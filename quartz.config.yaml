@@ -123,7 +123,7 @@ plugins:
       display: all
   - source: github:quartz-community/alias-redirects
     enabled: true
-  - source: github:quartz-community/content-index
+  - source: ./plugins/content-index
     enabled: true
     options:
       enableSiteMap: true
@@ -142,7 +142,7 @@ plugins:
     enabled: true
   - source: github:quartz-community/tag-page
     enabled: true
-  - source: github:quartz-community/explorer
+  - source: ./plugins/explorer
     enabled: true
     layout:
       position: left
