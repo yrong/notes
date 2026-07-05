@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Darwinia Bridge</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Quartz 5"/><meta property="og:title" content="Darwinia Bridge"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Darwinia Bridge"/><meta name="twitter:description" content="Theory White Paper Principle Darwinia-Ethereum Bridge Projects Navigation Darwinia Bridge cross-chain overview Background ERC223 ERC721 Patricia Merkle Trees Mining difficulty calculate mmr relay game Bridger Relayers (aka."/><meta property="og:description" content="Theory White Paper Principle Darwinia-Ethereum Bridge Projects Navigation Darwinia Bridge cross-chain overview Background ERC223 ERC721 Patricia Merkle Trees Mining difficulty calculate mmr relay game Bridger Relayers (aka."/><meta property="og:image:alt" content="Theory White Paper Principle Darwinia-Ethereum Bridge Projects Navigation Darwinia Bridge cross-chain overview Background ERC223 ERC721 Patricia Merkle Trees Mining difficulty calculate mmr relay game Bridger Relayers (aka."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/post/2021-04-02-darwinia-bridger"/><meta property="twitter:url" content="https://yrong.github.io/notes/post/2021-04-02-darwinia-bridger"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="Theory White Paper Principle Darwinia-Ethereum Bridge Projects Navigation Darwinia Bridge cross-chain overview Background ERC223 ERC721 Patricia Merkle Trees Mining difficulty calculate mmr relay game Bridger Relayers (aka."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/post/2021-04-02-darwinia-bridger-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/post/2021-04-02-darwinia-bridger-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/post/2021-04-02-darwinia-bridger-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="post/2021-04-02-darwinia-bridger" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Quartz 5</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-62" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-62" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../post/">post</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Darwinia Bridge</a></div></nav><h1 class="article-title">Darwinia Bridge</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../tags/blockchain" class="internal internal-link tag-link">blockchain</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2021-04-02T00:00:00.000Z">Apr 02, 2021</time><span>9 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="theory">Theory<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#theory" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><a href="https://darwinia.network/ChainRelay_Technical_Paper(Preview)_EN.pdf" class="external external-link">White Paper<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://docs.darwinia.network/docs/en/rfc-0012-darwinia-bridge-core-interoperation-in-chainrelay-enabled-blockchains/" class="external external-link">Principle<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://docs.google.com/document/d/1NVDSk6KZXV5CjE20cNPA8Swmmd89IYeWyN0T9lRBOEM" class="external external-link">Darwinia-Ethereum Bridge<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h1 id="projects-navigation">Projects Navigation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#projects-navigation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="darwinia-bridge"><a href="https://github.com/darwinia-network/darwinia-common/tree/master/frame/bridge" class="external external-link">Darwinia Bridge<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#darwinia-bridge" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><a href="https://miro.medium.com/max/700/0*W_Q1-GWv4JeCCQ7x" class="external external-link">cross-chain overview<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h3 id="background">Background<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#background" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="https://github.com/Dexaran/ERC223-token-standard" class="external external-link">ERC223<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/35019858" class="external external-link">ERC721<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://eth.wiki/concepts/light-client-protocol" class="external external-link">Patricia Merkle Trees<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.md" class="external external-link">Mining difficulty calculate<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://github.com/nervosnetwork/merkle-mountain-range" class="external external-link">mmr<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://github.com/darwinia-network/darwinia-common/blob/master/frame/bridge/relayer-game/README.md" class="external external-link">relay game<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h2 id="bridger"><a href="https://github.com/darwinia-network/bridger" class="external external-link">Bridger<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#bridger" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Relayers (aka. Bridgers) in Darwinia Network are offchain worker clients which help relay the headers and messages between source chains and target chains</p>
+<h3 id="background-1">Background<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#background-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="https://github.com/actix/actix" class="external external-link">actix<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p>deprecated <a href="https://github.com/darwinia-network/dj" class="external external-link">dj<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h2 id="shadow"><a href="https://github.com/darwinia-network/shadow" class="external external-link">Shadow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#shadow" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Services for bridger which retrieve header data from public chains and generate mmr proof</p>
+<h3 id="background-2">Background<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#background-2" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html#using-extern-functions-to-call-external-code" class="external external-link">ffi<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h2 id="wormhole"><a href="https://github.com/darwinia-network/wormhole" class="external external-link">Wormhole<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#wormhole" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="background-3">Background<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#background-3" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="https://docs.darwinia.network/docs/en/wiki-tut-wormhole-general/" class="external external-link">wiki<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h1 id="workflow--core-logic">WorkFlow &amp;&amp; Core Logic<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#workflow--core-logic" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="ethereum-to-darwinia">Ethereum To Darwinia<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#ethereum-to-darwinia" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="wormhole-1">wormhole<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#wormhole-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="invoke-token-contract">invoke token contract<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#invoke-token-contract" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>function redeemTokenEth(account, params, callback) {
+    let web3js = new Web3(window.ethereum || window.web3.currentProvider);
+    const contract = new web3js.eth.Contract(TokenABI, config[`${params.tokenType.toUpperCase()}_ETH_ADDRESS`]);
+    contract.methods.transferFrom(account, config['ETHEREUM_DARWINIA_ISSUING'], params.value, params.toHex).send({ from: account }).on('transactionHash', (hash) => {
+        callback &amp;&amp; callback(hash)
+    })
+}
+</code></pre>
+<p><a href="https://github.com/darwinia-network/darwinia-bridge-on-ethereum/blob/master/contracts/tokens/RING.sol" class="external external-link">token<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://github.com/darwinia-network/darwinia-bridge-on-ethereum/blob/master/issuing-burn/IssuingBurn.sol" class="external external-link">issuing-burn<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h3 id="contract">contract<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#contract" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="burn-token-and-send-burnandredeem-event">burn token and send BurnAndRedeem event<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#burn-token-and-send-burnandredeem-event" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>function tokenFallback(
+    address _from,
+    uint256 _amount,
+    bytes _data
+) public whenNotPaused {
+    ...
+
+    IBurnableERC20(msg.sender).burn(address(this), _amount);
+    emit BurnAndRedeem(msg.sender, _from, _amount, _data);
+}
+</code></pre>
+<h3 id="bridger-1">bridger<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#bridger-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="scan-ethereum-txs-from-token-contracts">scan ethereum txs from token contracts<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#scan-ethereum-txs-from-token-contracts" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>if l.topics.contains(&amp;contracts.ring) || l.topics.contains(&amp;contracts.kton)
+{
+    EthereumTransaction {
+        tx_hash: EthereumTransactionHash::Token(
+            l.transaction_hash.unwrap_or_default(),
+        ),
+        block_hash: l.block_hash.unwrap_or_default(),
+        block,
+        index,
+    }
+} 
+...       
+</code></pre>
+<h4 id="affirm">affirm<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#affirm" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>will start the relay game in darwinia</li>
+</ul>
+<pre><code>/// Ethereum EthereumRelayHeaderParcel including ethereum block header and mmr root from shadow
+#[derive(Encode, Decode, Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct EthereumRelayHeaderParcel {
+	/// Ethereum header
+	pub header: EthereumHeader,
+	/// MMR root
+	pub mmr_root: [u8; 32],
+}
+...
+let parcel = shadow.parcel(target as usize + 1).await.with_context(|| {
+    format!(
+        &quot;Fail to get parcel from shadow when affirming ethereum block {}&quot;,
+        target
+    )
+})?;
+...
+let ex = Extrinsic::Affirm(parcel);
+let msg = MsgExtrinsic(ex);
+extrinsics_service.send(msg).await?;
+</code></pre>
+<h4 id="redeem">redeem<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#redeem" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>redeem after the end of relay game and block parcel confirmed</li>
+</ul>
+<pre><code>/// Ethereum ReceiptProofThing including Merkle Patricia Trie proof from ethereum and mmr proof from shadow
+#[derive(Clone, Debug, Default, PartialEq, Eq, Encode)]
+pub struct EthereumReceiptProofThing {
+	/// Ethereum Header
+	pub header: EthereumHeader,
+	/// Ethereum Receipt Proof
+	pub receipt_proof: EthereumReceiptProof,
+	/// MMR Proof
+	pub mmr_proof: MMRProof,
+}
+...
+let proof = shadow
+    .receipt(&amp;format!(&quot;{:?}&quot;, tx.enclosed_hash()), last_confirmed)
+    .await?;
+let redeem_for = match tx.tx_hash {
+    EthereumTransactionHash::Token(_) => RedeemFor::Token,
+};
+...
+let ex = Extrinsic::Redeem(redeem_for, proof, tx);
+let msg = MsgExtrinsic(ex);
+extrinsics_service.send(msg).await?;
+</code></pre>
+<h4 id="guard-vote_pending_relay_header_parcel">guard vote_pending_relay_header_parcel<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#guard-vote_pending_relay_header_parcel" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>tech_comm member arbitrate as replacement for the relay game arbitrate</li>
+</ul>
+<pre><code>if pending_block_number > last_confirmed
+    &amp;&amp; !ethereum2darwinia.has_voted(&amp;guard_account, voting_state)
+{
+    let parcel_from_shadow = shadow.parcel(pending_block_number as usize).await?;
+    let ex = if pending_parcel.is_same_as(&amp;parcel_from_shadow) {
+        Extrinsic::GuardVote(pending_block_number, true)
+    } else {
+        Extrinsic::GuardVote(pending_block_number, false)
+    };
+    extrinsics_service.send(MsgExtrinsic(ex)).await?;
+}
+</code></pre>
+<h3 id="shadow-1">shadow<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#shadow-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="mmr-root">mmr root<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#mmr-root" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>fn get_mmr_root(&amp;self, leaf_index: u64) -> Result&lt;Option&lt;String>> {
+    ...
+    let mmr_size = cmmr::leaf_index_to_mmr_size(leaf_index);
+    let mmr = MMR::&lt;[u8; 32], MergeHash, _>::new(mmr_size, store);
+    let root = mmr.get_root()?;
+}
+</code></pre>
+<h4 id="mmr-proof">mmr proof<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#mmr-proof" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>fn gen_proof(&amp;self, member: u64, last_leaf: u64) -> Result&lt;Vec&lt;String>> {
+    let mmr_size = cmmr::leaf_index_to_mmr_size(last_leaf);
+    let mmr = MMR::&lt;[u8; 32], MergeHash, _>::new(mmr_size, store);
+    let proof = mmr.gen_proof(vec![cmmr::leaf_index_to_pos(member)])?;
+}
+</code></pre>
+<h3 id="darwinia-relay-game">darwinia relay game<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#darwinia-relay-game" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="https://github.com/darwinia-network/darwinia-common/blob/master/frame/bridge/relayer-game/README.md" class="external external-link">RelayerGame Rule<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://github.com/darwinia-network/darwinia-common/blob/master/primitives/relay/src/relayer_game.rs" class="external external-link">RelayerGame Protocol<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h4 id="start-game">start game<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#start-game" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>#[weight = 0]
+pub fn affirm(
+origin,
+ethereum_relay_header_parcel: EthereumRelayHeaderParcel,
+optional_ethereum_relay_proofs: Option&lt;EthereumRelayProofs>
+) {
+  let game_id = T::RelayerGame::affirm(
+  &amp;relayer,
+  ethereum_relay_header_parcel,
+  optional_ethereum_relay_proofs
+  )?;
+  ...
+}
+</code></pre>
+<h4 id="challengeextend-game">challenge&amp;extend game<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#challengeextend-game" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>pub fn dispute_and_affirm(
+    origin,
+    ethereum_relay_header_parcel: EthereumRelayHeaderParcel,
+    optional_ethereum_relay_proofs: Option&lt;EthereumRelayProofs>
+) 
+
+fn extend_affirmation(
+    origin,
+    extended_ethereum_relay_affirmation_id: RelayAffirmationId&lt;EthereumBlockNumber>,
+    game_sample_points: Vec&lt;EthereumRelayHeaderParcel>,
+    optional_ethereum_relay_proofs: Option&lt;Vec&lt;EthereumRelayProofs>>,
+) 
+</code></pre>
+<h4 id="update-games">update games<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#update-games" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>find the relayer win and confirm_relay_header_parcels</p>
+<pre><code>pub fn update_games(game_ids: Vec&lt;RelayHeaderId&lt;T, I>>) -> DispatchResult {
+    let now = &lt;frame_system::Module&lt;T>>::block_number();
+    let mut relay_header_parcels = vec![];
+
+    for game_id in game_ids {
+        trace!(
+            target: &quot;relayer-game&quot;,
+            &quot;>  Trying to Settle Game `{:?}`&quot;, game_id
+        );
+
+        let round_count = Self::round_count_of(&amp;game_id);
+        let last_round = if let Some(last_round) = round_count.checked_sub(1) {
+            last_round
+        } else {
+            // Should never enter this condition
+            error!(target: &quot;relayer-game&quot;, &quot;   >  Rounds - EMPTY&quot;);
+
+            continue;
+        };
+        let mut relay_affirmations = Self::affirmations_of_game_at(&amp;game_id, last_round);
+
+        match (last_round, relay_affirmations.len()) {
+            // Should never enter this condition
+            (0, 0) => error!(target: &quot;relayer-game&quot;, &quot;   >  Affirmations - EMPTY&quot;),
+            // At first round and only one affirmation found
+            (0, 1) => {
+                trace!(target: &quot;relayer-game&quot;, &quot;   >  Challenge - NOT EXISTED&quot;);
+
+                if let Some(relay_header_parcel) =
+                    Self::settle_without_challenge(relay_affirmations.pop().unwrap())
+                {
+                    relay_header_parcels.push(relay_header_parcel);
+                }
+            }
+            // No relayer response for the latest round
+            (_, 0) => {
+                trace!(target: &quot;relayer-game&quot;, &quot;   >  All Relayers Abstain, Settle Abandon&quot;);
+
+                Self::settle_abandon(&amp;game_id);
+            }
+            // No more challenge found at latest round, only one relayer win
+            (_, 1) => {
+                trace!(target: &quot;relayer-game&quot;, &quot;   >  No More Challenge, Settle With Challenge&quot;);
+
+                if let Some(relay_header_parcel) =
+                    Self::settle_with_challenge(&amp;game_id, relay_affirmations.pop().unwrap())
+                {
+                    relay_header_parcels.push(relay_header_parcel);
+                } else {
+                    // Should never enter this condition
+
+                    Self::settle_abandon(&amp;game_id);
+                }
+            }
+            (last_round, _) => {
+                let distance = T::RelayableChain::distance_between(
+                    &amp;game_id,
+                    Self::best_confirmed_header_id_of(&amp;game_id),
+                );
+
+                if distance == round_count {
+                    trace!(target: &quot;relayer-game&quot;, &quot;   >  A Full Chain Gave, On Chain Arbitrate&quot;);
+
+                    // A whole chain gave, start continuous verification
+                    if let Some(relay_header_parcel) = Self::on_chain_arbitrate(&amp;game_id) {
+                        relay_header_parcels.push(relay_header_parcel);
+                    } else {
+                        Self::settle_abandon(&amp;game_id);
+                    }
+                } else {
+                    trace!(target: &quot;relayer-game&quot;, &quot;   >  Still In Challenge, Update Games&quot;);
+
+                    // Update game, start new round
+                    Self::update_game_at(&amp;game_id, last_round, now);
+
+                    continue;
+                }
+            }
+        }
+
+        Self::game_over(game_id);
+    }
+
+    // TODO: handle error
+    let _ = T::RelayableChain::try_confirm_relay_header_parcels(relay_header_parcels);
+
+    trace!(target: &quot;relayer-game&quot;, &quot;---&quot;);
+
+    Ok(())
+}
+</code></pre>
+<h4 id="verify-proof-in-game">verify proof in game<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#verify-proof-in-game" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>fn verify_relay_proofs(
+		relay_header_id: &amp;Self::RelayHeaderId,
+		relay_header_parcel: &amp;Self::RelayHeaderParcel,
+		relay_proofs: &amp;Self::RelayProofs,
+		optional_best_confirmed_relay_header_id: Option&lt;&amp;Self::RelayHeaderId>,
+	) -> DispatchResult {
+		
+    //verify ethash_proof
+    ensure!(
+        Self::verify_header(header, ethash_proof),
+        &lt;Error&lt;T>>::HeaderInv
+    );
+    ...
+    //verify mmr
+    ensure!(
+        Self::verify_mmr(
+            last_leaf,
+            mmr_root,
+            mmr_proof
+                .iter()
+                .map(|h| array_unchecked!(h, 0, 32).into())
+                .collect(),
+            vec![(
+                *best_confirmed_block_number,
+                best_confirmed_block_header_hash
+            )],
+        ),
+        &lt;Error&lt;T>>::MMRInv
+    );
+    ...
+}
+</code></pre>
+<h4 id="confirm-relay-parcel-after-game">confirm relay parcel after game<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#confirm-relay-parcel-after-game" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>pub fn update_confirmeds_with_reason(
+    relay_header_parcel: EthereumRelayHeaderParcel,
+    reason: Vec&lt;u8>,
+) {
+    let relay_block_number = relay_header_parcel.header.number;
+
+    ConfirmedBlockNumbers::mutate(|confirmed_block_numbers| {
+        // TODO: remove old numbers according to `ConfirmedDepth`
+
+        confirmed_block_numbers.push(relay_block_number);
+
+        BestConfirmedBlockNumber::put(relay_block_number);
+    });
+    ConfirmedHeaderParcels::insert(relay_block_number, relay_header_parcel);
+
+    Self::deposit_event(RawEvent::PendingRelayHeaderParcelConfirmed(
+        relay_block_number,
+        reason,
+    ));
+}
+</code></pre>
+<h3 id="darwinia-backing-module"><a href="https://github.com/darwinia-network/darwinia-common/tree/master/frame/bridge/ethereum/backing" class="external external-link">darwinia backing module<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#darwinia-backing-module" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>redeem will happen only after game finished and block confirmed</p>
+<h4 id="redeem-1">redeem<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#redeem-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>/// Redeem balances
+///
+/// # &lt;weight>
+/// - `O(1)`
+/// # &lt;/weight>
+#[weight = 10_000_000]
+pub fn redeem(origin, act: RedeemFor, proof: EthereumReceiptProofThing&lt;T>) {
+    let redeemer = ensure_signed(origin)?;
+
+    if RedeemStatus::get() {
+        match act {
+            RedeemFor::Token => Self::redeem_token(&amp;redeemer, &amp;proof)?,
+            RedeemFor::Deposit => Self::redeem_deposit(&amp;redeemer, &amp;proof)?,
+        }
+    } else {
+        Err(&lt;Error&lt;T>>::RedeemDis)?;
+    }
+}
+</code></pre>
+<h4 id="parse-burnandredeem-event">parse BurnAndRedeem event<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#parse-burnandredeem-event" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>fn parse_token_redeem_proof(
+		proof_record: &amp;EthereumReceiptProofThing&lt;T>,
+	) -> Result&lt;(T::AccountId, (bool, Balance), RingBalance&lt;T>), DispatchError> {
+		let verified_receipt = T::EthereumRelay::verify_receipt(proof_record)
+			.map_err(|_| &lt;Error&lt;T>>::ReceiptProofInv)?;
+		let fee = T::EthereumRelay::receipt_verify_fee();
+		let result = {
+			let eth_event = EthEvent {
+				name: &quot;BurnAndRedeem&quot;.to_owned(),
+				...
+		debug::trace!(target: &quot;ethereum-backing&quot;, &quot;[ethereum-backing] Darwinia Account: {:?}&quot;, darwinia_account);
+
+		Ok((darwinia_account, (is_ring, redeemed_amount), fee))
+}
+</code></pre>
+<h4 id="finish-the-transfer">finish the transfer<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#finish-the-transfer" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>C::transfer(
+    &amp;Self::account_id(),
+    &amp;darwinia_account,
+    redeem_amount,
+    KeepAlive,
+)?;
+// // Transfer the fee from redeemer.
+// T::RingCurrency::transfer(redeemer, &amp;T::EthereumRelay::account_id(), fee, KeepAlive)?;
+
+VerifiedProof::insert(tx_index, true);
+</code></pre>
+<h2 id="darwinia-to-ethereum">Darwinia To Ethereum<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#darwinia-to-ethereum" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="wormhole-2">wormhole<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#wormhole-2" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="lock-token">lock token<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lock-token" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>async function ethereumBackingLockDarwinia(account, params, callback, t) {
+    try {
+        console.log('ethereumBackingLock', { account, params, callback }, params.ring.toString(), params.kton.toString())
+        if (window.darwiniaApi) {
+            await window.darwiniaApi.isReady;
+            const injector = await web3FromAddress(account);
+            window.darwiniaApi.setSigner(injector.signer);
+            const hash = await window.darwiniaApi.tx.ethereumBacking.lock(params.ring, params.kton, params.to)
+            .signAndSend(account);
+            callback &amp;&amp; callback(hash);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+</code></pre>
+<h3 id="darwinia-backing-module-1">darwinia backing module<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#darwinia-backing-module-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="lock-balance-and-send-schedulemmrrootevent">lock balance and send ScheduleMMRRootEvent<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lock-balance-and-send-schedulemmrrootevent" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>// Lock some balances into the module account
+/// which very similar to lock some assets into the contract on ethereum side
+///
+/// This might kill the account just like `balances::transfer`
+#[weight = 10_000_000]
+pub fn lock(
+    origin,
+    #[compact] ring_to_lock: RingBalance&lt;T>,
+    #[compact] kton_to_lock: KtonBalance&lt;T>,
+    ethereum_account: EthereumAddress,
+) {
+    ...
+    T::RingCurrency::transfer(
+        &amp;user, &amp;Self::account_id(),
+        ring_to_lock,
+        AllowDeath
+    )?;
+  
+    let raw_event = RawEvent::LockRing(
+        user.clone(),
+        ethereum_account.clone(),
+        RingTokenAddress::get(),
+        ring_to_lock
+    );
+    let module_event: &lt;T as Config>::Event = raw_event.clone().into();
+    let system_event: &lt;T as frame_system::Config>::Event = module_event.into();
+  
+    locked = true;
+  
+    &lt;LockAssetEvents&lt;T>>::append(system_event);
+    Self::deposit_event(raw_event);
+    if locked {
+        //will send ScheduleMMRRootEvent 
+        T::EcdsaAuthorities::schedule_mmr_root((
+            &lt;frame_system::Module&lt;T>>::block_number().saturated_into::&lt;u32>()
+                / 10 * 10 + 10
+        ).saturated_into());
+    }
+}
+</code></pre>
+<h3 id="bridger-2">bridger<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#bridger-2" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="handle-schedulemmrrootevent">handle ScheduleMMRRootEvent<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#handle-schedulemmrrootevent" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>// call ethereum_backing.lock will emit the event
+  EventInfo::ScheduleMMRRootEvent(event) => {
+      if self
+          .darwinia2ethereum
+          .is_authority(block, &amp;self.account)
+          .await?
+      {
+          info!(&quot;{}&quot;, event);
+          let ex = Extrinsic::SignAndSendMmrRoot(event.block_number);
+          self.delayed_extrinsics.insert(event.block_number, ex);
+      }
+  }
+</code></pre>
+<h4 id="submit-signed_mmr_root-extrinsic">submit signed_mmr_root extrinsic<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#submit-signed_mmr_root-extrinsic" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>Extrinsic::SignAndSendMmrRoot(block_number) => {
+    if let Some(darwinia2ethereum) = &amp;darwinia2ethereum {
+        trace!(&quot;Start sign and send mmr_root...&quot;);
+        if let Some(relayer) = &amp;darwinia2ethereum_relayer {
+            let ex_hash = darwinia2ethereum
+                .ecdsa_sign_and_submit_signed_mmr_root(
+                    &amp;relayer,
+                    spec_name,
+                    block_number,
+                )
+                .await?;
+            info!(
+                &quot;Sign and send mmr root of block {} in extrinsic {:?}&quot;,
+                block_number, ex_hash
+            );
+        }
+    }
+}
+</code></pre>
+<h3 id="darwinia-relay-authorities"><a href="https://github.com/darwinia-network/darwinia-common/blob/master/frame/bridge/relay-authorities/src/lib.rs" class="external external-link">darwinia relay authorities<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#darwinia-relay-authorities" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="verify-signature-and-send-mmrrootsigned-event">verify signature and send MMRRootSigned event<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#verify-signature-and-send-mmrrootsigned-event" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<pre><code>/// Verify
+/// - the relay requirement is valid
+/// - the signature is signed by the submitter
+#[weight = 10_000_000]
+pub fn submit_signed_mmr_root(
+    origin,
+    block_number: BlockNumber&lt;T>,
+    signature: RelayAuthoritySignature&lt;T, I>
+) {
+    ...
+    let mmr_root =
+        T::DarwiniaMMR::get_root(block_number).ok_or(&lt;Error&lt;T, I>>::DarwiniaMMRRootNRY)?;
+
+    ...
+
+    ensure!(
+        T::Sign::verify_signature(&amp;signature, &amp;message, &amp;signer),
+         &lt;Error&lt;T, I>>::SignatureInv
+    );
+
+    ...
+    Self::mmr_root_signed(block_number);
+    Self::deposit_event(RawEvent::MMRRootSigned(block_number, mmr_root, signatures));
+}
+</code></pre>
+<h3 id="wormhole-3">wormhole<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#wormhole-3" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="invoke-verifyproof-contract">invoke VerifyProof contract<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#invoke-verifyproof-contract" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>only after MMRRootSigned</li>
+</ul>
+<pre><code>export async function ClaimTokenFromD2E({ networkPrefix, mmrIndex, mmrRoot, mmrSignatures, blockNumber, blockHeaderStr, blockHash, historyMeta} , callback, t ) {
+    connect('eth', async(_networkType, _account, subscribe) => {
+    
+    ...
+    darwiniaToEthereumVerifyProof(_account, {
+        root: '0x' + historyMeta.mmrRoot,
+        MMRIndex: historyMeta.best,
+        blockNumber: blockNumber,
+        blockHeader: blockHeader.toHex(),
+        peaks: mmrProof.peaks,
+        siblings: mmrProof.siblings,
+        eventsProofStr: eventsProof.toHex()
+    }, (result) => {
+        console.log('darwiniaToEthereumVerifyProof', result)
+        callback &amp;&amp; callback(result);
+    }); 
+}
+
+export async function darwiniaToEthereumVerifyProof(account, {
+    root,
+    MMRIndex,
+    blockNumber,
+    blockHeader,
+    peaks,
+    siblings,
+    eventsProofStr
+}, callback) {
+    let web3js = new Web3(window.ethereum || window.web3.currentProvider);
+    const contract = new web3js.eth.Contract(DarwiniaToEthereumTokenIssuingABI, config.DARWINIA_ETHEREUM_TOKEN_ISSUING);
+
+    // bytes32 root,
+    // uint32 MMRIndex,
+    // uint32 blockNumber,
+    // bytes memory blockHeader,
+    // bytes32[] memory peaks,
+    // bytes32[] memory siblings,
+    // bytes memory eventsProofStr
+    contract.methods.verifyProof(
+        root,
+        MMRIndex,
+        blockHeader,
+        peaks,
+        siblings,
+        eventsProofStr).send({ from: account }, function(error, transactionHash) {
+            if(error) {
+               console.log(error);
+               return;
+            }
+            callback &amp;&amp; callback(transactionHash)
+        })
+}
+</code></pre>
+<h3 id="contract-1">contract<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#contract-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="issue-mint">issue mint<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#issue-mint" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="https://github.com/darwinia-network/darwinia-bridge-on-ethereum/blob/master/contracts/TokenIssuing.sol" class="external external-link">Issuing-Mint<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>function verifyProof(
+        bytes32 root,
+        uint32 MMRIndex,
+        bytes memory blockHeader,
+        bytes32[] memory peaks,
+        bytes32[] memory siblings,
+        bytes memory eventsProofStr
+    ) 
+      public
+      whenNotPaused
+    {
+        uint32 blockNumber = Scale.decodeBlockNumberFromBlockHeader(blockHeader);
+
+        require(!history[blockNumber], &quot;TokenIssuing:: verifyProof:  The block has been verified&quot;);
+
+        Input.Data memory data = Input.from(relay.verifyRootAndDecodeReceipt(root, MMRIndex, blockNumber, blockHeader, peaks, siblings, eventsProofStr, storageKey));
+        
+        ScaleStruct.LockEvent[] memory events = Scale.decodeLockEvents(data);
+
+        address ring = registry.addressOf(bytes32(&quot;CONTRACT_RING_ERC20_TOKEN&quot;));
+        address kton = registry.addressOf(bytes32(&quot;CONTRACT_KTON_ERC20_TOKEN&quot;));
+
+        uint256 len = events.length;
+
+        for( uint i = 0; i &lt; len; i++ ) {
+          ScaleStruct.LockEvent memory item = events[i];
+          uint256 value = decimalsConverter(item.value);
+          if(item.token == ring) {
+            expendDailyLimit(ring, value);
+            IERC20(ring).mint(item.recipient, value);
+
+            emit MintRingEvent(item.recipient, value, item.sender);
+          }
+
+          if (item.token == kton) {
+            expendDailyLimit(kton, value);
+            IERC20(kton).mint(item.recipient, value);
+
+            emit MintKtonEvent(item.recipient, value, item.sender);
+          }
+        }
+
+        history[blockNumber] = true;
+        emit VerifyProof(blockNumber);
+    }
+</code></pre>
+<h4 id="verify-mmr">verify mmr<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#verify-mmr" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="https://github.com/darwinia-network/darwinia-bridge-on-ethereum/blob/master/contracts/Relay.sol" class="external external-link">verify proof<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>function verifyRootAndDecodeReceipt(
+    bytes32 root,
+    uint32 MMRIndex,
+    uint32 blockNumber,
+    bytes memory blockHeader,
+    bytes32[] memory peaks,
+    bytes32[] memory siblings,
+    bytes memory eventsProofStr,
+    bytes memory key
+) public view whenNotPaused returns (bytes memory){
+    // verify block proof
+    require(
+        verifyBlockProof(root, MMRIndex, blockNumber, blockHeader, peaks, siblings),
+        &quot;Relay: Block header proof varification failed&quot;
+    );
+
+    // get state root
+    bytes32 stateRoot = Scale.decodeStateRootFromBlockHeader(blockHeader);
+
+    return getLockTokenReceipt(stateRoot, eventsProofStr, key);
+}
+</code></pre></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-57" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#theory" data-for="theory">Theory</a></li><li class="depth-0"><a href="#projects-navigation" data-for="projects-navigation">Projects Navigation</a></li><li class="depth-1"><a href="#darwinia-bridge" data-for="darwinia-bridge">Darwinia Bridge</a></li><li class="depth-2"><a href="#background" data-for="background">Background</a></li><li class="depth-1"><a href="#bridger" data-for="bridger">Bridger</a></li><li class="depth-2"><a href="#background-1" data-for="background-1">Background</a></li><li class="depth-1"><a href="#shadow" data-for="shadow">Shadow</a></li><li class="depth-2"><a href="#background-2" data-for="background-2">Background</a></li><li class="depth-1"><a href="#wormhole" data-for="wormhole">Wormhole</a></li><li class="depth-2"><a href="#background-3" data-for="background-3">Background</a></li><li class="depth-0"><a href="#workflow--core-logic" data-for="workflow--core-logic">WorkFlow &amp;&amp; Core Logic</a></li><li class="depth-1"><a href="#ethereum-to-darwinia" data-for="ethereum-to-darwinia">Ethereum To Darwinia</a></li><li class="depth-2"><a href="#wormhole-1" data-for="wormhole-1">wormhole</a></li><li class="depth-2"><a href="#contract" data-for="contract">contract</a></li><li class="depth-2"><a href="#bridger-1" data-for="bridger-1">bridger</a></li><li class="depth-2"><a href="#shadow-1" data-for="shadow-1">shadow</a></li><li class="depth-2"><a href="#darwinia-relay-game" data-for="darwinia-relay-game">darwinia relay game</a></li><li class="depth-2"><a href="#darwinia-backing-module" data-for="darwinia-backing-module">darwinia backing module</a></li><li class="depth-1"><a href="#darwinia-to-ethereum" data-for="darwinia-to-ethereum">Darwinia To Ethereum</a></li><li class="depth-2"><a href="#wormhole-2" data-for="wormhole-2">wormhole</a></li><li class="depth-2"><a href="#darwinia-backing-module-1" data-for="darwinia-backing-module-1">darwinia backing module</a></li><li class="depth-2"><a href="#bridger-2" data-for="bridger-2">bridger</a></li><li class="depth-2"><a href="#darwinia-relay-authorities" data-for="darwinia-relay-authorities">darwinia relay authorities</a></li><li class="depth-2"><a href="#wormhole-3" data-for="wormhole-3">wormhole</a></li><li class="depth-2"><a href="#contract-1" data-for="contract-1">contract</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-503771fb.js" type="module" data-persist="true"></script></html>

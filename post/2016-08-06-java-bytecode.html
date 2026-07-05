@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Java字节码解析</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Quartz 5"/><meta property="og:title" content="Java字节码解析"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Java字节码解析"/><meta name="twitter:description" content="基于栈的虚拟机 JVM是一种基于栈的虚拟机，绝大部分字节码操作都涉及到操作数栈中操作数的入栈和出栈。例如，在执行求和操作时，会将两个操作数入栈，将两个数做加法后再将结果入栈，使用结果的时候再将操作结果出栈。除了栈之外，字节码的格式还规定了有多达65536个寄存器可以使用，也称之为 局部变量。 在字节码格式中，操作指令都被编码在一个字节中，也就是说，JVM最多支持256种 操作码（opcode）,每种操作都有唯一值和类似于汇编指令的 助记符 字节码格式概览 下面的代码是一个执行加法的函数及其编译后的字节码格式： public int add(int a, int b) { return a + ..."/><meta property="og:description" content="基于栈的虚拟机 JVM是一种基于栈的虚拟机，绝大部分字节码操作都涉及到操作数栈中操作数的入栈和出栈。例如，在执行求和操作时，会将两个操作数入栈，将两个数做加法后再将结果入栈，使用结果的时候再将操作结果出栈。除了栈之外，字节码的格式还规定了有多达65536个寄存器可以使用，也称之为 局部变量。 在字节码格式中，操作指令都被编码在一个字节中，也就是说，JVM最多支持256种 操作码（opcode）,每种操作都有唯一值和类似于汇编指令的 助记符 字节码格式概览 下面的代码是一个执行加法的函数及其编译后的字节码格式： public int add(int a, int b) { return a + ..."/><meta property="og:image:alt" content="基于栈的虚拟机 JVM是一种基于栈的虚拟机，绝大部分字节码操作都涉及到操作数栈中操作数的入栈和出栈。例如，在执行求和操作时，会将两个操作数入栈，将两个数做加法后再将结果入栈，使用结果的时候再将操作结果出栈。除了栈之外，字节码的格式还规定了有多达65536个寄存器可以使用，也称之为 局部变量。 在字节码格式中，操作指令都被编码在一个字节中，也就是说，JVM最多支持256种 操作码（opcode）,每种操作都有唯一值和类似于汇编指令的 助记符 字节码格式概览 下面的代码是一个执行加法的函数及其编译后的字节码格式： public int add(int a, int b) { return a + ..."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/post/2016-08-06-java-bytecode"/><meta property="twitter:url" content="https://yrong.github.io/notes/post/2016-08-06-java-bytecode"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="基于栈的虚拟机 JVM是一种基于栈的虚拟机，绝大部分字节码操作都涉及到操作数栈中操作数的入栈和出栈。例如，在执行求和操作时，会将两个操作数入栈，将两个数做加法后再将结果入栈，使用结果的时候再将操作结果出栈。除了栈之外，字节码的格式还规定了有多达65536个寄存器可以使用，也称之为 局部变量。 在字节码格式中，操作指令都被编码在一个字节中，也就是说，JVM最多支持256种 操作码（opcode）,每种操作都有唯一值和类似于汇编指令的 助记符 字节码格式概览 下面的代码是一个执行加法的函数及其编译后的字节码格式： public int add(int a, int b) { return a + ..."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/post/2016-08-06-java-bytecode-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/post/2016-08-06-java-bytecode-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/post/2016-08-06-java-bytecode-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="post/2016-08-06-java-bytecode" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Quartz 5</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-5" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-5" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../post/">post</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Java字节码解析</a></div></nav><h1 class="article-title">Java字节码解析</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../tags/java" class="internal internal-link tag-link">java</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2016-08-06T15:00:00.000Z">Aug 06, 2016</time><span>12 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h2 id="基于栈的虚拟机">基于栈的虚拟机<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#基于栈的虚拟机" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>JVM是一种基于栈的虚拟机，绝大部分字节码操作都涉及到操作数栈中操作数的入栈和出栈。例如，在执行求和操作时，会将两个操作数入栈，将两个数做加法后再将结果入栈，使用结果的时候再将操作结果出栈。除了栈之外，字节码的格式还规定了有多达65536个寄存器可以使用，也称之为 <strong>局部变量</strong>。</p>
+<p>在字节码格式中，操作指令都被编码在一个字节中，也就是说，JVM最多支持256种 <strong>操作码（opcode）</strong>,每种操作都有唯一值和类似于汇编指令的 <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5" class="external external-link">助记符<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<h2 id="字节码格式概览">字节码格式概览<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#字节码格式概览" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>下面的代码是一个执行加法的函数及其编译后的字节码格式：</p>
+<pre><code>public int add(int a, int b) {
+    return a + b;
+}
+
+public int add(int, int);
+  Code:
+    0: iload_1    // stack: a
+    1: iload_2    // stack: a, b
+    2: iadd       // stack: (a+b)
+    3: ireturn    // stack:
+}
+</code></pre>
+<p>函数<code>add</code>有两个输入参数<code>a</code>和<code>b</code>，分别被放入局部变量1和局部变量2中（根据JVM规范，实例方法局部变量0中存放是<code>this</code>）。前两个操作，即<code>iload_1</code>和<code>iload_2</code>，用于将局部变量1和局部变量2中的值放入到操作数栈中。第三个操作<code>iadd</code>从操作数栈中弹出两个数，对其求和，并将结果入栈。第四个操作<code>ireturn</code>弹出之前计算出的和，以该值作为返回值，方法结束。上面例子中的每一步字节码操作旁边都有关于操作数栈操作的注释，读者可自行揣摩。</p>
+<h2 id="字节码结构详解">字节码结构详解<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#字节码结构详解" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>key internal components of a typical JVM that conforms to <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/" class="external external-link">The Java Virtual Machine Specification Java SE 7 Edition<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>.
+<img src="../img/jvm_internal_architecture.png" alt/></p>
+<p>The components shown on this diagram are each explained below in two sections. First section covers the components that are created for each thread and the second section covers the components that are created independently of threads.</p>
+<ul>
+<li>Threads
+<ul>
+<li>JVM System Threads</li>
+<li>Per Thread</li>
+<li>program Counter (PC)</li>
+<li>Stack</li>
+<li>Native Stack</li>
+<li>Stack Restrictions</li>
+<li>Frame</li>
+<li>Local Variables Array</li>
+<li>Operand Stack</li>
+<li>Dynamic Linking</li>
+</ul>
+</li>
+<li>Shared Between Threads
+<ul>
+<li>Heap</li>
+<li>Memory Management</li>
+<li>Non-Heap Memory</li>
+<li>Just In Time (JIT) Compilation</li>
+<li>Method Area</li>
+<li>Class File Structure</li>
+<li>Classloader</li>
+<li>Faster Class Loading</li>
+<li>Where Is The Method Area</li>
+<li>Classloader Reference</li>
+<li>Run Time Constant Pool</li>
+<li>Exception Table</li>
+<li>Symbol Table</li>
+<li>Interned Strings (String Table)</li>
+</ul>
+</li>
+</ul>
+<h3 id="threads">Threads<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#threads" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="stack">Stack<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#stack" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Each thread has its own stack that holds a frame for each method executing on that thread. The stack is a Last In First Out (LIFO) data structure, so the currently executing method is at the top of the stack. A new frame is created and added (pushed) to the top of stack for every method invocation. The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation. The stack is not directly manipulated, except to push and pop frame objects, and therefore the frame objects may be allocated in the Heap and the memory does not need to be contiguous.</p>
+<h4 id="frame">Frame<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#frame" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>A new frame is created and added (pushed) to the top of stack for every method invocation. The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation. For more detail on exception handling see the section on Exception Tables below.Each frame contains:</p>
+<ul>
+<li>Local variable array</li>
+<li>Return value</li>
+<li>Operand stack</li>
+<li>Reference to runtime constant pool for class of the current method</li>
+</ul>
+<h5 id="operand-stack">Operand Stack<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#operand-stack" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h5>
+<p>The operand stack is used during the execution of byte code instructions in a similar way that general-purpose registers are used in a native CPU. Most JVM byte code spends its time manipulating the operand stack by pushing, popping, duplicating, swapping, or executing operations that produce or consume values. Therefore, instructions that move values between the array of local variables and the operand stack are very frequent in byte code. For example, a simple variable initialization results in two byte codes that interact with the operand stack.</p>
+<pre><code>int i;
+</code></pre>
+<p>Gets compiled to the following byte code:</p>
+<pre><code>0: iconst_0    // Push 0 to top of the operand stack
+1: istore_1    // Pop value from top of operand stack and store as local variable 1
+</code></pre>
+<p>下面的代码是判断一个数是否是偶数的函数，及其编译为字节码后的样子：</p>
+<pre><code>public boolean even(int number) {
+    return (number &amp; 1) == 0;
+}
+
+public boolean even(int);
+  Code:
+    0: iload_1      // 0x1b number
+    1: iconst_1     // 0x04 number, 1
+    2: iand         // 0x7e (number &amp; 1)
+    3: ifne 10      // 0x9a 0x00 0x07
+    6: iconst_1     // 0x03 1
+    7: goto 11      // 0xa7 0x00 0x04
+    10: iconst_0    // 0x03 0
+    11: ireturn     // 0xac
+}
+</code></pre>
+<p>在上面的代码中，首先将传入的参数<code>number</code>和常数1压入到操作数栈中，然后将它们都弹出求和，即执行<code>iand</code>指令，并将结果压入操作数栈。指令<code>ifne</code>进行条件判断，从操作数栈中弹出一个操作数做比较判断，如果不是0的话，就跳转到其他分支运行。指令<code>iconst_0</code>将常数0压入到操作数栈中，其操作码为<code>0x03</code>，其后无操作数。类似的，指令<code>iconst_1</code>会将常量1压入操作数栈中。返回值为布尔类型时是使用常量整数来表示的。</p>
+<p>比较和跳转指令，例如<code>ifne</code>（如果不相等则跳转，字节码是<code>0x9a</code>），通常需要使用两个字节的操作数（以满足16位跳转偏移的要求）。举个例子，如果有一个操作是经过条件跳转判断后需要将指令指针向前移动10000个字节的话，那么这个操作的编码应该是<code>0x9a 0x27 0x10</code>（注意，0x2710是10000的16禁止表示，字节码中数字的存储是大端序的）。</p>
+<p>字节码中还包含其他一些复杂结构，例如分支跳转，是通过在<code>tableswitch</code>指令后附加包含了所有跳转偏移的分支跳转表实现的。</p>
+<h3 id="shared-between-threads">Shared Between Threads<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#shared-between-threads" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="non-heap-memory">Non-Heap Memory<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#non-heap-memory" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Objects that are logically considered as part of the JVM mechanics are not created on the Heap.The non-heap memory includes:</p>
+<ul>
+<li>Permanent Generation that contains</li>
+<li>the method area</li>
+<li>interned strings</li>
+<li>Code Cache used for compilation and storage of methods that have been compiled to native code by the JIT compiler</li>
+<li>Just In Time (JIT) Compilation</li>
+</ul>
+<p>Java byte code is interpreted however this is not as fast as directly executing native code on the JVM’s host CPU. To improve performance the Oracle Hotspot VM looks for “hot” areas of byte code that are executed regularly and compiles these to native code. The native code is then stored in the code cache in non-heap memory. In this way the Hotspot VM tries to choose the most appropriate way to trade-off the extra time it takes to compile code verses the extra time it take to execute interpreted code.</p>
+<p>程序，包含数据和代码量部分，而数据则作为操作数使用。对于字节码程序来说，如果操作数非常小而又很常用，则这些操作数是直接内嵌在字节码指令中的，（例如<code>iconst_0</code>）。</p>
+<p>较大块的数据，例如常量字符串或比较大的数字，是存储在class文件开始部分的常量池中的。要使用数据作为操作数时，使用的是常量池中数据的索引位置，而不是实际数据本身。如果在编译方法时每次都要重新编码字符串的话，那字节码就谈不上压缩存储了。</p>
+<p>此外，Java程序中，方法、域和类的元数据也是class文件的组成部分，存储在常量池中。</p>
+<h5 id="method-area">Method Area<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#method-area" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h5>
+<p>The method area stores per-class information such as:</p>
+<ul>
+<li>
+<p>Classloader Reference</p>
+</li>
+<li>
+<p>Run Time Constant Pool</p>
+<ul>
+<li>Numeric constants</li>
+<li>Field references</li>
+<li>Method References</li>
+<li>Attributes</li>
+</ul>
+</li>
+<li>
+<p>Field data</p>
+<ul>
+<li>Per field
+<ul>
+<li>Name</li>
+<li>Type</li>
+<li>Modifiers</li>
+<li>Attributes</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Method data</p>
+<ul>
+<li>Per method
+<ul>
+<li>Name</li>
+<li>Return Type</li>
+<li>Parameter Types (in order)</li>
+<li>Modifiers</li>
+<li>Attributes</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Method code</p>
+<ul>
+<li>Per method
+<ul>
+<li>Bytecodes</li>
+<li>Operand stack size</li>
+<li>Local variable size</li>
+<li>Local variable table</li>
+<li>Exception table
+<ul>
+<li>Per exception handler
+<ul>
+<li>Start point</li>
+<li>End point</li>
+<li>PC offset for handler code</li>
+<li>Constant pool index for exception class being caught</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>All threads share the same method area, so access to the method area data and the process of dynamic linking must be thread safe. If two threads attempt to access a field or method on a class that has not yet been loaded it must only be loaded once and both threads must not continue execution until it has been loaded.</p>
+<h4 id="class-file-structure">Class File Structure<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#class-file-structure" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<blockquote>
+<p>可以使用JDK附带的命令行工具javap对字节码进行反汇编</p>
+</blockquote>
+<p>A compiled class file consists of the following structure:</p>
+<pre><code>ClassFile {
+    u4          magic;
+    u2          minor_version;
+    u2          major_version;
+    u2          constant_pool_count;
+    cp_info     contant_pool[constant_pool_count – 1];
+    u2          access_flags;
+    u2          this_class;
+    u2          super_class;
+    u2          interfaces_count;
+    u2          interfaces[interfaces_count];
+    u2          fields_count;
+    field_info      fields[fields_count];
+    u2          methods_count;
+    method_info     methods[methods_count];
+    u2          attributes_count;
+    attribute_info  attributes[attributes_count];
+}
+</code></pre>
+<p>If you compile the following simple class:</p>
+<pre><code>package org.jvminternals;
+
+public class SimpleClass {
+
+    public void sayHello() {
+        System.out.println(&quot;Hello&quot;);
+    }
+
+}
+</code></pre>
+<p>Then you get the following output if you run:</p>
+<pre><code>javap -v -p -s -sysinfo -constants classes/org/jvminternals/SimpleClass.class
+</code></pre>
+<pre><code>public class org.jvminternals.SimpleClass
+      SourceFile: &quot;SimpleClass.java&quot;
+      minor version: 0
+      major version: 51
+      flags: ACC_PUBLIC, ACC_SUPER
+    Constant pool:
+       #1 = Methodref          #6.#17         //  java/lang/Object.&quot;&lt;init>&quot;:()V
+       #2 = Fieldref           #18.#19        //  java/lang/System.out:Ljava/io/PrintStream;
+       #3 = String             #20            //  &quot;Hello&quot;
+       #4 = Methodref          #21.#22        //  java/io/PrintStream.println:(Ljava/lang/String;)V
+       #5 = Class              #23            //  org/jvminternals/SimpleClass
+       #6 = Class              #24            //  java/lang/Object
+       #7 = Utf8               &lt;init>
+       #8 = Utf8               ()V
+       #9 = Utf8               Code
+      #10 = Utf8               LineNumberTable
+      #11 = Utf8               LocalVariableTable
+      #12 = Utf8               this
+      #13 = Utf8               Lorg/jvminternals/SimpleClass;
+      #14 = Utf8               sayHello
+      #15 = Utf8               SourceFile
+      #16 = Utf8               SimpleClass.java
+      #17 = NameAndType        #7:#8          //  &quot;&lt;init>&quot;:()V
+      #18 = Class              #25            //  java/lang/System
+      #19 = NameAndType        #26:#27        //  out:Ljava/io/PrintStream;
+      #20 = Utf8               Hello
+      #21 = Class              #28            //  java/io/PrintStream
+      #22 = NameAndType        #29:#30        //  println:(Ljava/lang/String;)V
+      #23 = Utf8               org/jvminternals/SimpleClass
+      #24 = Utf8               java/lang/Object
+      #25 = Utf8               java/lang/System
+      #26 = Utf8               out
+      #27 = Utf8               Ljava/io/PrintStream;
+      #28 = Utf8               java/io/PrintStream
+      #29 = Utf8               println
+      #30 = Utf8               (Ljava/lang/String;)V
+    {
+      public org.jvminternals.SimpleClass();
+        Signature: ()V
+        flags: ACC_PUBLIC
+        Code:
+          stack=1, locals=1, args_size=1
+            0: aload_0
+            1: invokespecial #1    // Method java/lang/Object.&quot;&lt;init>&quot;:()V
+            4: return
+          LineNumberTable:
+            line 3: 0
+          LocalVariableTable:
+            Start  Length  Slot  Name   Signature
+              0      5      0    this   Lorg/jvminternals/SimpleClass;
+
+      public void sayHello();
+        Signature: ()V
+        flags: ACC_PUBLIC
+        Code:
+          stack=2, locals=1, args_size=1
+            0: getstatic      #2    // Field java/lang/System.out:Ljava/io/PrintStream;
+            3: ldc            #3    // String &quot;Hello&quot;
+            5: invokevirtual  #4    // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+            8: return
+          LineNumberTable:
+            line 6: 0
+            line 7: 8
+          LocalVariableTable:
+            Start  Length  Slot  Name   Signature
+              0      9      0    this   Lorg/jvminternals/SimpleClass;
+    }
+</code></pre>
+<p>This class file shows three main sections the constant pool, the constructor and the sayHello method.</p>
+<ul>
+<li>
+<p>Constant Pool – this provides the same information that a symbol table typically provides and is described in more detail below.</p>
+</li>
+<li>
+<p>Methods – each containing four areas:</p>
+<ul>
+<li>signature and access flags</li>
+<li>byte code</li>
+<li>LineNumberTable – provides information to a debugger to indicate which line corresponds to which byte code instruction, for example line 6 in Java code corresponds to byte code 0 in the sayHello method and line 7 corresponds to byte code 8</li>
+<li>LocalVariableTable – this lists all local variables provided in the frame, in both examples the only local variable is this.</li>
+</ul>
+</li>
+</ul>
+<p><img src="../img/bytecode_explanation_simpleclass.png" alt/></p>
+<p><img src="../img/bytecode_explanation_sayhello.png" alt/></p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-2" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#基于栈的虚拟机" data-for="基于栈的虚拟机">基于栈的虚拟机</a></li><li class="depth-0"><a href="#字节码格式概览" data-for="字节码格式概览">字节码格式概览</a></li><li class="depth-0"><a href="#字节码结构详解" data-for="字节码结构详解">字节码结构详解</a></li><li class="depth-1"><a href="#threads" data-for="threads">Threads</a></li><li class="depth-1"><a href="#shared-between-threads" data-for="shared-between-threads">Shared Between Threads</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-503771fb.js" type="module" data-persist="true"></script></html>

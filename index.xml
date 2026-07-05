@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>Quartz 5</title>
+      <link>https://yrong.github.io/notes</link>
+      <description>Last 10 notes on Quartz 5</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>attach</title>
+    <link>https://yrong.github.io/notes/attach/</link>
+    <guid>https://yrong.github.io/notes/attach/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>post</title>
+    <link>https://yrong.github.io/notes/post/</link>
+    <guid>https://yrong.github.io/notes/post/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>技能清单</title>
+    <link>https://yrong.github.io/notes/tags/%E6%8A%80%E8%83%BD%E6%B8%85%E5%8D%95</link>
+    <guid>https://yrong.github.io/notes/tags/%E6%8A%80%E8%83%BD%E6%B8%85%E5%8D%95</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>教育经历</title>
+    <link>https://yrong.github.io/notes/tags/%E6%95%99%E8%82%B2%E7%BB%8F%E5%8E%86</link>
+    <guid>https://yrong.github.io/notes/tags/%E6%95%99%E8%82%B2%E7%BB%8F%E5%8E%86</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>英文能力</title>
+    <link>https://yrong.github.io/notes/tags/%E8%8B%B1%E6%96%87%E8%83%BD%E5%8A%9B</link>
+    <guid>https://yrong.github.io/notes/tags/%E8%8B%B1%E6%96%87%E8%83%BD%E5%8A%9B</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>java</title>
+    <link>https://yrong.github.io/notes/tags/java</link>
+    <guid>https://yrong.github.io/notes/tags/java</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>vertx</title>
+    <link>https://yrong.github.io/notes/tags/vertx</link>
+    <guid>https://yrong.github.io/notes/tags/vertx</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>elasticsearch</title>
+    <link>https://yrong.github.io/notes/tags/elasticsearch</link>
+    <guid>https://yrong.github.io/notes/tags/elasticsearch</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>nginx</title>
+    <link>https://yrong.github.io/notes/tags/nginx</link>
+    <guid>https://yrong.github.io/notes/tags/nginx</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item><item>
+    <title>neo4j</title>
+    <link>https://yrong.github.io/notes/tags/neo4j</link>
+    <guid>https://yrong.github.io/notes/tags/neo4j</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Sun, 05 Jul 2026 18:15:46 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>

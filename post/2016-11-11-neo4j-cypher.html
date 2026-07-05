@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Neo4j Cypher query</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Quartz 5"/><meta property="og:title" content="Neo4j Cypher query"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Neo4j Cypher query"/><meta name="twitter:description" content="Neo4j Cypher Query filter element Delete specific element from array stackoverflow MATCH (n) WHERE HAS(n.some_array) SET n.array = FILTER(x IN n.some_array WHERE x &lt;> &quot;oranges&quot;); split unrelated queries case MATCH (a {cond:'1'}), (b {cond:'x'}) CREATE a-[:rel]-&amp;gt..."/><meta property="og:description" content="Neo4j Cypher Query filter element Delete specific element from array stackoverflow MATCH (n) WHERE HAS(n.some_array) SET n.array = FILTER(x IN n.some_array WHERE x &lt;> &quot;oranges&quot;); split unrelated queries case MATCH (a {cond:'1'}), (b {cond:'x'}) CREATE a-[:rel]-&amp;gt..."/><meta property="og:image:alt" content="Neo4j Cypher Query filter element Delete specific element from array stackoverflow MATCH (n) WHERE HAS(n.some_array) SET n.array = FILTER(x IN n.some_array WHERE x &lt;> &quot;oranges&quot;); split unrelated queries case MATCH (a {cond:'1'}), (b {cond:'x'}) CREATE a-[:rel]-&amp;gt..."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/post/2016-11-11-neo4j-cypher"/><meta property="twitter:url" content="https://yrong.github.io/notes/post/2016-11-11-neo4j-cypher"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="Neo4j Cypher Query filter element Delete specific element from array stackoverflow MATCH (n) WHERE HAS(n.some_array) SET n.array = FILTER(x IN n.some_array WHERE x &lt;> &quot;oranges&quot;); split unrelated queries case MATCH (a {cond:'1'}), (b {cond:'x'}) CREATE a-[:rel]-&amp;gt..."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/post/2016-11-11-neo4j-cypher-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/post/2016-11-11-neo4j-cypher-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/post/2016-11-11-neo4j-cypher-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="post/2016-11-11-neo4j-cypher" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Quartz 5</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-21" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-21" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../post/">post</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Neo4j Cypher query</a></div></nav><h1 class="article-title">Neo4j Cypher query</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../tags/neo4j" class="internal internal-link tag-link">neo4j</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2016-11-11T15:00:00.000Z">Nov 11, 2016</time><span>4 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p>Neo4j Cypher Query</p>
+
+<h3 id="filter-element">filter element<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#filter-element" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="delete-specific-element-from-array">Delete specific element from array<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#delete-specific-element-from-array" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="http://stackoverflow.com/questions/31953794/delete-specific-element-from-array" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>MATCH (n)
+WHERE HAS(n.some_array)
+SET n.array = FILTER(x IN n.some_array WHERE x &lt;> &quot;oranges&quot;);
+</code></pre>
+<h4 id="split-unrelated-queries">split unrelated queries<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#split-unrelated-queries" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="http://stackoverflow.com/questions/21778435/multiple-unrelated-queries-in-neo4j-cypher#comment54304565_21810903" class="external external-link">case<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>MATCH (a {cond:'1'}), (b {cond:'x'}) CREATE a-[:rel]->b
+WITH 1 as dummy
+MATCH (a {cond:'2'}), (b {cond:'y'}) CREATE a-[:rel]->b
+WITH 1 as dummy
+MATCH (a {cond:'3'}), (b {cond:'z'}) CREATE a-[:rel]->b
+</code></pre>
+<h3 id="aggregation">aggregation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#aggregation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<blockquote>
+<p>remember that anything which isn’t an aggregate function(count/collect/distinct/sum..)<br/>
+is automaticlly used as part of the grouping key which means we could include more than<br/>
+one field in our grouping key.</p>
+</blockquote>
+<p><a href="http://neo4j.com/docs/developer-manual/current/cypher/clauses/aggregation/" class="external external-link">neo4j<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre>MATCH (n { name: 'A' })-[r]->()
+RETURN <b>type(r)</b>, count(*)//group key as type(r)
+</pre>
+<p><a href="http://www.markhneedham.com/blog/2013/02/17/neo4jcypher-sql-style-group-by-functionality/" class="external external-link">markhneedham<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre>START player = node:players('name:*')
+MATCH player-[:sent_off_in]-game-[:in_month]-month
+RETURN COUNT(player.name) AS numberOfReds, <b>month.name</b>//group key as month.name
+ORDER BY numberOfReds DESC
+
+START player = node:players('name:*')
+MATCH player-[:sent_off_in]-game-[:in_month]-month, 
+      game-[:in_match]-stats-[:stats]-player, 
+      stats-[:played_for]-team
+RETURN <b>month.name, team.name</b>, COUNT(player.name) AS numberOfReds//group key as month.name and team.name
+ORDER BY numberOfReds DESC
+</pre>
+<p><a href="http://stackoverflow.com/questions/27536615/how-to-group-and-count-relationships-in-cypher-neo4j" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre>MATCH (u:User {name: 'my user'})
+RETURN <b>u</b>, size((u)-[:POSTED]>())//count posts group by user
+</pre>
+<p><a href="http://stackoverflow.com/questions/13731911/how-to-use-sql-like-group-by-in-cypher-query-language-in-neo4j" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre>start n=node:node_auto_index(name='comp')
+match n&lt;-[:Members_In]-x
+with  <b>n.name as companyName</b>, collect(x) as employees//group by company name
+return length(filter(x in employees : x.Sex='Male')) as NumOfMale,
+length(filter(x in employees : x.Sex='Female')) as NumOfFemale,
+length(employees) as Total
+</pre>
+<h3 id="collecting-elments">collecting elments<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#collecting-elments" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="http://gist.neo4j.org/?4c4ed4fef33bcf5c4b35" class="external external-link">Neo4j Gist<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>MATCH 
+    (brand:Brand)-[:CREATED_A]->(campaign:Campaign)&lt;-->(node)
+WITH 
+    brand, 
+    { 
+        campaign : campaign, 
+        nodes : COLLECT(node)
+    } AS campaigns
+WITH 
+    { 
+        brand : brand, 
+        campaigns : COLLECT(campaigns)
+    } AS brands
+RETURN brands
+</code></pre>
+<pre><code>match (n:Label)
+//group by n.prop implicitly
+with n.prop as prop, collect(n) as nodelist, count(*) as count
+where count > 1
+return prop, nodelist, count;
+</code></pre>
+<p><a href="http://www.markhneedham.com/blog/2014/09/26/neo4j-collecting-multiple-values-too-many-parameters-for-function-collect/" class="external external-link">markhneedham<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>MATCH (p:Person)-[:EVENT]->(e)
+RETURN p, COLLECT({eventName: e.name, eventTimestamp: e.timestamp});
+</code></pre>
+<p><a href="http://stackoverflow.com/questions/30266193/neo4j-cypher-how-to-count-multiple-property-values-with-cypher-efficiently-and" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>match (c:Company {id: 'MY.co'})&lt;-[:type_of]-(s:Set)&lt;-[:job_for]-(j:Job) 
+with s, j.Status as Status,count(*) as StatusCount
+return s.Description, collect({Status:Status,StatusCount:StatusCount]);
+</code></pre>
+<p><a href="https://github.com/yrong/movies-python-bolt/blob/master/movies.py" class="external external-link">my movie project<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>MATCH (movie:Movie {title:'A League of Their Own'}) 
+OPTIONAL MATCH (movie)&lt;-[r]-(person:Person)
+return movie.title as title,collect({name:person.name, type:(head(split(lower(type(r)), '_'))), roles:r.roles}) as cast
+</code></pre>
+<p><a href="http://www.markhneedham.com/blog/2013/03/20/neo4jcypher-with-collect-extract" class="external external-link">markhneedham<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>START team = node:teams('name:&quot;Manchester United&quot;')
+MATCH team-[h:home_team|away_team]-game-[:on_day]-day 
+WITH day.name as d, game, team, h 
+MATCH team-[:home_team|away_team]-game-[:home_team|away_team]-opp 
+WITH d, COLLECT([type(h),opp.name]) AS games 
+RETURN d, 
+  EXTRACT(c in FILTER(x in games: HEAD(x) = &quot;home_team&quot;) : HEAD(TAIL(c))) AS home,   
+  EXTRACT(c in FILTER(x in games: HEAD(x) = &quot;away_team&quot;) : HEAD(TAIL(c))) AS away
+</code></pre>
+<h3 id="null-handling">null handling<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#null-handling" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="casenull-check">case&amp;&amp;null check<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#casenull-check" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="http://stackoverflow.com/questions/24487418/cypher-remove-all-properties-with-a-particular-value" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>load csv with headers from &quot;&quot; as line
+with line, case line.foo when '' then null else line.foo end as foo
+create (:User {name:line.name, foo:foo})
+</code></pre>
+<pre><code>MATCH (n:Asset)
+WHERE n.manageIP IS NOT NULL
+WITH n.manageIP as ips,n as asset
+REMOVE asset.manageIP
+return asset,ips
+</code></pre>
+<h4 id="foreach-check">foreach check<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#foreach-check" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="http://www.markhneedham.com/blog/2014/08/22/neo4j-load-csv-handling-empty-columns/" class="external external-link">markhneedham<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>load csv with headers from &quot;file:/tmp/foo.csv&quot; as row
+MERGE (p:Person {a: row.a})
+FOREACH(ignoreMe IN CASE WHEN trim(row.b) &lt;> &quot;&quot; THEN [1] ELSE [] END | SET p.b = row.b)
+FOREACH(ignoreMe IN CASE WHEN trim(row.c) &lt;> &quot;&quot; THEN [1] ELSE [] END | SET p.c = row.c)
+RETURN p
+</code></pre>
+<p><a href="http://stackoverflow.com/questions/27576427/cypher-neo4j-case-expression-with-merge" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>FOREACH ( i in (CASE WHEN {asset_location} IS NOT NULL and {asset_location}.status = 'mounted' THEN [1] ELSE [] END) |
+   MERGE (cabinet:Cabinet {uuid:{asset_location}.cabinet})
+   MERGE (n)-[:LOCATED{status:&quot;mounted&quot;,u:{asset_location}.u,date_mounted:{asset_location}.date_mounted}]->(cabinet)
+)
+</code></pre>
+<h3 id="complex-json-structure-handling">complex json structure handling<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#complex-json-structure-handling" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="https://neo4j.com/blog/cypher-load-json-from-url/" class="external external-link">neo4j-blog<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>Overall Response Structure
+{ &quot;items&quot;: [{
+    &quot;question_id&quot;: 24620768,
+    &quot;link&quot;: &quot;http://stackoverflow.com/questions/24620768/neo4j-cypher-query-get-last-n-elements&quot;,
+    &quot;title&quot;: &quot;Neo4j cypher query: get last N elements&quot;,
+    &quot;answer_count&quot;: 1,
+    &quot;score&quot;: 1,
+    .....
+    &quot;creation_date&quot;: 1404771217,
+    &quot;body_markdown&quot;: &quot;I have a graph....How can I do that?&quot;,
+    &quot;tags&quot;: [&quot;neo4j&quot;, &quot;cypher&quot;],
+    &quot;owner&quot;: {
+        &quot;reputation&quot;: 815,
+        &quot;user_id&quot;: 1212067,
+        ....
+        &quot;link&quot;: &quot;http://stackoverflow.com/users/1212067/&quot;
+    },
+    &quot;answers&quot;: [{
+        &quot;owner&quot;: {
+            &quot;reputation&quot;: 488,
+            &quot;user_id&quot;: 737080,
+            &quot;display_name&quot;: &quot;Chris Leishman&quot;,
+            ....
+        },
+        &quot;answer_id&quot;: 24620959,
+        &quot;share_link&quot;: &quot;http://stackoverflow.com/a/24620959&quot;,
+        ....
+        &quot;body_markdown&quot;: &quot;The simplest would be to use an ... some discussion on this here:...&quot;,
+        &quot;title&quot;: &quot;Neo4j cypher query: get last N elements&quot;
+    }]
+ }
+</code></pre>
+<pre><code>WITH {json} as data
+UNWIND data.items as q
+MERGE (question:Question {id:q.question_id}) ON CREATE
+  SET question.title = q.title, question.share_link = q.share_link, question.favorite_count = q.favorite_count
+
+MERGE (owner:User {id:q.owner.user_id}) ON CREATE SET owner.display_name = q.owner.display_name
+MERGE (owner)-[:ASKED]->(question)
+
+FOREACH (tagName IN q.tags | MERGE (tag:Tag {name:tagName}) MERGE (question)-[:TAGGED]->(tag))
+FOREACH (a IN q.answers |
+   MERGE (question)&lt;-[:ANSWERS]-(answer:Answer {id:a.answer_id})
+   MERGE (answerer:User {id:a.owner.user_id}) ON CREATE SET answerer.display_name = a.owner.display_name
+   MERGE (answer)&lt;-[:PROVIDED]-(answerer)
+)
+</code></pre>
+<h3 id="unwind-vs-foreach">unwind vs foreach<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#unwind-vs-foreach" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><a href="http://stackoverflow.com/questions/30208963/how-to-create-relationship-and-merge-create-new-node-in-loop-in-neo4j" class="external external-link">stackoverflow<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>MATCH (u:User {id:&quot;2&quot;})
+unwind [{id:&quot;21&quot;,name:&quot;b&quot;,year:&quot;2010&quot;},
+        {id:&quot;41&quot;,name:&quot;d&quot;,year:&quot;2011&quot;},
+        {id:&quot;51&quot;,name:&quot;e&quot;,year:&quot;2013&quot;}] as user
+merge (y:User {id: user.id, name: user.name,year:user.year})
+MERGE (u)-[:FRIEND]->(y)
+</code></pre>
+<p><a href="http://www.markhneedham.com/blog/2014/05/31/neo4j-cypher-unwind-vs-foreach/" class="external external-link">markhneedham<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>WITH [{name: &quot;Event 1&quot;, timetree: {day: 1, month: 1, year: 2014}}, 
+      {name: &quot;Event 2&quot;, timetree: {day: 2, month: 1, year: 2014}}] AS events
+UNWIND events AS event
+CREATE (e:Event {name: event.name})
+WITH e, event.timetree AS timetree
+MATCH (year:Year {year: timetree.year }), 
+      (year)-[:HAS_MONTH]->(month {month: timetree.month }),
+      (month)-[:HAS_DAY]->(day {day: timetree.day })
+CREATE (e)-[:HAPPENED_ON]->(day)
+</code></pre>
+<p><a href="https://gist.github.com/CliffordAnderson/8e2fb338cdb90994b0a4" class="external external-link">gist<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<pre><code>match (a {name:&quot;Daniel&quot;}), (b {name:&quot;Jerry&quot;})
+with a,b
+match s = shortestPath(a-[]-b)
+unwind nodes(s) as n
+with collect(n) as m
+return head(m)
+</code></pre></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-18" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#filter-element" data-for="filter-element">filter element</a></li><li class="depth-0"><a href="#aggregation" data-for="aggregation">aggregation</a></li><li class="depth-0"><a href="#collecting-elments" data-for="collecting-elments">collecting elments</a></li><li class="depth-0"><a href="#null-handling" data-for="null-handling">null handling</a></li><li class="depth-0"><a href="#complex-json-structure-handling" data-for="complex-json-structure-handling">complex json structure handling</a></li><li class="depth-0"><a href="#unwind-vs-foreach" data-for="unwind-vs-foreach">unwind vs foreach</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-503771fb.js" type="module" data-persist="true"></script></html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>webpack使用</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Quartz 5"/><meta property="og:title" content="webpack使用"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="webpack使用"/><meta name="twitter:description" content="webpack使用 Webpack your bags 原文： Webpack your bags(by Maxime Fabre) Webpack your bags 之前你可能已经听说过这个很酷的叫webpack工具，如果你没仔细了解过这个工具，你可能会有些困惑，因为有人说他它是像Gulp之类构建工具，也有人说它是像Browserify之类的bundler，如果你仔细了解一下，你可能还是会不明白是怎么回事儿，因为官网上把webpack说成是这两者。 说实话，开始的时候对于**“webpack到底是什么“很模糊，感觉很受挫，然后我直接就把网页关了，毕竟我已经有一个构建系统了，而且我用得也非常..."/><meta property="og:description" content="webpack使用 Webpack your bags 原文： Webpack your bags(by Maxime Fabre) Webpack your bags 之前你可能已经听说过这个很酷的叫webpack工具，如果你没仔细了解过这个工具，你可能会有些困惑，因为有人说他它是像Gulp之类构建工具，也有人说它是像Browserify之类的bundler，如果你仔细了解一下，你可能还是会不明白是怎么回事儿，因为官网上把webpack说成是这两者。 说实话，开始的时候对于**“webpack到底是什么“很模糊，感觉很受挫，然后我直接就把网页关了，毕竟我已经有一个构建系统了，而且我用得也非常..."/><meta property="og:image:alt" content="webpack使用 Webpack your bags 原文： Webpack your bags(by Maxime Fabre) Webpack your bags 之前你可能已经听说过这个很酷的叫webpack工具，如果你没仔细了解过这个工具，你可能会有些困惑，因为有人说他它是像Gulp之类构建工具，也有人说它是像Browserify之类的bundler，如果你仔细了解一下，你可能还是会不明白是怎么回事儿，因为官网上把webpack说成是这两者。 说实话，开始的时候对于**“webpack到底是什么“很模糊，感觉很受挫，然后我直接就把网页关了，毕竟我已经有一个构建系统了，而且我用得也非常..."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/post/2016-12-02-webpack"/><meta property="twitter:url" content="https://yrong.github.io/notes/post/2016-12-02-webpack"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="webpack使用 Webpack your bags 原文： Webpack your bags(by Maxime Fabre) Webpack your bags 之前你可能已经听说过这个很酷的叫webpack工具，如果你没仔细了解过这个工具，你可能会有些困惑，因为有人说他它是像Gulp之类构建工具，也有人说它是像Browserify之类的bundler，如果你仔细了解一下，你可能还是会不明白是怎么回事儿，因为官网上把webpack说成是这两者。 说实话，开始的时候对于**“webpack到底是什么“很模糊，感觉很受挫，然后我直接就把网页关了，毕竟我已经有一个构建系统了，而且我用得也非常..."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/post/2016-12-02-webpack-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/post/2016-12-02-webpack-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/post/2016-12-02-webpack-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="post/2016-12-02-webpack" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Quartz 5</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-27" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-27" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../post/">post</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>webpack使用</a></div></nav><h1 class="article-title">webpack使用</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../tags/javascript" class="internal internal-link tag-link">javascript</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2016-12-02T00:00:00.000Z">Dec 02, 2016</time><span>36 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p>webpack使用</p>
+
+<p><strong>Webpack your bags</strong>
+原文： <a href="https://blog.madewithlove.be/post/webpack-your-bags/" title="Webpack your bags" class="external external-link"><strong>Webpack your bags</strong><svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>(by <a href="https://twitter.com/anahkiasen" class="external external-link">Maxime Fabre<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>)</p>
+<h1 id="webpack-your-bags">Webpack your bags<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#webpack-your-bags" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><img src="https://webpack.github.io/assets/what-is-webpack.png" alt/>
+之前你可能已经听说过这个很酷的叫webpack工具，如果你没仔细了解过这个工具，你可能会有些困惑，因为有人说他它是像<strong>Gulp</strong>之类构建工具，也有人说它是像<strong>Browserify</strong>之类的bundler，如果你仔细了解一下，你可能还是会不明白是怎么回事儿，因为官网上把webpack说成是这两者。</p>
+<p>说实话，开始的时候对于**“webpack到底是什么“很模糊，感觉很受挫，然后我直接就把网页关了，毕竟我已经有一个构建系统了，而且我用得也非常哈皮，如果你紧赶javascript的时髦的话，像我这样，你可能在估计很快因为在各种流行的东西中频繁地跳来跳去而烧的灰飞烟灭了。
+现在我有些经验了，我觉得我应该写这篇文章给那些还处在混沌中的小伙伴儿，更清楚解释一下webpack到底是什么，更重要的是它的什么地方那么棒以至于值得我们投入更多的精力。</p>
+<h2 id="webpack是什么">Webpack是什么？<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#webpack是什么" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>好的，下面我们来回答一下，介绍里面提到的那个问题，Webpack是一个构建系统还是一个模块bundler（捆绑器），恩-，两个都是 - 我不是说它两个事儿都干，我的意思是它把两者连接起来了，webpack不是先构建你的资源（assets），然后再bundle你的模块，它把你的资源本身当做模块。</p>
+<p>更准确的说，它不是先编译你的所有的Sass文件，再优化所有的图片，再在一个地方include进来，然后bundle所有的模块，在另一个地方include到你的page上。假设你在是下面这样：</p>
+<pre><code>import stylesheet from 'styles/my-styles.scss';
+import logo from 'img/my-logo.svg';
+import someTemplate from 'html/some-template.html';
+
+console.log(stylesheet); // &quot;body{font-size:12px}&quot;
+console.log(logo); // &quot;data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5[...]&quot;
+console.log(someTemplate) // &quot;&lt;html>&lt;body>&lt;h1>Hello&lt;/h1>&lt;/body>&lt;/html>&quot;
+</code></pre>
+<p>你的所有的资源本身被当成模块，这些模块可以被import，modify，manipulate（操作），最后被打包到你最后的bundle</p>
+<p>为了达到这个目的，得在webpack configuration里注册loaders，loader就是当你遇到某种文件的时候，对它做相应的一种处理的一种插件，下面是一些loader的例子：</p>
+<pre><code>{
+  // When you import a .ts file, parse it with Typescript
+  test: /\.ts/,
+  loader: 'typescript',
+},
+{
+  // When you encounter images, compress them with image-webpack (wrapper around imagemin)
+  // and then inline them as data64 URLs
+  test: /\.(png|jpg|svg)/,
+  loaders: ['url', 'image-webpack'],
+},
+{
+  // When you encounter SCSS files, parse them with node-sass, then pass autoprefixer on them
+  // then return the results as a string of CSS
+  test: /\.scss/,
+  loaders: ['css', 'autoprefixer', 'sass'],
+}
+</code></pre>
+<p>最后在食物链的终点所有的loader返回的都是string，这样可以使webpack把资源最后包装成javascript模块。这个例子里你的Sass文件被loaders转换后，里面看起来差不多是这样。</p>
+<pre><code>export default 'body{font-size:12px}';
+</code></pre>
+<h2 id="那你究竟为什么要用它呢">那你究竟为什么要用它呢？<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#那你究竟为什么要用它呢" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>一旦你明白webpack是做什么的，很有可能就会想到第二个问题：用它能有什么好处呢？images和CSS？还在我的JS里？玩啥呢哥们儿。好的，看下这个：很长时间我一直被告诉要把所有文件都放在一个文件里，这样来保证不浪费我们的request。</p>
+<p>但这样导致一个最大的缺点，就是现在大多数人都把所有的资源（assets）bundle到一个单独的app.js文件里，然后把他include每一个页面，这就意味着渲染任意一个页面的时候大部分时间都浪费在加载一大堆根本用不上的资源上。如果你不这么做，那么你很有可能得手动把这些资源include到指定的页面，这就会引出一大团乱遭的依赖树去维护和跟踪如：哪些页面这个需要依赖？哪些页面style A 和Style B 起作用。</p>
+<p>这两个方法都不对，也都不是错的。我们把webpack当做一个中间者-他不仅仅是一个构建（build）系统或者一个bundler，它是一个邪恶小精灵般的智能打包（packing）系统，正确地配置后，它甚至比你都了解你的系统栈（stack），而且它比你清楚怎么样最优优化你的系统。</p>
+<h2 id="我们来做一个小的app">我们来做一个小的app<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#我们来做一个小的app" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>为了让你更容易地理解webpack带来的好处，我们做一个小的app，然后用它来bundle 资源（assets），在本篇文章里我建议用Node 4 (或 5)和NPM 3因为扁平的依赖树在你用webpack的时候会避免很多让人头疼的麻烦，如果你还没有NPM3,你可以通过 <code>npm install npm@3 -g</code> 来安装。</p>
+<pre><code>$ node --version
+v5.7.1
+$ npm --version
+3.6.0
+</code></pre>
+<p>同时我也建议你把 <code>node_modules/.bin</code> 加到你的PATH variable（环境变量里）以避免每次都手动打 <code>node_modules/.bin/webpack</code> ，后面的所有例子都不会显示我要执行的命令行的 <code>node_modules/.bin</code> 部分。</p>
+<p><strong>基本引导</strong></p>
+<p>我们开始，先创建个project，安装上webpack，我们也加上jquery好在后面证明一些东西。</p>
+<pre><code>$ npm init -y
+$ npm install jquery --save
+$ npm install webpack --save-dev
+</code></pre>
+<p>现在来我们创建一个app入口，用纯ES5 （in plain ES5）</p>
+<p><strong>src/index.js</strong></p>
+<pre><code>var $ = require('jquery');
+
+$('body').html('Hello');
+</code></pre>
+<p>在一个webpack.config.js文件里建webpack configuration，webpack configuration是javascript，需要export 一个object</p>
+<p><strong>webpack.config.js</strong></p>
+<pre><code>module.exports = {
+    entry:  './src',
+    output: {
+	    path: 'builds',
+	    filename: 'bundle.js',
+    },
+};
+</code></pre>
+<p>这里，entry告诉webpack那个文件是你的app的入口点。这些是你的主文件，他们在依赖树的顶端，然后我们告诉它编译我们的bundle 到<code>bundle.js</code>文件放在<code>builds</code>目录下，再创建相应的index HTML</p>
+<pre><code>&lt;!DOCTYPE html>
+&lt;html>
+    &lt;body>
+	    &lt;h1>My title&lt;/h1>
+	    &lt;a>Click me&lt;/a>
+	    
+	    &lt;script src=&quot;builds/bundle.js&quot;>&lt;/script>
+    &lt;/body>
+&lt;/html>
+</code></pre>
+<p>跑一下webpack，如果一切正常，会看见一个信息告诉我们正确地编译了<code>bundle.js</code></p>
+<pre><code>$ webpack
+Hash: d41fc61f5b9d72c13744
+Version: webpack 1.12.14
+Time: 301ms
+AssetSize  Chunks Chunk Names
+bundle.js  268 kB   0  [emitted]  main
+   [0] ./src/index.js 53 bytes {0} [built]
++ 1 hidden modules
+</code></pre>
+<p>这里webpack告诉你你的bundle.js包含了我们的入口点（index.js）和一个隐藏的模块，这个就是jquery，默认情况下webpack把不是你的模块会隐藏掉，如果想看见webpack编译的所有的模块 ，我们可以加<code>--display-modules</code> 参数</p>
+<pre><code>$ webpack --display-modules
+bundle.js  268 kB   0  [emitted]  main
+   [0] ./src/index.js 53 bytes {0} [built]
+   [1] ./~/jquery/dist/jquery.js 259 kB {0} [built]
+</code></pre>
+<p>你也可以运行 <code>webpack --watch</code> 来自动监视文件的变化，如果有变化，自动重新编译。
+搭建我们的第一个loader
+现在还记得我们怎么讨论webpack可以导入CSS和HTML还有各种文件的吗？什么时候能排上用场呢？好的，如果你跟随着过去几年朝着web组件方向的大跃进（Angular 2, Vue, React, Polymer, X-Tag, etc.）估计你听过这样一个观点：你的app是如果用一套可重用，自包含的UI组件搭建的话相比较于一个单独的内聚的UI将会变得更容易维护，这个可重用的组件就是web 组件（在这里我说的比较简单），现在为了让组件变成真正的自包含，需要把组件需要的所有的东西封装到他们自己的内部，我们来考虑一个button，它里面肯定有一些HTML，而且还有一些JS来保证它的交互性，还得来一些style，这些东西如果需要的时候一起加载进来会非常棒，只有在我们导入button组件的时候，我们才会得到所有的这些资源文件（asset）。</p>
+<p>来我们写一个button，首先我先假设你们已经熟悉了ES2015 ，我们先加入babel这个loader。想要在webpack里安装一个loader，有两步需要做：1. <code>npm install {whatever}-loader</code>,2. 把它加到你的Webpack configuration里的<code>module.loaders</code>部分
+我们开始，现在我们要加babel，所以：</p>
+<pre><code>$ npm install babel-loader --save-dev
+</code></pre>
+<p>我们也得安装	Babel ，因为现在我们这个case，loader不会安装它，我们需要装<code>babel-core package</code> 和 <code>es2015 preset</code>:</p>
+<pre><code>$ npm install babel-core babel-preset-es2015 --save-dev.
+</code></pre>
+<p>我们现在创建<code>.babelrc</code>文件，告诉bable用那个preset，这是一个json文件让你配置Babel在你的code上执行哪种变体，我们现在这个我们我告诉它用<code>es2015 </code>preset</p>
+<p><strong>.babelrc</strong>
+<code>{ &quot;presets&quot;: [&quot;es2015&quot;] }</code></p>
+<p>现在babel配完了，我们可以更新我们的配置：我们想要什么？我们想babel在我们所有的.js结尾的文件上运行，<strong>但是</strong>由于webpack遍历所有的依赖，我们想避免babel运行在第三方代码上，如jquery，所以我们可以再稍微过滤一下，loaders既可以有<code>include</code>也可以由<code>exclude</code>，可以是string，regex（正则表达式），一个callback（回调），随便用哪个。因为我们想让babel值运行在我们的文件上，所以我们只include我们自己的source目录：</p>
+<pre><code>module.exports = {
+    entry:  './src',
+	    output: {
+		    path: 'builds',
+		   	 filename: 'bundle.js',
+		    },
+		    module: {
+		    loaders: [
+		    {
+			    test:   /\.js/,
+			    loader: 'babel',
+			    include: __dirname + '/src',
+		    }
+	    ],
+    }
+};
+</code></pre>
+<p>我们可以用ES6重写一下我们的<code>index.js</code>这个小文件，由于我们引入了babel，从这里开始后面的所有例子都用ES6.</p>
+<pre><code>import $ from 'jquery';
+
+$('body').html('Hello');
+</code></pre>
+<h2 id="写个小组件">写个小组件<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#写个小组件" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>我们来写一个小的Button 组件，它有一些SCSS style，一个HTML template，和一些behavior，那么我们安装一些我们需要的东西。首先我们用一个非常轻量的模板包Mustache ，我们也需要给Sass和HTML用的loaders，因为结果会通过管道（pipe）从一个loader传到另一个，我们需要一个Sass loader，现在一旦我们有了css，会有多种方式处理它，当前阶段，我们用一个叫<code>style-loader</code>的loader，它会接收一段CSS，然后动态地把它插入到页面。</p>
+<pre><code>$ npm install mustache --save
+$ npm install css-loader style-loader html-loader sass-loader node-sass --save-dev
+</code></pre>
+<p>为了让webpack用管道（pipe）把东西从一个loader传到另一个loader，我们简传入几个loader方向由右到左，用一个<code>！</code>分开，或者你可以用一个数组通过<code>loaders</code>属性，不是<code>loader</code></p>
+<pre><code>{
+    test:/\.js/,
+    loader:  'babel',
+    include: __dirname + '/src',
+},
+{
+test:   /\.scss/,
+    loader: 'style!css!sass',
+    // Or
+    loaders: ['style', 'css', 'sass'],
+},
+{
+    test:   /\.html/,
+    loader: 'html',
+}
+</code></pre>
+<p>现在我们把loaders准备好了，我们来写一个button：</p>
+<p><strong>src/Components/Button.scss</strong></p>
+<pre><code>.button {
+  background: tomato;
+  color: white;
+}
+</code></pre>
+<p><strong>src/Components/Button.html</strong></p>
+<pre><code>&lt;a class=&quot;button&quot; href=&quot;{{link}}&quot;>{{text}}&lt;/a>
+</code></pre>
+<p><strong>src/Components/Button.js</strong></p>
+<pre><code>import $ from 'jquery';
+import template from './Button.html';
+import Mustache from 'mustache';
+import './Button.scss';
+
+import $ from 'jquery';
+import template from './Button.html';
+import Mustache from 'mustache';
+import './Button.scss';
+
+export default class Button {
+		constructor(link) {
+		this.link = link;
+	}
+	
+	onClick(event) {
+		event.preventDefault();
+		alert(this.link);
+	}
+	
+	render(node) {
+		const text = $(node).text();
+	
+		// Render our button
+		$(node).html(Mustache.render(template, {text}));
+	
+		// Attach our listeners
+		$('.button').click(this.onClick.bind(this));
+	}
+}
+</code></pre>
+<p>你的Button现在是百分之百自包含的，无论什么时候导入，无论运行在什么context，它有所有需要的东西，然后正确地render（渲染），现在我们只需要把我们的Button render到我们的网页上（page）：</p>
+<p><strong>src/index.js</strong></p>
+<pre><code>js import Button from ‘./Components/Button’;
+
+const button = new Button(‘google.com’); button.render(‘a’); 
+</code></pre>
+<p>我们来运行一下webpack，然后刷新一下页面，你应该就能看见你的挺丑的button出来了。
+<img src="http://i.imgur.com/8Ov1x2P.png" alt/></p>
+<p>现在你已经学了怎么配置loader和怎么给你的app的每一个部分定义dependency（依赖），现在可能看起来不太重要这些，但现在我们来把我们的例子再做一下改进：</p>
+<p><strong>code分片（splitting)</strong></p>
+<p>这个例子还不错什么都有，但可能我们不总需要我们的Button，可能有些界面不会有 <code>a</code>（link）来让我们渲染Button用，在这种情况下，我们不需要导入所有的Button的style（式样），template（模板），Mustache 和一切相关的东西，对吧？“Monolithic bundle”（单片绑定） VS “Unmaintainable manual imports”（不好维护的手动导入）. 这种idea是，你在你的代码里定义split point（分割点）：你的code中可以轻松拆分开到单独文件中的部分，然后按需加载，语法非常简单：</p>
+<pre><code>import $ from 'jquery';
+
+// This is a split point
+require.ensure([], () => {
+  // All the code in here, and everything that is imported
+  // will be in a separate file
+  const library = require('some-big-library');
+  $('foo').click(() => library.doSomething());
+});
+</code></pre>
+<p>在<code>require.ensure</code> callback 里的任何东西都会被拆分成chunk（代码块）-一个webpack需要的时候会通过ajax单独加载的bundle，这意味着我们基本上有这些：</p>
+<pre><code>bundle.js
+|- jquery.js
+|- index.js // our main file
+chunk1.js
+|- some-big-libray.js
+|- index-chunk.js // the code in the callback
+
+</code></pre>
+<p>你无需导入<code>chunk1.js</code>。webpack只有在需要它的时候才会加载它，这意味着你可以把你的code按照各种逻辑分成多块，我们将在下面的例子中这么做，我们只想在page里有link的的时候才需要Button</p>
+<p><strong>src/index.js</strong></p>
+<pre><code>if (document.querySelectorAll('a').length) {
+    require.ensure([], () => {
+	    const Button = require('./Components/Button').default;
+	  	  const button = new Button('google.com');
+	    
+	    button.render('a');
+    });
+}
+</code></pre>
+<p>注意，用<code>require</code>的时候，如果你想default export 你需要通过<code>.default</code>手动获取它，
+因为<code>require </code>不会同时处理default 和 normal（正常） exports，所以你必须指定返回哪个，不过<code>import</code>有一个系统处理这个，所以它已经知道了(例如： <code>import foo from 'bar'</code>)vs <code>import {baz} from 'bar').</code></p>
+<p>webpack的output现在应该会相应地不同了，我们来用<code>--display-chunks</code> flag 来运行一下，来看一下哪个模块在哪个chunk里</p>
+<pre><code>$ webpack --display-modules --display-chunks
+Hash: 43b51e6cec5eb6572608
+Version: webpack 1.12.14
+Time: 1185ms
+  Asset Size  Chunks Chunk Names
+  bundle.js  3.82 kB   0  [emitted]  main
+1.bundle.js   300 kB   1  [emitted]
+chunk{0} bundle.js (main) 235 bytes [rendered]
+[0] ./src/index.js 235 bytes {0} [built]
+chunk{1} 1.bundle.js 290 kB {0} [rendered]
+[1] ./src/Components/Button.js 1.94 kB {1} [built]
+[2] ./~/jquery/dist/jquery.js 259 kB {1} [built]
+[3] ./src/Components/Button.html 72 bytes {1} [built]
+[4] ./~/mustache/mustache.js 19.4 kB {1} [built]
+[5] ./src/Components/Button.scss 1.05 kB {1} [built]
+[6] ./~/css-loader!./~/sass-loader!./src/Components/Button.scss 212 bytes {1} [built]
+[7] ./~/css-loader/lib/css-base.js 1.51 kB {1} [built]
+[8] ./~/style-loader/addStyles.js 7.21 kB {1} [built]
+</code></pre>
+<p>可以看到我们的入口（<code>bundle.js</code>）现在只有一些webpack的逻辑，其它的东西(jQuery, Mustache, Button) 都在<code>1.bundle.js </code>,只有page上有anchor （锚：超链接的意思）的时候才会加载，为了让webpack知道用ajax加载的时候在哪能找到chunks，我们必须在我们的配置中加几行:</p>
+<pre><code>path:   'builds',
+filename:   'bundle.js',
+publicPath: 'builds/',
+</code></pre>
+<p><code>output.publicPath</code>选项告诉webpack相对于当前的page（我们的case是在 /builds/）在哪能找到built（构建后的）assets （资源），现在访问我们的page我们会看到一切都正常工作，但更重要的是，我们能看到，由于页面上有anchor （锚：超链接的意思），webpack实时地加载加载了chunk：</p>
+<p><img src="http://i.imgur.com/rPvIRiB.png" alt/></p>
+<p>如果我们page上没有anchor，只有<code>bundle.js</code>会被加载 ，这点可以让你智能地把你的app里的大片逻辑拆分开，让每个页面值加载它真正需要的，我们也可以给我们的split point命名，不用<code>1.bundle.js</code>，我们可以用更有语义的名字，你可以通过传给<code>require.ensure</code>第三个参数来指定:</p>
+<pre><code>require.ensure([], () => {
+    const Button = require('./Components/Button').default;
+    const button = new Button('google.com');
+    
+    button.render('a');
+}, 'button');
+</code></pre>
+<p>这样就会生成<code>button.bundle.js</code>而不是<code>1.bundle.js.</code>
+加入第二个组件
+现在啥都有了非常cool了已经，我们再来加一个组件来看看好不好使：</p>
+<p><strong>src/Components/Header.scss</strong></p>
+<pre><code>.header {
+  font-size: 3rem;
+}
+</code></pre>
+<p><strong>src/Components/Header.html</strong></p>
+<pre><code>&lt;header class=&quot;header&quot;>{{text}}&lt;/header>
+</code></pre>
+<p><strong>src/Components/Header.js</strong></p>
+<pre><code>import $ from 'jquery';
+import Mustache from 'mustache';
+import template from './Header.html';
+import './Header.scss';
+
+export default class Header {
+	render(node) {
+		const text = $(node).text();
+		
+		$(node).html(
+			Mustache.render(template, {text})
+		);
+	}
+}
+</code></pre>
+<p>我们在我们的application里把它render（渲染）一下：</p>
+<pre><code>// If we have an anchor, render the Button component on it
+if (document.querySelectorAll('a').length) {
+    require.ensure([], () => {
+	    const Button = require('./Components/Button').default;
+	    const button = new Button('google.com');
+	    
+	    button.render('a');
+    });
+}
+
+// If we have a title, render the Header component on it
+if (document.querySelectorAll('h1').length) {
+	    require.ensure([], () => {
+	    const Header = require('./Components/Header').default;
+	    
+	    new Header().render('h1');
+    });
+}
+</code></pre>
+<p>现在用<code>--display-chunks --display-modules</code> flags（参数标记）来看一下webpack的output：</p>
+<pre><code>$ webpack --display-modules --display-chunks
+Hash: 178b46d1d1570ff8bceb
+Version: webpack 1.12.14
+Time: 1548ms
+  Asset Size  Chunks Chunk Names
+  bundle.js  4.16 kB   0  [emitted]  main
+1.bundle.js   300 kB   1  [emitted]
+2.bundle.js   299 kB   2  [emitted]
+chunk{0} bundle.js (main) 550 bytes [rendered]
+[0] ./src/index.js 550 bytes {0} [built]
+chunk{1} 1.bundle.js 290 kB {0} [rendered]
+[1] ./src/Components/Button.js 1.94 kB {1} [built]
+[2] ./~/jquery/dist/jquery.js 259 kB {1} {2} [built]
+[3] ./src/Components/Button.html 72 bytes {1} [built]
+[4] ./~/mustache/mustache.js 19.4 kB {1} {2} [built]
+[5] ./src/Components/Button.scss 1.05 kB {1} [built]
+[6] ./~/css-loader!./~/sass-loader!./src/Components/Button.scss 212 bytes {1} [built]
+[7] ./~/css-loader/lib/css-base.js 1.51 kB {1} {2} [built]
+[8] ./~/style-loader/addStyles.js 7.21 kB {1} {2} [built]
+chunk{2} 2.bundle.js 290 kB {0} [rendered]
+[2] ./~/jquery/dist/jquery.js 259 kB {1} {2} [built]
+[4] ./~/mustache/mustache.js 19.4 kB {1} {2} [built]
+[7] ./~/css-loader/lib/css-base.js 1.51 kB {1} {2} [built]
+[8] ./~/style-loader/addStyles.js 7.21 kB {1} {2} [built]
+[9] ./src/Components/Header.js 1.62 kB {2} [built]
+   [10] ./src/Components/Header.html 64 bytes {2} [built]
+   [11] ./src/Components/Header.scss 1.05 kB {2} [built]
+   [12] ./~/css-loader!./~/sass-loader!./src/Components/Header.scss 192 bytes {2} [built]
+</code></pre>
+<p>能看见这里有一个主要问题：我们的两个组件都会用到jQuery 和 Mustache，也就是说这两个依赖会在chunk里有重复，wepack默认做很少优化，但是他会以plugin的形式来给webpack提供强大的功能。</p>
+<p>plugin跟laoder不同，它不是对指定的文件像pipe一样执行一些操作，他们对所有文件进行处理，做一些更高级的操作，但不一定非得是transformation（转换），webpack有一把plugin可以做各种优化，此时我们比较感兴趣的一个是CommonChunksPlugin：它分析你的chunk的递归依赖，然后把它们抽出来放在别的地方，可以使一个完全独立的文件（如<code>vendor.js</code>）或者也可以是你的主（main）文件。</p>
+<p>我们现在的case，我们需要把公用的依赖移到我们的entry（入口） 文件，如果所有的文件需要jQuery 和 Mustache,我们也可以把它往上层移动，我们来更新一下我们的configuration：</p>
+<pre><code>var webpack = require('webpack');
+
+module.exports = {
+    entry:   './src',
+    output:  {
+      // ...
+    },
+    plugins: [
+        new webpack.optimize.CommonsChunkPlugin({
+            name:      'main', // Move dependencies to our main file
+            children:  true, // Look for common dependencies in all children,
+            minChunks: 2, // How many times a dependency must come up before being extracted
+        }),
+    ],
+    module:  {
+      // ...
+    }
+};
+</code></pre>
+<p>如果我们重新run一下 Webpack，我们可以看到现在比之前好多了，这里的<code>main</code>是默认chunk的名字</p>
+<pre><code>chunk    {0} bundle.js (main) 287 kB [rendered]
+    [0] ./src/index.js 550 bytes {0} [built]
+    [2] ./~/jquery/dist/jquery.js 259 kB {0} [built]
+    [4] ./~/mustache/mustache.js 19.4 kB {0} [built]
+    [7] ./~/css-loader/lib/css-base.js 1.51 kB {0} [built]
+    [8] ./~/style-loader/addStyles.js 7.21 kB {0} [built]
+chunk    {1} 1.bundle.js 3.28 kB {0} [rendered]
+    [1] ./src/Components/Button.js 1.94 kB {1} [built]
+    [3] ./src/Components/Button.html 72 bytes {1} [built]
+    [5] ./src/Components/Button.scss 1.05 kB {1} [built]
+    [6] ./~/css-loader!./~/sass-loader!./src/Components/Button.scss 212 bytes {1} [built]
+chunk    {2} 2.bundle.js 2.92 kB {0} [rendered]
+    [9] ./src/Components/Header.js 1.62 kB {2} [built]
+   [10] ./src/Components/Header.html 64 bytes {2} [built]
+   [11] ./src/Components/Header.scss 1.05 kB {2} [built]
+   [12] ./~/css-loader!./~/sass-loader!./src/Components/Header.scss 192 bytes {2} [built]
+</code></pre>
+<p>如果我们把名字制定为如<code>name: 'vendor':</code></p>
+<pre><code>new webpack.optimize.CommonsChunkPlugin({
+    name:      'vendor',
+    children:  true,
+    minChunks: 2,
+}),
+</code></pre>
+<p>由于vendor 这个 chunk还不存在，webpack会创建一个<code>builds/vendor.js</code>,我们手动把它导入到我们的HTML：</p>
+<pre><code>&lt;script src=&quot;builds/vendor.js&quot;>&lt;/script>
+&lt;script src=&quot;builds/bundle.js&quot;>&lt;/script>
+</code></pre>
+<p>你也可以通过不提供一个公用的（common） chunk name或者是指定<code>async: true</code>来让公用的dependency被异步加载，webpack有非常多的智能优化。作为练习我们来给我们的app建一个product version</p>
+<h2 id="生产环境相关插件配置">生产环境相关插件配置<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#生产环境相关插件配置" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>首先，我们加几个plugin到configuration，但我们想只有在NODE_ENV 等于production才加载这些plugin，所以让我们来给configuration加一些逻辑，因为只是一个js 文件，所以比较简单：</p>
+<pre><code>var webpack    = require('webpack');
+var production = process.env.NODE_ENV === 'production';
+
+var plugins = [
+    new webpack.optimize.CommonsChunkPlugin({
+        name:      'main', // Move dependencies to our main file
+        children:  true, // Look for common dependencies in all children,
+        minChunks: 2, // How many times a dependency must come up before being extracted
+    }),
+];
+
+if (production) {
+    plugins = plugins.concat([
+       // Production plugins go here
+    ]);
+}
+
+module.exports = {
+    entry:   './src',
+    output:  {
+        path:       'builds',
+        filename:   'bundle.js',
+        publicPath: 'builds/',
+    },
+    plugins: plugins,
+    // ...
+};
+</code></pre>
+<p>再把几个webpack的设置在production上关掉：</p>
+<pre><code>module.exports = {
+    debug:   !production,
+    devtool: production ? false : 'eval',
+</code></pre>
+<p>第一个设置把转为非debug模式，非debug模式会去掉debug模式中产生的方便调试的code，第2个是控制sourcemap 生成的，webpack有几个方法可以render sourcemap，自带的里面<code>eval</code>是最好的，生产环境我们不太关心sourcemap的事，我们把它disable掉，下面加一下production plugins：</p>
+<pre><code>if (production) {
+    plugins = plugins.concat([
+
+        // This plugin looks for similar chunks and files
+        // and merges them for better caching by the user
+        new webpack.optimize.DedupePlugin(),
+
+        // This plugins optimizes chunks and modules by
+        // how much they are used in your app
+        new webpack.optimize.OccurenceOrderPlugin(),
+
+        // This plugin prevents Webpack from creating chunks
+        // that would be too small to be worth loading separately
+        new webpack.optimize.MinChunkSizePlugin({
+            minChunkSize: 51200, // ~50kb
+        }),
+
+        // This plugin minifies all the Javascript code of the final bundle
+        new webpack.optimize.UglifyJsPlugin({
+            mangle:   true,
+            compress: {
+                warnings: false, // Suppress uglification warnings
+            },
+        }),
+
+        // This plugins defines various variables that we can set to false
+        // in production to avoid code related to them from being compiled
+        // in our final bundle
+        new webpack.DefinePlugin({
+            __SERVER__:      !production,
+            __DEVELOPMENT__: !production,
+            __DEVTOOLS__:    !production,
+            'process.env':   {
+                BABEL_ENV: JSON.stringify(process.env.NODE_ENV),
+            },
+        }),
+
+    ]);
+}
+</code></pre>
+<p>上面这几个是我最长用的，不过webpack提供很多plugin用来优化处理你的modules和chunks，NPM上也有个人用户写的plugin，有各种功能的插件，自行按需选择。</p>
+<p>另关于production assets的另一个方面是，我们有时想给asset加版本，还记得在上面我把<code>output.filename</code>设置为<code>bundle.js</code>吧，这有几个变量可以在option里用，其中一个是<code>[hash]</code>代表最后bundle文件的版本，同时用<code>output.chunkFilename</code>给chunk也加上版本：</p>
+<pre><code>output: {
+    path:          'builds',
+    filename:      production ? '[name]-[hash].js' : 'bundle.js',
+    chunkFilename: '[name]-[chunkhash].js',
+    publicPath:    'builds/',
+},
+</code></pre>
+<p>由于没有什么特别好的办法能动态地获取这个简化版app编译后的bundle的名字（由于加了版本号），所以只是在production上给asset加版本，多次编译后目录里带版本的bundle会越来越多，还得加一个第三方插件来每次production build 之前清理一下build folder（output 里面的path）：</p>
+<pre><code>$ npm install clean-webpack-plugin --save-dev
+</code></pre>
+<p>把它加到configuration里</p>
+<pre><code>var webpack     = require('webpack');
+var CleanPlugin = require('clean-webpack-plugin');
+
+// ...
+
+if (production) {
+    plugins = plugins.concat([
+
+        // Cleanup the builds/ folder before
+        // compiling our final assets
+        new CleanPlugin('builds'),
+</code></pre>
+<p>欧了，做完了几个小优化，下面比较一下结果：</p>
+<pre><code>$ webpack
+                bundle.js   314 kB       0  [emitted]  main
+1-21660ec268fe9de7776c.js  4.46 kB       1  [emitted]
+2-fcc95abf34773e79afda.js  4.15 kB       2  [emitted]
+</code></pre>
+<p>.</p>
+<pre><code>$ NODE_ENV=production webpack
+main-937cc23ccbf192c9edd6.js  97.2 kB       0  [emitted]  main
+</code></pre>
+<p>So what has Webpack done: first of all since our example is very lightweight, our two async chunks weren’t worth the HTTP request so Webpack merged them back up to the entry point. Second everything was properly minified. We went from a total of 3 HTTP requests for 322kb to a single HTTP request for 97kb.</p>
+<blockquote>
+<p>But wasn’t the point of Webpack to stem away for one big ass JS file?</p>
+</blockquote>
+<p>Yes, yes it is, but this only happened because our app is very small. Now consider this: you didn’t have to think about what to merge, when or where. If your chunks suddenly start having more dependencies, the chunk will be moved to an async chunk instead of being merged; and if these chunks start looking too similar to be worth loading separately, they would be merged, etc. You just setup the rules, and from then on, Webpack will automatically optimize your application in the best way possible. No manual labor, no thinking about what dependencies go where or are needed where, everything is automatic.</p>
+<p>You may have noticed I didn’t setup anything to minify our HTML and CSS, that’s because the css-loader and html-loader already take care of that by default if the debug option we mentioned earlier is false. This is also the reason why Uglify is a separate plugin: because there is no js-loader in Webpack, since Webpack itself is the JS loader.</p>
+<h3 id="extract-text-webpack-plugin">extract-text-webpack-plugin<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#extract-text-webpack-plugin" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Ok now as you may have noticed, since the beginning of this tutorial our styles have been injected live into the webpage which causes a FOUAP (Flash of Ugly Ass Page). Now wouldn’t it be nice if we could just, pipe all the styles that Webpack has gathered in the current build to a final CSS file? Sure we can, let’s call in some help from an external plugin:</p>
+<p><code>$ npm install extract-text-webpack-plugin --save-dev</code></p>
+<p>What this plugin does is exactly what I just said: gather a certain type of content from your final bundle, and pipe it elsewhere, most common use case being for CSS. So let’s set it up:</p>
+<pre><code>var webpack    = require('webpack');
+var CleanPlugin = require('clean-webpack-plugin');
+var ExtractPlugin = require('extract-text-webpack-plugin');
+var production = process.env.NODE_ENV === 'production';
+
+var plugins = [
+    new ExtractPlugin('bundle.css'), // &lt;=== where should content be piped
+    new webpack.optimize.CommonsChunkPlugin({
+        name:      'main', // Move dependencies to our main file
+        children:  true, // Look for common dependencies in all children,
+        minChunks: 2, // How many times a dependency must come up before being extracted
+    }),
+];
+
+// ...
+
+module.exports = {
+    // ...
+    plugins: plugins,
+    module:  {
+        loaders: [
+            {
+                test:   /\.scss/,
+                loader: ExtractPlugin.extract('style', 'css!sass'),
+            },
+            // ...
+        ],
+    }
+};
+</code></pre>
+<p>Now the extract method takes two arguments: first is what to do with the extracted contents when we’re in a chunk (‘style’), second is what to do when we’re in a main file (‘css!sass’). Now if we’re in a chunk, we can’t just magically append our CSS to the generated one so we use the style loader here as before, but for all the styles that are found in the main file, pipe them to a builds/bundle.css file. Let’s test it out, let’s add a small main stylesheet for our application:</p>
+<p><strong>src/styles.scss</strong></p>
+<pre><code>body {
+  font-family: sans-serif;
+  background: darken(white, 0.2);
+}
+</code></pre>
+<p><strong>src/index.js</strong></p>
+<pre><code>import './styles.scss';
+</code></pre>
+<p>Let’s run Webpack and sure enough we now have a bundle.css file that we can import in our HTML:</p>
+<pre><code>$ webpack
+                bundle.js    318 kB       0  [emitted]  main
+1-a110b2d7814eb963b0b5.js   4.43 kB       1  [emitted]
+2-03eb25b4d6b52a50eb89.js    4.1 kB       2  [emitted]
+               bundle.css  59 bytes       0  [emitted]  main
+</code></pre>
+<p>If you’d like to also extract the styles of the chunks, you can pass the ExtractTextPlugin(‘bundle.css’, {allChunks: true}) option. Do note that you can also use variables here in your filename, so if you wanted a versioned stylesheet you’d just do ExtractTextPlugin(‘[name]-[hash].css’) same as for the Javascript file.</p>
+<h3 id="images-all-the-people">Images all the people<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#images-all-the-people" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Now this is good for all our Javascript files but one topic we haven’t talked about much is concrete assets: images, fonts, etc. How do those work in the context of Webpack and how can we best optimize them? Let’s take a picture from the web that we’ll use as our page background because I’ve seen people doing it on Geocities and it looks so cool:</p>
+<p><img src="../blog/img/cib8joh.jpg" alt="puppy"/></p>
+<p>Let’s save this image in img/puppy.jpg, and update our Sass file accordingly:</p>
+<p><strong>src/styles.scss</strong></p>
+<pre><code>body {
+    font-family: sans-serif;
+    background: darken(white, 0.2);
+    background-image: url('../img/puppy.jpg');
+    background-size: cover;
+}
+</code></pre>
+<p>Now if you do this, Webpack will legitimately tell you “What the fuck do I do with a JPG”, because we have no loader for it. There are two native loaders we can use to handle concrete assets: the file-loader and the url-loader: - The first one will just return a URL to the asset without any particular change, allowing you in the process to version the file (this is the default behavior). - The second one will inline the asset to a data:image/jpeg;base64 URL</p>
+<p>In reality it’s not black and white: if your background is a 2Mb image you don’t want to inline that and it would be preferable to load it separately. If on the other hand it’s a small icon of 2kb it’s better to inline it and spare the HTTP request, so let’s setup both:</p>
+<p>$ npm install url-loader file-loader —save-dev</p>
+<pre><code>{
+    test:   /\.(png|gif|jpe?g|svg)$/i,
+    loader: 'url?limit=10000',
+},
+</code></pre>
+<p>Here, we’re passing a limit query parameter to the url-loader which tells it: if the asset is smaller than 10kb inline it, else, fallback to the file-loader and reference it. That syntax is called a query string, you use it to configure loaders, alternatively you can also configure loaders through an object:</p>
+<pre><code>{
+    test:   /\.(png|gif|jpe?g|svg)$/i,
+    loader: 'url',
+    query: {
+      limit: 10000,
+    }
+}
+</code></pre>
+<p>Ok let’s give it a shot:</p>
+<pre><code>  	bundle.js   15 kB       0  [emitted]  main
+	1-b8256867498f4be01fd7.js  317 kB       1  [emitted]
+	2-e1bc215a6b91d55a09aa.js  317 kB       2  [emitted]
+               bundle.css  2.9 kB       0  [emitted]  main
+</code></pre>
+<p>As we can see there is no mention of a JPG because our puppy image is smaller than the configured size, it has been inlined. Which means if we visit our page we can bask in the gloriousness of our puppies overlords.</p>
+<h3 id="well-do-it-live-dammit">We’ll do it live dammit<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#well-do-it-live-dammit" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Now that our production build is taken care of, let’s focus more on our local development. You may have noticed one big hole so far that usually comes up when mentioning build tools: live reloading: LiveReload, BrowserSync, whatever your cup of tea is. But having the whole page refresh that’s for suckers, let’s take it one step further with what is called hot module replacement or hot reload. It’s the idea that, since Webpack knows exactly the position of each module in our dependency tree, a change in it can be represented by simply patching that part of the tree with the new file. More clearly: your changes appear live on your screen without the page reloading.</p>
+<p>In order for HMR to be used, we need a server from which the hot assets will be served. Webpack comes with a dev-server we can leverage for that, so let’s install it:</p>
+<p>$ npm install webpack-dev-server —save-dev</p>
+<p>Now to run the dev server, nothing simpler, just run the following command:</p>
+<p>$ webpack-dev-server —inline —hot</p>
+<p>The first flag tells Webpack to inline the HMR logic into the page (instead of presenting the page in an iframe) and the second enables HMR. Now let’s visit the web-server at <a href="http://localhost:8080/webpack-dev-server/" class="external external-link">http://localhost:8080/webpack-dev-server/<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>. You’ll see your usual page, but now try to modify one of the Sass files and, magic:</p>
+<p><img src="../blog/img/s2xxiwt.gif" alt="hot reload"/></p>
+<p>You can use the webpack-dev-server as your own local server. If you plan to always use it for HMR, you can say so in your configuration:</p>
+<pre><code>output: {
+    path:          'builds',
+    filename:      production ? '[name]-[hash].js' : 'bundle.js',
+    chunkFilename: '[name]-[chunkhash].js',
+    publicPath:    'builds/',
+},
+devServer: {
+    hot: true,
+},
+</code></pre>
+<p>Now whenever we run webpack-dev-server it’ll already be in HMR mode. Note that we used webpack-dev-server here to serve the hot assets but you can use several other options, like an Express server. Webpack provides a middleware that you can use to plug in HMR capabilities to other servers.</p>
+<h3 id="get-clean-or-die-lintin">Get clean or die lintin<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#get-clean-or-die-lintin" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>If you’ve been following this tutorial closely you may have noticed something weird: why are loaders nested in module.loaders but plugins are not? That’s because there are other things you can put into module of course! Webpack doesn’t just have loaders, it also has pre-loaders and post-loaders: loaders that are executed on the code before or after our main loaders. Let’s take an example: I’m sure the code I wrote for this article is horrendous, so let’s apply ESLint to our code before we transform it:</p>
+<p>$ npm install eslint eslint-loader babel-eslint —save-dev</p>
+<p>And let’s create a minimalistic .eslintrc file that I know will fail:</p>
+<p><strong>.eslintrc</strong></p>
+<pre><code>parser: 'babel-eslint'
+rules:
+  quotes: 2
+</code></pre>
+<p>Now to add our pre-loader, we simply use the same syntax as before, but in module.preLoaders:</p>
+<pre><code>module:  {
+    preLoaders: [
+        {
+            test: /\.js/,
+            loader: 'eslint',
+        }
+    ],
+</code></pre>
+<p>And now if we run Webpack, sure enough it fails:</p>
+<p>$ webpack</p>
+<pre><code>Hash: 33cc307122f0a9608812
+Version: webpack 1.12.2
+Time: 1307ms
+                    Asset      Size  Chunks             Chunk Names
+                bundle.js    305 kB       0  [emitted]  main
+1-551ae2634fda70fd8502.js    4.5 kB       1  [emitted]
+2-999713ac2cd9c7cf079b.js   4.17 kB       2  [emitted]
+               bundle.css  59 bytes       0  [emitted]  main
+    + 15 hidden modules
+</code></pre>
+<p>ERROR in ./src/index.js</p>
+<pre><code>/Users/anahkiasen/Sites/webpack/src/index.js
+   1:8   error  Strings must use doublequote  quotes
+   4:31  error  Strings must use doublequote  quotes
+   6:32  error  Strings must use doublequote  quotes
+   7:35  error  Strings must use doublequote  quotes
+   9:23  error  Strings must use doublequote  quotes
+  14:31  error  Strings must use doublequote  quotes
+  16:32  error  Strings must use doublequote  quotes
+  18:29  error  Strings must use doublequote  quotes
+</code></pre>
+<p>Let’s take another example of pre-loader: for every component we currently import its stylesheet of the same name, and its template of the same name. Let’s use a pre-loader to automatically load any files bearing the same name as a module:</p>
+<p>$ npm install baggage-loader —save-dev</p>
+<pre><code>{
+    test: /\.js/,
+    loader: 'baggage?[file].html=template&amp;[file].scss',
+}
+</code></pre>
+<p>This tells Webpack: if you encounter an HTML file of the same name, import it as template, and also import any Sass file of the same name. We can now change our components from this:</p>
+<pre><code>import $ from 'jquery';
+import template from './Button.html';
+import Mustache from 'mustache';
+import './Button.scss';
+</code></pre>
+<p>To this:</p>
+<pre><code>import $ from 'jquery';
+import Mustache from 'mustache';
+</code></pre>
+<p>As you can see pre-loaders can be pretty powerful, same goes for post-loaders. Take a look at the list of available loaders at the end of this article and you’ll surely find a lot of use cases in it.</p>
+<h1 id="demonstrations">Demonstrations<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#demonstrations" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><a href="https://github.com/yrong/webpack-express-boilerplate" class="external external-link">Boilerplate for express+react app with webpack builder<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<p><a href="https://github.com/yrong/angular-express-webpack-boilerplate" class="external external-link">Boilerplate for express+angular app with webpack builder<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-23" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#webpack-your-bags" data-for="webpack-your-bags">Webpack your bags</a></li><li class="depth-1"><a href="#webpack是什么" data-for="webpack是什么">Webpack是什么？</a></li><li class="depth-1"><a href="#那你究竟为什么要用它呢" data-for="那你究竟为什么要用它呢">那你究竟为什么要用它呢？</a></li><li class="depth-1"><a href="#我们来做一个小的app" data-for="我们来做一个小的app">我们来做一个小的app</a></li><li class="depth-1"><a href="#写个小组件" data-for="写个小组件">写个小组件</a></li><li class="depth-1"><a href="#生产环境相关插件配置" data-for="生产环境相关插件配置">生产环境相关插件配置</a></li><li class="depth-2"><a href="#extract-text-webpack-plugin" data-for="extract-text-webpack-plugin">extract-text-webpack-plugin</a></li><li class="depth-2"><a href="#images-all-the-people" data-for="images-all-the-people">Images all the people</a></li><li class="depth-2"><a href="#well-do-it-live-dammit" data-for="well-do-it-live-dammit">We’ll do it live dammit</a></li><li class="depth-2"><a href="#get-clean-or-die-lintin" data-for="get-clean-or-die-lintin">Get clean or die lintin</a></li><li class="depth-0"><a href="#demonstrations" data-for="demonstrations">Demonstrations</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-503771fb.js" type="module" data-persist="true"></script></html>
