@@ -13,13 +13,13 @@
 </ul>
 <h3 id="1-核心工作原理">1. 核心工作原理<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-核心工作原理" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
 <p>Agent 的基本运作循环如下：</p>
-<pre><button class="expand-button" aria-label="Expand mermaid diagram" data-view-component="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z"></path></svg></button><code class="mermaid" data-clipboard="&quot;graph TD\n    User[1. 用户输入任务] --> Interpret[2. LLM 理解意图]\n    Interpret --> Plan[3. 推理/规划循环]\n    Plan --> Tools[\&quot;4. 调用工具 (API/数据库)\&quot;]\n    Tools --> Check[5. 校验结果并反思]\n    Check -->|任务未完成| Plan\n    Check -->|任务完成| Finish[6. 输出最终结果]&quot;">graph TD
-    User[1. 用户输入任务] --> Interpret[2. LLM 理解意图]
-    Interpret --> Plan[3. 推理/规划循环]
-    Plan --> Tools[&quot;4. 调用工具 (API/数据库)&quot;]
-    Tools --> Check[5. 校验结果并反思]
+<pre><button class="expand-button" aria-label="Expand mermaid diagram" data-view-component="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3.72 3.72a.75.75 0 011.06 1.06L2.56 7h10.88l-2.22-2.22a.75.75 0 011.06-1.06l3.5 3.5a.75.75 0 010 1.06l-3.5 3.5a.75.75 0 11-1.06-1.06l2.22-2.22H2.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5z"></path></svg></button><code class="mermaid" data-clipboard="&quot;graph TD\n    User[\&quot;(1) 用户输入任务\&quot;] --> Interpret[\&quot;(2) LLM 理解意图\&quot;]\n    Interpret --> Plan[\&quot;(3) 推理/规划循环\&quot;]\n    Plan --> Tools[\&quot;(4) 调用工具 (API/数据库)\&quot;]\n    Tools --> Check[\&quot;(5) 校验结果并反思\&quot;]\n    Check -->|任务未完成| Plan\n    Check -->|任务完成| Finish[\&quot;(6) 输出最终结果\&quot;]&quot;">graph TD
+    User[&quot;(1) 用户输入任务&quot;] --> Interpret[&quot;(2) LLM 理解意图&quot;]
+    Interpret --> Plan[&quot;(3) 推理/规划循环&quot;]
+    Plan --> Tools[&quot;(4) 调用工具 (API/数据库)&quot;]
+    Tools --> Check[&quot;(5) 校验结果并反思&quot;]
     Check -->|任务未完成| Plan
-    Check -->|任务完成| Finish[6. 输出最终结果]
+    Check -->|任务完成| Finish[&quot;(6) 输出最终结果&quot;]
 </code><div id="mermaid-container" role="dialog"><div id="mermaid-space"><div class="mermaid-content"></div></div></div></pre>
 <p>以“预订纽约到旧金山的机票”为例：</p>
 <ol>
