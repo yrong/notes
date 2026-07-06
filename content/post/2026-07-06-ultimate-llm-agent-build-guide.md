@@ -32,12 +32,12 @@ Agent 的基本运作循环如下：
 
 ```mermaid
 graph TD
-    User[1. 用户输入任务] --> Interpret[2. LLM 理解意图]
-    Interpret --> Plan[3. 推理/规划循环]
-    Plan --> Tools["4. 调用工具 (API/数据库)"]
-    Tools --> Check[5. 校验结果并反思]
+    User["(1) 用户输入任务"] --> Interpret["(2) LLM 理解意图"]
+    Interpret --> Plan["(3) 推理/规划循环"]
+    Plan --> Tools["(4) 调用工具 (API/数据库)"]
+    Tools --> Check["(5) 校验结果并反思"]
     Check -->|任务未完成| Plan
-    Check -->|任务完成| Finish[6. 输出最终结果]
+    Check -->|任务完成| Finish["(6) 输出最终结果"]
 ```
 
 以“预订纽约到旧金山的机票”为例：
