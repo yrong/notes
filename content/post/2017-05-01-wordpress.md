@@ -321,9 +321,9 @@ function wp( $query_vars = '' ) {
 }
 ```
 
-* 解析1：调用$wp->main()，即调用对象$wp的main()方法，该对象是class-wp.php文件中WP类实例化得到的，该类主要用于启动WordPress环境，main()方法源码分析详见“WordPress核心类WP内main()方法源码分析”；
+* 解析1：调用 `$wp->main()`，即调用对象 `$wp` 的main()方法，该对象是class-wp.php文件中WP类实例化得到的，该类主要用于启动WordPress环境，main()方法源码分析详见“WordPress核心类WP内main()方法源码分析”；
 
-* 解析2：判断$wp_the_query是否设置，若未设置将其赋值为$wp_query，该对象是query.php文件中WP_Query类实例化得到的，该类作用强大，几乎WP所需要的所有数据信息都是由该类得到的，所以内容的准备工作基本都是这段代码来完成的，该类的具体分析见“”；
+* 解析2：判断 `$wp_the_query` 是否设置，若未设置将其赋值为 `$wp_query`，该对象是query.php文件中WP_Query类实例化得到的，该类作用强大，几乎WP所需要的所有数据信息都是由该类得到的，所以内容的准备工作基本都是这段代码来完成的，该类的具体分析见“”；
 
 至此，WP根据请求准备相应数据的工作也已经完成，下面就需要加载模板并把这些数据展现到前台去了。
 
@@ -416,4 +416,4 @@ endif;
 # 若template_include过滤钩子上有挂载函数，则对$template进行应用，最终将内容呈现给用户；
 ```
 
-* 解析1：如果常量WP_USE_THEMES存在且值为真，则判断页面类型同时给$template变量赋相应值；其中，判断页面类型的函数如is_404()位于wp-includes目录下query.php文件，该函数返回对象$wp_query中is_404()方法，若is_404()为false则继续往下判断是否是其他页面；若为true则给$template赋值为get_404_template()，该函数位于wp-includes目录下template.php文件，它返回get_query_template('404')，而该函数将页面类型传入数组$templates并应用调用函数locate_template($templates)且应用过滤器；locate_template()函数根据传入数组在主题中查找到相应的文件然后交给load_template()函数然后使用require加载，最终将用户需要的页面呈现出来；
+* 解析1：如果常量WP_USE_THEMES存在且值为真，则判断页面类型同时给 `$template` 变量赋相应值；其中，判断页面类型的函数如is_404()位于wp-includes目录下query.php文件，该函数返回对象 `$wp_query` 中is_404()方法，若is_404()为false则继续往下判断是否是其他页面；若为true则给 `$template` 赋值为get_404_template()，该函数位于wp-includes目录下template.php文件，它返回get_query_template('404')，而该函数将页面类型传入数组 `$templates` 并应用调用函数locate_template(`$templates`)且应用过滤器；locate_template()函数根据传入数组在主题中查找到相应的文件然后交给load_template()函数然后使用require加载，最终将用户需要的页面呈现出来；
