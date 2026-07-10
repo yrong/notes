@@ -9,121 +9,122 @@ tags:
 title: Solidity patterns
 ---
 
-## Solidity 设计模式汇总笔记
+## Solidity design-pattern notes
 
-本笔记总结了用于优化 Gas 消耗、增强安全性以及改善开发体验的核心 Solidity 编程模式。
+Core Solidity patterns for gas, security, and DX.
 
-### 1. 重入保护模式 (Reentrancy Protection)
+### 1. Reentrancy protection
 
-问题：当合约发起外部调用时，执行控制权会转移给另一方。攻击者可以利用此机会在原始操作完成前再次调用合约函数，从而导致资产被超额提取。
+**Problem:** An external call transfers control. An attacker can re-enter before the original call finishes and drain more than allowed.
 
-检查-效果-交互 (CEI) 模式：
-- Checks：验证输入参数和初始状态。
-- Effects：在进行任何外部调用之前，更新所有的状态变量。
-- Interactions：最后再执行外部调用或资产转移。
+**Checks-Effects-Interactions (CEI):**
+- **Checks:** validate inputs and initial state.
+- **Effects:** update all state *before* any external call.
+- **Interactions:** external calls / transfers last.
 
-重入卫兵 (Reentrancy Guards/Mutex)：使用一个布尔标志（如 `nonReentrant` 修饰符）在函数进入时加锁，结束后解锁。如果函数在锁定状态下再次被调用，则交易回滚。
+**Reentrancy guards / mutex:** a bool flag (e.g. `nonReentrant`) locks on entry and unlocks on exit; re-entry while locked reverts.
 
-### 2. 存储打包模式 (Packing Storage)
+### 2. Packing storage
 
-问题：读写 EVM 存储插槽（32 字节）是极其昂贵的操作。
+**Problem:** Reading/writing EVM storage slots (32 bytes) is expensive.
 
-- 自动插槽打包：将多个小于 32 字节的原始类型（如 `uint8`, `bool`, `bytes16`）相邻声明，编译器会将它们压缩进同一个存储插槽以减少 Gas。
-- 共定位建议：将经常同时读写的变量定义在一起，以利用 EIP-2929 的“热访问”折扣。
-- 类型选择：根据需求选择更小的类型（例如用 `uint40` 表示时间戳，而不是 `uint256`）。
+- **Auto packing:** declare small types next to each other (`uint8`, `bool`, `bytes16`); the compiler packs them into one slot.
+- **Colocation:** put variables that are often read/written together so EIP-2929 “warm” access discounts apply.
+- **Smaller types:** e.g. `uint40` for timestamps instead of `uint256` when that fits.
 
-### 3. Permit2 模式
+### 3. Permit2
 
-问题：传统 `approve` UX 差（每个协议都要一次授权交易）且存在风险（用户倾向无限授权）。
+**Problem:** Classic `approve` UX is poor (one approval tx per protocol) and risky (users tend to infinite-approve).
 
-- 离线签名授权：用户向 Permit2 规范合约授予一次性授权。
-- 跨协议共享：之后用户只需签署符合 EIP-712 的离线消息即可授权，集成 Permit2 的协议可共享授权。
-- 安全优势：签名包含过期时间，Permit2 合约更简单，通常更易审计。
+- **Offline signed approval:** user grants a one-time allowance to the Permit2 contract.
+- **Shared across protocols:** later, EIP-712 signatures authorize spends; Permit2-integrated protocols share that allowance.
+- **Security:** signatures expire; Permit2 is small and usually easier to audit.
 
-### 4. 委托调用访问控制 (onlyDelegateCall / noDelegateCall)
+### 4. Delegatecall access control (`onlyDelegateCall` / `noDelegateCall`)
 
-问题：代理架构中逻辑合约是独立合约，敏感函数若未限制，可能被直接调用导致严重后果。
+**Problem:** In proxy setups the logic contract is separate; unrestricted sensitive functions can be called directly with bad outcomes.
 
-- onlyDelegateCall：用 immutable 记录部署地址，通过 `address(this) != DEPLOYED_ADDRESS` 限制只能通过代理的 `delegatecall` 执行。
-- noDelegateCall：确保函数不能被 `delegatecall` 调用（常见于防止被代理/克隆复用逻辑，例如 Uniswap V3 风格）。
+- **`onlyDelegateCall`:** store deploy address as `immutable`; require `address(this) != DEPLOYED_ADDRESS` so the function only runs via the proxy’s `delegatecall`.
+- **`noDelegateCall`:** forbid `delegatecall` into the function (e.g. Uniswap V3-style — stop proxies/clones from reusing logic).
 
-### 5. 独立授权目标 (Separate Allowance Targets)
+### 5. Separate allowance targets
 
-问题：协议升级频繁，若用户授权给易变逻辑合约，升级需重授权且逻辑漏洞可能危及已授权资产。
+**Problem:** Protocols upgrade often. If users approve a mutable logic contract, upgrades need re-approval and logic bugs can drain approved funds.
 
-- 职责分离：部署一个极简、稳定的授权目标合约（Allowance Target），用户仅授权给它。
-- 动态控制：业务合约向授权合约请求扣款，治理可随时开关业务合约的访问权限。
+- **Separation of duties:** deploy a minimal, stable allowance-target contract; users approve only that.
+- **Dynamic control:** business contracts request pulls through it; governance can toggle which business contracts may access.
 
-### 6. 只读委托调用 (Read-only Delegatecall)
+### 6. Read-only delegatecall
 
-问题：`delegatecall` 可能修改状态，且不能直接在 `view` 中使用。
+**Problem:** `delegatecall` can mutate state and cannot be used directly in `view`.
 
-思路：
-- 包装在 `staticcall` 中：对自身辅助函数发起 `staticcall`，底层强制只读，即便内部使用 `delegatecall` 也无法修改状态。
-- 执行后回滚：执行完 `delegatecall` 后主动 `revert`，撤销状态更改，并通过回滚 payload 捕获返回值。
+Approaches:
+- **Wrap in `staticcall`:** `staticcall` a helper on self; the EVM forces read-only even if the helper uses `delegatecall` underneath.
+- **Execute then revert:** run `delegatecall`, then `revert` to undo state changes and recover the return value from the revert payload.
 
-### 7. “栈过深”解决方法 (Stack Too Deep Workarounds)
+### 7. “Stack too deep” workarounds
 
-问题：EVM 栈只能直接访问顶部 32 个槽位，局部变量/参数过多会导致编译错误。
+**Problem:** The EVM stack only exposes the top 16 slots directly; too many locals/args → compile error.
 
-- IR 编译（`--via-ir`）：让编译器把部分栈变量移入内存。
-- 块级作用域：用 `{ ... }` 缩短变量生命周期。
-- 内存结构体：把多个变量封装进 `struct memory`，栈上只保留一个指针。
-- 离线计算：把复杂计算放链下，链上做验证。
-
----
-
-## Assembly Tricks (Part 1)（新增）
-
-## 来源
-
-本篇整理自 Dragonfly 的 patterns（`assembly-tricks-1`）：`https://github.com/dragonfly-xyz/useful-solidity-patterns/tree/main/patterns/assembly-tricks-1`。
-
-目标：总结这些 “short & sweet” assembly 技巧的**模式本质**（为什么省 gas/解决什么限制）、**适用边界**与**踩坑点**，方便在生产代码里安全复用。
+- **IR pipeline (`--via-ir`):** compiler spills some stack vars to memory.
+- **Block scopes:** `{ ... }` shortens variable lifetimes.
+- **Memory structs:** pack many vars into `struct memory`; stack keeps one pointer.
+- **Off-chain compute:** do heavy work off-chain; verify on-chain.
 
 ---
 
-## Pattern 1: Bubble up reverts（原样冒泡 revert data）
+## Assembly tricks (Part 1)
 
-### 问题
+## Source
 
-当你用低级 `call/delegatecall/staticcall` 或 `try/catch` 捕获失败时，会拿到 `bytes memory revertBytes`。常见错误做法：
+From Dragonfly’s patterns (`assembly-tricks-1`):  
+https://github.com/dragonfly-xyz/useful-solidity-patterns/tree/main/patterns/assembly-tricks-1
+
+Goal: capture the **essence** of these short assembly tricks (why they save gas / which limits they dodge), **when they apply**, and **pitfalls** — so they can be reused safely in production.
+
+---
+
+## Pattern 1: Bubble up reverts (raw revert data)
+
+### Problem
+
+Low-level `call` / `delegatecall` / `staticcall` or `try/catch` give you `bytes memory revertBytes`. A common mistake:
 
 ```solidity
 revert(string(revertBytes));
 ```
 
-这会把“原始 revert data”重新编码成 `Error(string)`，导致错误类型/selector 丢失（也可能破坏自定义 error 的 data）。
+That re-encodes raw revert data as `Error(string)`, dropping the original type/selector (and breaking custom-error payloads).
 
-### 模式
+### Pattern
 
-在 assembly 里直接 `revert(ptr, len)` 抛出**原始 revert data**：
+In assembly, `revert(ptr, len)` with the **raw** bytes:
 
 ```solidity
 assembly { revert(add(revertBytes, 0x20), mload(revertBytes)) }
 ```
 
-### 使用场景
+### When to use
 
-- 你只想对某些错误做特殊处理，其它错误要“向上透传”；
-- 你希望保留自定义 error / Panic / Error(string) 的原始格式，便于上层解码。
+- You special-case some errors and want everything else to bubble unchanged.
+- You need to preserve custom errors / Panic / `Error(string)` for upper layers to decode.
 
-### 风险/边界
+### Risks / limits
 
-- 仅对 `memory` 的 `bytes` 直接适用（catch 里的 bytes 通常在 memory）。
-- 注意不要在你已经构造了新的错误信息后又混用原始 bytes，避免泄漏或误报。
+- Applies directly to `memory` `bytes` (catch bytes are usually in memory).
+- Don’t mix raw bytes with a newly constructed error message — leaks / misreports.
 
 ---
 
-## Pattern 2: Hash two words（两个 word 的 keccak 更便宜写法）
+## Pattern 2: Hash two words (cheaper keccak of two words)
 
-### 问题
+### Problem
 
-`keccak256(abi.encode(x, y))` 会触发 `abi.encode` 分配新内存缓冲区，开销更大。
+`keccak256(abi.encode(x, y))` allocates a new buffer via `abi.encode` — more gas.
 
-### 模式
+### Pattern
 
-用 scratch space `0x00..0x3f` 直接拼两个 32 字节再 keccak：
+Write both 32-byte words into scratch space `0x00..0x3f`, then keccak:
 
 ```solidity
 bytes32 hash;
@@ -134,27 +135,27 @@ assembly {
 }
 ```
 
-### 使用场景
+### When to use
 
-- Merkle traversal / pair hashing / 两个 32 字节值组合哈希；
-- 你明确知道两段数据在 64 字节内（或严格两个 words）。
+- Merkle traversal / pair hashing / combining two 32-byte values.
+- You know the payload is exactly two words (64 bytes).
 
-### 风险/边界
+### Risks / limits
 
-- 只适用于“固定宽度、固定拼接形态”。如果你原来使用 `abi.encodePacked` 或拼接规则不同，结果会不同。
-- scratch space 通常可用，但若你在同一段 assembly 中依赖了 `0x00..0x3f` 的其它值，要小心覆盖。
+- Fixed-width, fixed concatenation only. Different from `abi.encodePacked` or other layouts → different digests.
+- Scratch space is usually free, but don’t overwrite `0x00..0x3f` if the same assembly block still needs those values.
 
 ---
 
-## Pattern 3: Cast between compatible `memory` array types（数组类型零拷贝转型）
+## Pattern 3: Cast between compatible `memory` array types (zero-copy)
 
-### 问题
+### Problem
 
-Solidity 不允许在类型系统层面直接把 `address[]` 当作 `IERC20[]` 之类（即便它们在内存里都是 32-byte slots 的兼容表示）。朴素做法是逐元素复制，浪费 gas。
+Solidity won’t treat `address[]` as `IERC20[]` even when both are 32-byte slots in memory. Naively copying element-by-element wastes gas.
 
-### 模式
+### Pattern
 
-对 `memory` 动态数组：变量本质是指针，直接把指针赋给另一种数组类型。
+A `memory` dynamic array variable is a pointer — assign the pointer to another array type:
 
 ```solidity
 address[] memory a = ...;
@@ -162,22 +163,22 @@ IERC20[] memory b;
 assembly { b := a }
 ```
 
-### 使用场景
+### When to use
 
-- 你**确信 bit-level 兼容**（例如 `address` 与 `contract/interface` 视为 20 字节地址存储在 word 里）；
-- 需要把某个库函数输入类型“对齐”到你已有数据结构。
+- You are sure of **bit-level compatibility** (e.g. `address` vs `contract`/`interface` as 20-byte addresses in a word).
+- You need to match a library’s input type to data you already have.
 
-### 风险/边界（很重要）
+### Risks / limits (important)
 
-- 只适用于 `memory` 数组；`calldata` 的指针语义不同，不能这样搞。
-- 兼容性必须严格成立：例如 `uint256[]` 与 `bytes32[]` 的 slot 是兼容的，但若元素类型有不同编码/对齐规则就会出错。
-- 这种“类型欺骗”会让审计/读者更难理解：建议封装成内部函数并在命名里强调 `unsafe`。
+- **`memory` only** — `calldata` pointer semantics differ; don’t do this there.
+- Compatibility must be strict: `uint256[]` ↔ `bytes32[]` slots are fine; mismatched encoding/alignment is not.
+- Type lies hurt auditability — wrap in an internal helper named `unsafe…`.
 
 ---
 
-## Pattern 4: Cast between compatible `memory` structs（struct 零拷贝转型）
+## Pattern 4: Cast between compatible `memory` structs (zero-copy)
 
-与数组同理，对兼容字段布局的 `memory` struct 可以用相同技巧：
+Same idea for `memory` structs with compatible field layouts:
 
 ```solidity
 Foo memory foo = ...;
@@ -185,43 +186,43 @@ Bar memory bar;
 assembly { bar := foo }
 ```
 
-### 风险/边界
+### Risks / limits
 
-- 只有当两个 struct 的字段**数量、顺序、slot 布局**完全兼容时才安全。
-- 这种技巧对可维护性影响更大：建议仅用于非常局部的性能热点，并写清楚兼容性前提。
+- Safe only if field **count, order, and slot layout** match exactly.
+- Hurts maintainability more than array casts — keep to local hot paths and document the layout assumption.
 
 ---
 
-## Pattern 5: Shortening dynamic `memory` arrays（原地缩短动态数组）
+## Pattern 5: Shorten dynamic `memory` arrays in place
 
-### 背景
+### Background
 
-动态 `memory` 数组的首 word 存长度 `mload(arr)`，后面紧跟元素。
+A dynamic `memory` array stores length at `mload(arr)`, then elements.
 
-### 模式
+### Pattern
 
-直接改写长度（通常只安全缩短，不要变长）：
+Overwrite length (usually only safe to **shorten**):
 
 ```solidity
 uint256[] memory arr = new uint256[](100);
 assembly { mstore(arr, 99) }
 ```
 
-### 使用场景
+### When to use
 
-- 你预分配了一个较长数组，后来确定实际有效元素更少；
-- 想避免再分配/复制一份新数组。
+- You preallocated long, then learned the real length is smaller.
+- You want to avoid allocating/copying a new array.
 
-### 风险/边界
+### Risks / limits
 
-- 只能安全缩短；变长可能读到/写到其它变量占用的内存区域。
-- 这会影响同一引用的其它使用者：确认没有其它代码依赖原长度。
+- Shorten only; growing can read/write into other memory.
+- Affects every holder of the same reference — ensure nothing still assumes the old length.
 
 ---
 
-## Pattern 6: “Shorten” static arrays / slicing（静态数组截断与切片）
+## Pattern 6: “Shorten” static arrays / slicing
 
-静态数组没有 length 前缀，不能用 `mstore` 改长度。可用“指针复用”创建子视图：
+Static arrays have no length prefix — you can’t `mstore` a new length. Reuse the pointer as a smaller view:
 
 ```solidity
 uint256[10] memory arr;
@@ -229,44 +230,44 @@ uint256[9] memory shortArr;
 assembly { shortArr := arr }
 ```
 
-甚至可以把指针偏移 0x20，从而创建共享 slice：
+Or offset by `0x20` for a shared slice:
 
 ```solidity
 uint256[10] memory arr;
 uint256[8] memory slice;
-assembly { slice := add(arr, 0x20) } // 跳过第一个元素
+assembly { slice := add(arr, 0x20) } // skip first element
 ```
 
-### 风险/边界
+### Risks / limits
 
-- 对静态数组声明本身会分配内存（没有动态数组那么省），但仍避免逐元素复制。
-- 指针偏移 slice 的可读性较差，且容易和真实所有权/边界搞混；尽量限定在 internal 纯函数内。
-
----
-
-## 总结：什么时候值得用这些 assembly tricks
-
-- **值得用**：性能热点（循环内）、Merkle/哈希密集、需要保持 revert data 原样、与第三方库类型不一致但 bit 兼容。
-- **不值得/慎用**：边界复杂、团队维护成本高、需要在 `calldata` 上玩指针、struct 布局不稳定（未来升级）。
+- Declaring a static array still allocates; you mainly avoid element-wise copies.
+- Offset slices are hard to read and easy to confuse with ownership/bounds — keep them in internal pure helpers.
 
 ---
 
-## Pattern: Code-as-storage（把数据存进合约 bytecode）— BigDataStoreV1（独立 section）
+## When these assembly tricks are worth it
 
-### 这个模式在做什么
+- **Worth it:** hot loops, Merkle/hash-heavy paths, preserving raw revert data, bit-compatible type mismatch with a third-party API.
+- **Avoid / be careful:** fuzzy boundaries, high maintenance cost, pointer games on `calldata`, unstable struct layouts across upgrades.
 
-当你要存很大的 blob（图片/base64/json/证明数据）时，`SSTORE` 非常贵。Code-as-storage 的思路是：
+---
 
-- **写入**：部署一个“数据合约”，把数据变成它的 **runtime bytecode**。
-- **读取**：用 `EXTCODECOPY` 从该地址的 code 区把数据拷回内存。
+## Pattern: Code-as-storage (data in contract bytecode) — BigDataStoreV1
 
-本文用一个简单约定（带 header）：
+### What it does
+
+Large blobs (images / base64 / JSON / proofs) make `SSTORE` very expensive. Code-as-storage:
+
+- **Write:** deploy a “data contract” whose **runtime bytecode** *is* the data.
+- **Read:** `EXTCODECOPY` from that address’s code into memory.
+
+Simple header convention used here:
 
 - `code(loc) = MAGIC(4 bytes) || VERSION(1 byte) || DATA(bytes)`
 
-这样读取时可以先校验 `MAGIC/VERSION`，避免把任意合约地址的 bytecode 当成数据读出来。
+Readers check `MAGIC` / `VERSION` first so arbitrary contract bytecode isn’t treated as payload.
 
-### BigDataStoreV1（完整代码：mstore8 可读版）
+### BigDataStoreV1 (full code: readable `mstore8` version)
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -305,7 +306,7 @@ contract BigDataStoreV1 {
 }
 ```
 
-### 如何加载（读取 + 校验）CodeStoreV1
+### Loading (read + validate) — CodeStoreV1
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -353,34 +354,32 @@ library CodeStoreV1 {
 }
 ```
 
-### 逐行解释：`return(add(data, 27), size+5)` 是什么意思？
+### Line-by-line: what does `return(add(data, 27), size+5)` mean?
 
-在 constructor 里的 `assembly { return(ptr, len) }` 不是“函数返回值”，而是：
+In a constructor, `assembly { return(ptr, len) }` is **not** a Solidity return value. It means:
 
-- 把内存 `[ptr .. ptr+len-1]` 作为“**新合约的 runtime bytecode**”交给 EVM
-- EVM 用这段 bytes 作为部署后 `loc.code`
+- Hand memory `[ptr .. ptr+len-1]` to the EVM as the **new contract’s runtime bytecode**
+- That becomes `loc.code` after deploy
 
-因此：
+So:
 
-- `add(data, 27)`：从 `data+27` 开始返回（这里正好是我们写入 `MAGIC+VERSION` 的位置）
-- `size+5`：返回 header(5 bytes) + payload(size bytes)
+- `add(data, 27)`: start returning at `data+27` (where `MAGIC+VERSION` was written)
+- `size+5`: header (5) + payload (`size`)
 
-部署完成后：
+After deploy:
 
 - `extcodesize(loc) == 5 + size`
-- `extcodecopy(loc, ..., 0, 5)` 读到 header
-- `extcodecopy(loc, ..., 5, size)` 读到原始数据
+- `extcodecopy(loc, ..., 0, 5)` → header
+- `extcodecopy(loc, ..., 5, size)` → original data
 
-### 逐行解释：读取为什么用 `extcodesize/extcodecopy`？
+### Line-by-line: why `extcodesize` / `extcodecopy`?
 
-这是 Code-as-storage 的“读取存储”方式（读的是 **code 区**，不是 `SLOAD`）：
+That is how code-as-storage **reads** (code region, not `SLOAD`):
 
-- `extcodesize(loc)`：读 `loc` 的 runtime code 长度（等价于“数据长度 + header”）
-- `extcodecopy(loc, dst, offset, size)`：把 `loc` 的 code 从 `offset` 开始拷贝 `size` 字节到内存 `dst`
+- `extcodesize(loc)`: runtime code length (= data length + header)
+- `extcodecopy(loc, dst, offset, size)`: copy `size` bytes from code at `offset` into memory `dst`
 
-在上面的 `loadBytes` 中：
+In `loadBytes` above:
 
-- 先拷 5 字节校验 `MAGIC/VERSION`（信任模型）
-- 再从 offset=5 拷贝剩余字节作为 payload
-
-
+- First copy 5 bytes and check `MAGIC` / `VERSION` (trust model)
+- Then copy from offset 5 as the payload

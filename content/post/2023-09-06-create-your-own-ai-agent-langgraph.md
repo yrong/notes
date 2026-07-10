@@ -6,119 +6,127 @@ tags:
 - agents
 - langgraph
 - llm-studio
-title: "实战教程：如何使用 LangGraph 和 LLM Studio 构建专属 AI Agent"
+title: "Tutorial: Build your own AI agent with LangGraph and LLM Studio"
 ---
 
-本篇笔记基于 TensorOps 机器学习工程师 Clara Gadelho 的视频教程 [How to Create Your Own AI Agent - Tutorial with Clara Gadelho](https://www.youtube.com/watch?v=6Dvj4VZsscg) 整理，详细记录了如何基于现代 LLM 框架构建一个具备工具调用和记忆能力的 ReAct 智能体（旅行助理）。
+Notes from TensorOps ML engineer Clara Gadelho’s video [How to Create Your Own AI Agent - Tutorial with Clara Gadelho](https://www.youtube.com/watch?v=6Dvj4VZsscg): building a ReAct agent with tool use and memory (a travel assistant) on modern LLM frameworks.
 
 <!--more-->
 
 ---
 
-## 一、 AI Agent 与 ReAct 架构基础
+## 1. AI agents and the ReAct architecture
 
-在现代大语言模型应用中，**Agent（智能体）** 是能够自主决策、调用外部工具并执行复杂任务的实体。
+In modern LLM apps, an **agent** is an entity that can decide on its own, call external tools, and run multi-step tasks.
 
-### 1. ReAct (Reasoning and Acting) 架构
-ReAct 是构建 Agent 最主流的架构之一。它的核心思想是**交替进行“思考”与“行动”**：
-1.  **Reasoning（推理）**：模型根据用户的输入进行思考，分析当前状态，并决定下一步需要做什么。
-2.  **Acting（行动）**：如果需要外部信息，模型会调用指定的 **Tools（工具）**（如搜索引擎、API、计算器）。
-3.  模型将工具返回的结果与此前的推理结合，继续进行下一步推理，直至得到最终答案返回给用户。
+### ReAct (Reasoning and Acting)
+
+ReAct is one of the most common agent architectures. The idea is to **alternate thinking and acting**:
+
+1.  **Reasoning**: the model thinks about the user input, inspects state, and decides what to do next.
+2.  **Acting**: if it needs external info, it calls **tools** (search, APIs, calculators, …).
+3.  It folds tool results back into reasoning and loops until it can return a final answer.
 
 ```mermaid
 graph TD
-    User[用户] --> Agent[Agent 推理环]
-    subgraph "Agent 内部"
-        LLM[LLM 决策核] <--> Memory[Memory 记忆库]
-        LLM <--> Tools[Tools 工具集]
+    User[User] --> Agent[Agent reasoning loop]
+    subgraph "Inside the agent"
+        LLM[LLM decision core] <--> Memory[Memory]
+        LLM <--> Tools[Tools]
     end
-    Agent -->|最终答案| User
+    Agent -->|Final answer| User
 ```
 
-### 2. 构建 Agent 的三大核心要素
-*   **Tools（工具）**：Agent 与外界交互的桥梁，可以是 API、数据库查询或任意 Python 函数。
-*   **Memory（记忆）**：使 Agent 能够记住上下文及历史多轮对话信息。
-*   **Planning（规划）**：控制推理的环路及图流向。
+### Three building blocks
+
+*   **Tools**: bridge to the outside world — APIs, DB queries, or any Python function.
+*   **Memory**: keep context and multi-turn history.
+*   **Planning**: control the reasoning loop and graph flow.
 
 ---
 
-## 二、 技术选型
+## 2. Stack choices
 
-本教程使用了两个核心库：
-*   **LLM Studio**：TensorOps 开源的模型路由与管理库。它作为大模型的统一网关，允许开发者在无需修改业务代码的前提下，轻松在 GPT-4o、Gemini 等不同模型之间进行无缝切换。
-*   **LangGraph**：由 LangChain 团队开发的基于图（Graph）的 Agent 构建框架。它高度模块化，提供开箱即用的状态管理和循环控制能力，极大简化了复杂 Agent 架构（如多 Agent 协同）的开发。
+This tutorial uses two libraries:
+
+*   **LLM Studio**: TensorOps’ open-source model router/manager. A unified gateway so you can switch GPT-4o, Gemini, etc. without rewriting business code.
+*   **LangGraph**: LangChain’s graph-based agent framework. Modular, with built-in state and loop control — simplifies complex setups (including multi-agent).
 
 ---
 
-## 三、 实战：构建一个智能旅行助手
+## 3. Build: a smart travel assistant
 
-### 1. 前置准备
-在运行代码前，需要安装依赖并配置环境变量：
-*   **环境依赖**：Python 3.10+，安装 `langchain`、`langgraph`、`requests`、`python-dotenv` 和 `llm-studio`。
-*   **API 密钥**：
-    *   模型提供商 API 密钥（如 OpenAI Key）。
-    *   **Weatherbit API** Key：用于查询目的地的实时天气。
-    *   **Tavily Search API** Key：用于实现高性能的网页搜索。
+### Prerequisites
 
-### 2. 核心代码实现步骤
+*   **Deps**: Python 3.10+, install `langchain`, `langgraph`, `requests`, `python-dotenv`, and `llm-studio`.
+*   **API keys**:
+    *   Model provider key (e.g. OpenAI).
+    *   **Weatherbit** API key for live destination weather.
+    *   **Tavily Search** API key for web search.
 
-#### 步骤 1：导入依赖与初始化 LLM
-使用 `llm-studio` 作为路由器连接 OpenAI 的 `gpt-4o` 模型，并将其包装为可被 LangChain 兼容调用的接口。
+### Implementation steps
+
+#### Step 1: Imports and LLM init
+
+Use `llm-studio` as a router to OpenAI `gpt-4o`, wrapped for LangChain:
 
 ```python
 import os
 import sys
 from dotenv import load_dotenv
-from llm_studio import LLM  # 导入 LLM Studio
+from llm_studio import LLM  # LLM Studio
 
 load_dotenv()
 
-# 初始化大语言模型路由器
+# Initialize the LLM router
 llm = LLM(provider="openai")
 model = llm.get_model("gpt-4o")
 ```
 
-#### 步骤 2：定义 Agent 工具 (Tools)
-为了完成旅行规划，我们为 Agent 装备了三种工具：
-1.  **获取系统当前时间**：让 Agent 知晓“今天”的日期，以便推算预订时间。
-2.  **网络搜索工具**：使用预置的 `TavilySearchResults`。
-3.  **获取天气工具**：调用外部 Weatherbit API 接口。
+#### Step 2: Define tools
 
-> **重要提示**：在编写自定义工具时，必须为函数添加详细的 **Docstring（文档字符串）**。Agent 在运行时会读取 Docstring 来判断该工具的作用以及何时去调用它。
+Three tools for trip planning:
+
+1.  **Current system date** — so the agent knows “today” for relative booking dates.
+2.  **Web search** — stock `TavilySearchResults`.
+3.  **Weather** — Weatherbit API.
+
+> **Important:** custom tools need a detailed **docstring**. At runtime the agent reads it to decide what the tool does and when to call it.
 
 ```python
 from langchain_core.tools import tool
 from langchain_community.tools.tavily_search import TavilySearchResults
 from datetime import datetime
 
-# 1. 自定义获取当前时间的工具
+# 1. Current date
 @tool
 def get_system_date() -> str:
     """Get the current system date. Useful for calculating relative travel dates."""
     current_date = datetime.now().strftime("%Y-%m-%d")
     return f"The current date is: {current_date}"
 
-# 2. 初始化网络搜索工具（限制返回 3 条结果以防超长）
+# 2. Web search (cap results to avoid huge context)
 web_search_tool = TavilySearchResults(max_results=3)
 
-# 3. 自定义天气查询工具（调用外部 Weatherbit API）
+# 3. Weather (Weatherbit API)
 @tool
 def get_weather(location: str) -> str:
     """Fetch the weather forecast for a given location."""
-    # （此处省略具体的 HTTP 请求解析代码）
+    # (HTTP request/parse omitted)
     return f"Weather forecast for {location}: Sunny, 25°C."
     
 tools = [get_system_date, web_search_tool, get_weather]
 ```
 
-#### 步骤 3：构建 ReAct Agent 与会话记忆
-使用 LangGraph 的 `create_react_agent` 快速装配。通过引入 `MemorySaver` 来持久化对话状态，允许 Agent 在多轮对话中通过 `thread_id` 自动找回历史记忆。
+#### Step 3: ReAct agent + session memory
+
+Assemble with LangGraph’s `create_react_agent`. `MemorySaver` persists dialogue state so the agent can reload history by `thread_id` across turns.
 
 ```python
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 
-# 定义 Agent 系统级提示词（State Modifier）
+# System prompt (state modifier)
 system_prompt = (
     "You are a helpful travel assistant. If given a duration for a trip, "
     "suggest a detailed daily itinerary with activities, meals, and accommodations. "
@@ -126,10 +134,8 @@ system_prompt = (
     "Make sure to provide direct links if you suggest booking."
 )
 
-# 实例化会话记忆组件
 memory = MemorySaver()
 
-# 构建 Agent 流程图
 agent = create_react_agent(
     model=model,
     tools=tools,
@@ -138,40 +144,44 @@ agent = create_react_agent(
 )
 ```
 
-#### 步骤 4：可视化图结构
-LangGraph 允许直接生成 Mermaid 架构图，其拓扑结构非常直观：
+#### Step 4: Visualize the graph
+
+LangGraph can emit a Mermaid diagram of the topology:
+
 ```mermaid
 graph LR
-    __start__([Start]) --> Agent[Agent 逻辑控制]
-    Agent -->|需要工具| Action[调用 Tools]
+    __start__([Start]) --> Agent[Agent control]
+    Agent -->|Needs tools| Action[Call tools]
     Action --> Agent
-    Agent -->|推理完成| __end__([End])
+    Agent -->|Done reasoning| __end__([End])
 ```
 
 ---
 
-## 四、 运行与多轮对话测试
+## 4. Run and multi-turn tests
 
-### 1. 首轮提问：规划行程
-配置会话 `thread_id` 为 `1`，输入任务需求：“帮我规划两周后去米兰的 3 天行程，我从波尔图出发。”
+### Turn 1: plan a trip
+
+Set `thread_id` to `1` and ask: “Plan a 3-day trip to Milan in two weeks. I’m traveling from Porto.”
 
 ```python
 config = {"configurable": {"thread_id": "1"}}
 inputs = {"messages": [("user", "Plan a 3-day trip to Milan that will happen in two weeks. I'm traveling from Porto.")]}
 
 for event in agent.stream(inputs, config):
-    # 打印运行中的事件与消息流
+    # Print streaming events/messages
     pass
 ```
 
-*   **运行轨迹**：
-    1.  Agent 自动触发 `get_system_date` 获取今天日期，算出两周后的精确出行时间。
-    2.  调用 `get_weather("Milan")` 查询届时的天气。
-    3.  调用 `Tavily` 搜索从波尔图飞往米兰的航班以及酒店价格信息。
-    4.  最后，结合所有数据生成带有预订链接的精细化 3 天行程单。
+*   **Trace**:
+    1.  Agent calls `get_system_date` to compute the exact travel date two weeks out.
+    2.  Calls `get_weather("Milan")`.
+    3.  Calls Tavily for Porto→Milan flights and hotel prices.
+    4.  Combines everything into a detailed 3-day itinerary with booking links.
 
-### 2. 第二轮提问：测试会话记忆
-紧接着在同一个 `thread_id` 下提问：“我去的时候那里的圣诞集市开了吗？”（**注意：此提问中没有提到“米兰”以及出行时间**）。
+### Turn 2: test memory
+
+Same `thread_id`: “Will Christmas markets be open when I go there?” (**no mention of Milan or dates**).
 
 ```python
 inputs_2 = {"messages": [("user", "Will Christmas markets be open when I go there?")]}
@@ -180,13 +190,14 @@ for event in agent.stream(inputs_2, config):
     pass
 ```
 
-*   **结果**：Agent 成功从 Memory 中检索出之前的目的地为“米兰”，并且出发时间是两周后。它利用这些信息再次自动联网搜索当年米兰圣诞集市的开放时间，并给出了准确的答复。
+*   **Result**: the agent recovers “Milan” and the travel window from memory, searches Milan Christmas market dates for that period, and answers accurately.
 
 ---
 
-## 五、 总结与启发
+## 5. Takeaways
 
-本教程展示了如何使用极少的代码搭建一个生产级别的 Agent 原型：
-1.  **极简构建**：LangGraph 的 `create_react_agent` 屏蔽了底层图状态维护的复杂细节，使得快速验证思路变得非常简单。
-2.  **Docstring 即代码**：在 Tool 设计中，Python 函数的 Docstring 直接被充当了大模型的系统提示词，决定了模型的调用时机，凸显了“Prompt Engineering”在 Agent 时代的重要性。
-3.  **大模型网关的作用**：配合 `llm-studio`，可以大幅度降低大模型升级换代时的适配成本。
+A production-shaped agent prototype with little code:
+
+1.  **Minimal build**: `create_react_agent` hides graph/state plumbing so you can validate ideas quickly.
+2.  **Docstrings as prompts**: tool docstrings act as model-facing instructions for *when* to call — prompt engineering still matters in the agent era.
+3.  **Model gateway**: with `llm-studio`, swapping models costs far less when providers change.

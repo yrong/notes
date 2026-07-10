@@ -6,30 +6,30 @@ tags:
 - agents
 - blockchain
 - ethereum
-title: "x402 协议笔记：Stripe 如何让 AI 代理自主支付"
+title: "Notes: x402 — how Stripe lets AI agents pay autonomously"
 ---
 
-x402 是一种面向机器对机器（M2M）支付的开放协议，核心思路是**复活 HTTP 402「Payment Required」状态码**，让 API 在返回付费要求时，客户端（尤其是 AI Agent）能自动完成支付并重试请求，无需人工介入、无需预先注册账号。
+x402 is an open protocol for machine-to-machine (M2M) payments. The core idea is to **revive HTTP 402 “Payment Required”**: when an API returns a payment challenge, the client (especially an AI agent) can pay and retry automatically — no human in the loop, no pre-registered account.
 
-Stripe 在 2026 年将其接入现有支付基础设施：开发者仍用熟悉的 PaymentIntent 和 Dashboard，底层走 USDC 链上结算；Coinbase 则围绕同一协议构建了 Agent.market 代理经济生态。本文综合 BitKan 解读、[Stripe 官方文档](https://docs.stripe.com/payments/machine/x402) 与示例代码，整理一份学习笔记。
+In 2026 Stripe wired it into existing payment infrastructure: developers still use familiar PaymentIntents and the Dashboard, while settlement is USDC on-chain. Coinbase built Agent.market around the same protocol. This note combines BitKan write-ups, [Stripe’s docs](https://docs.stripe.com/payments/machine/x402), and sample code.
 
 <!--more-->
 
-## 1. 背景：为什么需要 x402？
+## 1. Background: why x402?
 
-传统 API 付费模式对 AI Agent 极不友好：
+Traditional API billing is hostile to AI agents:
 
-| 模式 | 问题 |
+| Model | Problem |
 |------|------|
-| API Key + 订阅 | Agent 需预先注册、绑定信用卡，无法按次按需付费 |
-| OAuth / 账号体系 | 人类身份验证流程，Agent 难以自动化 |
-| 链上直接转账 | 每笔交易需单独签名、确认，延迟高、集成复杂 |
+| API key + subscription | Agent must register and bind a card; no true pay-per-call |
+| OAuth / accounts | Human identity flows; hard to automate |
+| Direct on-chain transfer | Sign and confirm every tx; high latency, heavy integration |
 
-x402 把「付费」嵌入 HTTP 请求本身：服务端返回 402 + 支付条件，客户端签名授权后带 `payment` 头重试，**一次 HTTP 往返完成议价与结算**。这对 $0.01 级别的微支付、7×24 运行的自主 Agent 尤为合适。
+x402 embeds payment in HTTP itself: server returns 402 + terms; client signs an authorization and retries with a `payment` header — **one HTTP round-trip for negotiation and settlement**. That fits $0.01 micropayments and 24/7 autonomous agents.
 
-协议最初由 Coinbase 在 2025 年开源，x402 Foundation（Coinbase + Cloudflare 共同发起）维护规范；Stripe、Google、Cloudflare 等均已接入或提供兼容实现。
+Coinbase open-sourced the protocol in 2025; the x402 Foundation (Coinbase + Cloudflare) maintains the spec. Stripe, Google, Cloudflare, and others ship compatible implementations.
 
-## 2. 支付流程
+## 2. Payment flow
 
 ```mermaid
 sequenceDiagram
@@ -40,58 +40,58 @@ sequenceDiagram
     participant Chain as Base (USDC)
 
     Agent->>Server: GET /paid
-    Server->>Stripe: 创建 PaymentIntent（获取充值地址）
+    Server->>Stripe: create PaymentIntent (deposit address)
     Stripe-->>Server: deposit address
-    Server-->>Agent: 402 + payment-required 头
+    Server-->>Agent: 402 + payment-required header
 
-    Agent->>Agent: 签名 USDC 支付授权
-    Agent->>Server: GET /paid + payment 头
-    Server->>Facilitator: 验证支付证明
-    Facilitator->>Chain: 链上结算
-    Facilitator-->>Server: 验证通过
-    Server-->>Agent: 200 + 资源内容
-    Stripe->>Stripe: 检测到链上到账，自动 capture PaymentIntent
+    Agent->>Agent: sign USDC payment authorization
+    Agent->>Server: GET /paid + payment header
+    Server->>Facilitator: verify payment proof
+    Facilitator->>Chain: on-chain settle
+    Facilitator-->>Server: verified
+    Server-->>Agent: 200 + resource
+    Stripe->>Stripe: detect on-chain deposit, auto-capture PaymentIntent
 ```
 
-关键角色：
+Roles:
 
-- **Resource Server**：你的 API，声明哪些路由需要付费、价格多少、收款地址。
-- **Facilitator**：验证支付签名、执行链上结算的第三方服务（测试可用 x402.org testnet facilitator；主网可用 [Coinbase CDP Facilitator](https://docs.cdp.coinbase.com)）。
-- **Stripe**：管理充值地址生命周期、PaymentIntent 状态、Dashboard 对账与合规。
+- **Resource Server**: your API — which routes are paid, price, payee address.
+- **Facilitator**: third party that verifies payment proofs and settles on-chain (test: x402.org testnet facilitator; mainnet: [Coinbase CDP Facilitator](https://docs.cdp.coinbase.com)).
+- **Stripe**: deposit-address lifecycle, PaymentIntent state, Dashboard reconciliation and compliance.
 
-未付款时，服务端返回：
+When unpaid, the server returns:
 
 ```http
 HTTP/1.1 402 Payment Required
 payment-required: eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiO...
 ```
 
-`payment-required` 头是 base64 编码的 JSON，包含金额、网络、收款地址、scheme 等信息。
+The `payment-required` header is base64 JSON: amount, network, payee address, scheme, etc.
 
-## 3. Facilitator：验签与链上结算
+## 3. Facilitator: verify and settle on-chain
 
-**Facilitator**（协调者）是 x402 协议中的第三方服务，负责**验证客户端的支付证明**，并在通过后**执行链上结算**。Resource Server 不必自己跑全节点、验签名、发交易，而是通过 `HTTPFacilitatorClient` 把链上操作委托给 Facilitator。
+The **Facilitator** verifies the client’s payment proof and, if valid, **settles on-chain**. The Resource Server does not run a full node, verify signatures, or broadcast txs — it delegates via `HTTPFacilitatorClient`.
 
-### 3.1 在架构中的位置
+### 3.1 Place in the architecture
 
-| 角色 | 职责 |
+| Role | Responsibility |
 |------|------|
-| **Resource Server** | 声明价格、返回 402、保护付费路由 |
-| **Facilitator** | 验签、链上结算、向 Server 背书「支付有效」 |
-| **Stripe**（可选） | 生成充值地址、监听到账、capture PaymentIntent、Dashboard 对账 |
+| **Resource Server** | Declare price, return 402, protect paid routes |
+| **Facilitator** | Verify signatures, settle on-chain, attest “payment valid” to the server |
+| **Stripe** (optional) | Deposit addresses, watch deposits, capture PaymentIntent, Dashboard |
 
-Facilitator 管的是**协议层链上结算**；Stripe 管的是**商户收款侧认账**。两者分工不同，在 Stripe x402 集成里通常同时使用。
+Facilitator owns **protocol-layer on-chain settlement**; Stripe owns **merchant-side recognition of funds**. Different jobs; Stripe’s x402 integration usually uses both.
 
-常见 Facilitator：测试网用 x402.org testnet facilitator；主网可用 [Coinbase CDP Facilitator](https://docs.cdp.coinbase.com)（`https://api.cdp.coinbase.com/platform/v2/x402`）。协议开放，也可自建。
+Common facilitators: x402.org testnet; mainnet [Coinbase CDP](https://docs.cdp.coinbase.com) (`https://api.cdp.coinbase.com/platform/v2/x402`). The protocol is open — you can self-host.
 
-### 3.2 密码学基础：EIP-3009 + EIP-712
+### 3.2 Crypto basis: EIP-3009 + EIP-712
 
-Facilitator 的验签与结算建立在 USDC 的 **EIP-3009（TransferWithAuthorization）** 和 **EIP-712（结构化数据签名）** 上：
+Verification and settlement rest on USDC’s **EIP-3009 (`TransferWithAuthorization`)** and **EIP-712** (typed data signing):
 
-- Agent **只签名授权，不自己发链上交易**，也**不需要持有 ETH 付 gas**
-- Facilitator 验签通过后，代付 gas 调用 USDC 合约完成转账
+- The agent **only signs an authorization** — it does **not** send the on-chain tx and **does not need ETH for gas**
+- After verify, the Facilitator pays gas and calls the USDC contract
 
-收到 402 后，Agent 钱包对 `TransferWithAuthorization` 做 EIP-712 签名，授权内容示例：
+After a 402, the agent wallet EIP-712-signs `TransferWithAuthorization`, e.g.:
 
 ```json
 {
@@ -104,150 +104,150 @@ Facilitator 的验签与结算建立在 USDC 的 **EIP-3009（TransferWithAuthor
 }
 ```
 
-签名时附带 **domain separator**（合约地址、chainId、代币名 `"USD Coin"` 等），防止签名被挪到其他链/合约复用。结果 base64 编码后放入 HTTP `payment` 头，重试请求。
+Signing includes a **domain separator** (contract address, chainId, token name `"USD Coin"`, etc.) so the signature cannot be replayed on another chain/contract. The result is base64’d into the HTTP `payment` header for the retry.
 
-### 3.3 两个标准 API：`/verify` 与 `/settle`
+### 3.3 Two standard APIs: `/verify` and `/settle`
 
-[x402 规范](https://github.com/coinbase/x402/blob/main/specs/x402-specification-v2.md) 定义了 Facilitator 的标准 HTTP 接口，`x402ResourceServer` 通过 `HTTPFacilitatorClient` 调用：
+The [x402 spec](https://github.com/coinbase/x402/blob/main/specs/x402-specification-v2.md) defines Facilitator HTTP APIs; `x402ResourceServer` calls them via `HTTPFacilitatorClient`:
 
-| 端点 | 作用 |
+| Endpoint | Role |
 |------|------|
-| `POST /verify` | 验签 + 预检，**不上链** |
-| `POST /settle` | 验签通过后，**广播链上交易** |
-| `GET /supported` | 返回支持的 scheme、网络列表 |
+| `POST /verify` | Verify + preflight — **no chain write** |
+| `POST /settle` | After verify — **broadcast on-chain tx** |
+| `GET /supported` | Supported schemes and networks |
 
-Server 将 `payment` 头解码后的 payload 与原始 `paymentRequirements`（402 里声明的金额、地址、网络）一并发给 Facilitator。
+The server sends the decoded `payment` payload plus the original `paymentRequirements` (amount, address, network from the 402).
 
-#### `/verify` 检查项（exact scheme / EVM）
+#### `/verify` checks (exact scheme / EVM)
 
-依据 [scheme_exact_evm 规范](https://github.com/x402-foundation/x402/blob/main/specs/schemes/exact/scheme_exact_evm.md)：
+Per [scheme_exact_evm](https://github.com/x402-foundation/x402/blob/main/specs/schemes/exact/scheme_exact_evm.md):
 
-1. `ecrecover` 恢复签名者 → 必须等于 `authorization.from`
-2. 链上 `balanceOf(from)` → 余额 ≥ `value`
-3. `authorization.value` == `paymentRequirements.amount`（精确金额）
+1. `ecrecover` signer → must equal `authorization.from`
+2. On-chain `balanceOf(from)` → balance ≥ `value`
+3. `authorization.value` == `paymentRequirements.amount` (exact)
 4. `authorization.to` == `paymentRequirements.payTo`
-5. 当前时间在 `[validAfter, validBefore]` 窗口内
-6. `nonce` 未被使用过（防重放）
-7. token 合约地址、network 与要求一致
-8. `eth_call` 模拟 `transferWithAuthorization(...)` → 必须成功
+5. Now within `[validAfter, validBefore]`
+6. `nonce` unused (anti-replay)
+7. Token contract and network match requirements
+8. `eth_call` simulate `transferWithAuthorization(...)` → must succeed
 
-通过返回 `{ "isValid": true, "payer": "0x..." }`；失败返回 `invalid_signature`、`insufficient_funds`、`nonce_already_used` 等。
+Success: `{ "isValid": true, "payer": "0x..." }`. Failures: `invalid_signature`, `insufficient_funds`, `nonce_already_used`, etc.
 
-#### `/settle` 链上执行
+#### `/settle` on-chain
 
-Facilitator 用自己的钱包（持有 ETH 作 gas）调用 USDC 合约：
+Facilitator’s wallet (holds ETH for gas) calls USDC:
 
 ```solidity
 USDC.transferWithAuthorization(
     from, to, value,
     validAfter, validBefore, nonce,
-    v, r, s   // 从 payload.signature 拆出
+    v, r, s   // from payload.signature
 );
 ```
 
-合约内部再次验签、检查 nonce、执行 `transfer(from → to, value)` 并标记 nonce 已消费。确认后返回交易哈希。
+The contract re-verifies the signature, checks nonce, `transfer(from → to, value)`, and consumes the nonce. Returns the tx hash.
 
 ```mermaid
 sequenceDiagram
     participant Agent
     participant Server
     participant Facilitator
-    participant USDC as USDC 合约
+    participant USDC as USDC contract
 
-    Agent->>Agent: EIP-712 签名 TransferWithAuthorization
-    Agent->>Server: GET /paid + payment 头
+    Agent->>Agent: EIP-712 sign TransferWithAuthorization
+    Agent->>Server: GET /paid + payment header
 
     Server->>Facilitator: POST /verify
-    Facilitator->>USDC: eth_call 模拟 + balanceOf
+    Facilitator->>USDC: eth_call simulate + balanceOf
     Facilitator-->>Server: isValid: true
 
     Server->>Facilitator: POST /settle
     Facilitator->>USDC: transferWithAuthorization(v,r,s)
-    USDC->>USDC: 验签 + 转账 + 消耗 nonce
+    USDC->>USDC: verify + transfer + consume nonce
     Facilitator-->>Server: tx hash
 
-    Server-->>Agent: 200 + 资源
+    Server-->>Agent: 200 + resource
 ```
 
-`paymentMiddleware` 将 verify/settle 封装在请求处理流程中，开发者通常不直接调用这两个 API。
+`paymentMiddleware` wraps verify/settle in the request path; developers rarely call these APIs directly.
 
-### 3.4 安全性质
+### 3.4 Security properties
 
-规范明确：**Facilitator 不能修改金额或收款地址**，它仅是交易广播员，替 Agent 付 gas。签名里 `to` 和 `value` 已固定，合约只按签名执行。
+Spec: the **Facilitator cannot change amount or payee** — it only broadcasts; `to` and `value` are fixed in the signature; the contract executes exactly that.
 
-| 机制 | 防什么 |
+| Mechanism | Prevents |
 |------|--------|
-| EIP-712 domain（chainId + 合约地址） | 跨链/跨合约重放签名 |
-| 一次性 nonce | 同一授权付两次 |
-| `validBefore` 时间窗 | 过期授权被滥用 |
-| exact scheme | 金额必须精确匹配 |
-| `eth_call` 模拟 | 避免广播必失败的交易 |
+| EIP-712 domain (chainId + contract) | Cross-chain / cross-contract replay |
+| One-time nonce | Paying twice with the same auth |
+| `validBefore` window | Abuse of expired auths |
+| Exact scheme | Amount must match exactly |
+| `eth_call` simulation | Broadcasting doomed txs |
 
-在 Stripe 集成中：Facilitator 完成 Agent → Stripe 充值地址的 USDC 链上转账；Stripe 监听该地址到账并 capture 对应 PaymentIntent。
+In Stripe’s integration: Facilitator moves USDC Agent → Stripe deposit address; Stripe watches that address and captures the matching PaymentIntent.
 
-## 4. Stripe 的实现要点
+## 4. Stripe implementation notes
 
-### 4.1 与开放协议的关系
+### 4.1 Relation to the open protocol
 
-需要区分两个概念：
+Two distinct layers:
 
-- **x402 协议**：开放的 HTTP 402 握手规范，Apache 2.0，不绑定厂商。
-- **Stripe Machine Payments**：Stripe 提供的托管层，负责充值地址、链上监控、PaymentIntent capture、退款与 Dashboard 报表。
+- **x402 protocol**: open HTTP 402 handshake, Apache 2.0, vendor-neutral.
+- **Stripe Machine Payments**: hosted layer — deposit addresses, chain monitoring, PaymentIntent capture, refunds, Dashboard reporting.
 
-Stripe 还另有 **MPP（Machine Payments Protocol）**——基于会话的流式支付，适合高频连续扣费；x402 则是**按请求精确付费**（exact scheme）。两者可并存，按场景选型。
+Stripe also has **MPP (Machine Payments Protocol)** — session-based streaming charges for high-frequency continuous billing. x402 is **exact per-request** payment. Both can coexist; pick by scenario.
 
-### 4.2 为什么要创建 PaymentIntent？
+### 4.2 Why create a PaymentIntent?
 
-流程图里「Server → Stripe: 创建 PaymentIntent」这一步容易让人困惑：x402 协议本身只要求 402 响应里带上金额和收款地址，为什么不能直接写死一个钱包地址？
+The “Server → Stripe: create PaymentIntent” step is easy to question: x402 only needs amount + payee in the 402 — why not a static wallet?
 
-**核心原因：Stripe 需要把链上 USDC 转账映射成一笔可追踪的 Stripe 订单。**
+**Core reason: Stripe must map an on-chain USDC transfer to a trackable Stripe order.**
 
-纯 x402（Coinbase 原生路径）可以配置静态 `payTo: "0xYourWallet"`，由 Facilitator 验证签名和链上结算，不经过任何支付网关。但一旦接入 Stripe，**PaymentIntent + deposit address** 就是它的集成方式——多这一步，换来 Dashboard 对账、自动 capture 和退款能力。
+Pure x402 (Coinbase-native) can use a static `payTo: "0xYourWallet"`; Facilitator verifies and settles with no payment gateway. With Stripe, **PaymentIntent + deposit address** is the integration — that extra step buys Dashboard reconciliation, auto-capture, and refunds.
 
-#### 动态生成专属充值地址
+#### Dynamic per-intent deposit address
 
-`paymentIntents.create` 返回的 `deposit_addresses.base.address` 是 Stripe 为**这一笔** PaymentIntent 专门分配的地址，不是商户的固定收款钱包。Agent 往这个地址打 USDC 后，Stripe 监听链上到账并自动 **capture** 对应 PI，资金进入 Stripe 余额。
+`paymentIntents.create` returns `deposit_addresses.base.address` — allocated for **this** PaymentIntent, not a fixed merchant wallet. After the agent sends USDC there, Stripe detects the deposit, **captures** the PI, and funds land in Stripe balance.
 
-#### 纳入 Stripe 账务体系
+#### Into Stripe’s ledger
 
-| 无 PaymentIntent | 有 PaymentIntent |
+| Without PaymentIntent | With PaymentIntent |
 |----------------|------------------|
-| Agent 往某地址打 USDC | Agent 往 Stripe 分配的地址打 USDC |
-| 自行扫链、对账 | Stripe 自动检测到账并 capture |
-| 无 Dashboard 记录 | Payments 页面可见 |
-| 退款需自建 | 可走 Stripe 退款流程 |
+| Agent pays some address | Agent pays Stripe-allocated address |
+| You scan the chain yourself | Stripe auto-detects and captures |
+| No Dashboard record | Visible under Payments |
+| Refunds DIY | Stripe refund flows |
 
-PaymentIntent 的 `amount` 还绑定了期望收款金额，Stripe 到账检测时会校验该地址应收多少 USDC，避免少付、多付混乱。
+The PI `amount` also binds expected USDC so deposit detection can check the right amount and avoid under/overpay chaos.
 
-#### 防止伪造收款地址
+#### Anti-forged payee
 
-`createPayToAddress` 在客户端重试时从 `payment` 头解码 `authorization.to`，并与服务端缓存比对——只有**本服务器最近通过 Stripe 创建过 PI 的地址**才合法，攻击者无法把随机地址塞进 payment 头骗过验证。
+On retry, `createPayToAddress` decodes `authorization.to` from the `payment` header and compares to server cache — only addresses **this server recently created via Stripe** are valid. Attackers cannot stuff a random address into the payment header.
 
-#### 与纯 x402 的对比
+#### vs pure x402
 
 ```
-纯 Coinbase x402:  payTo = 静态钱包 → Facilitator 验证 → 完成
-Stripe x402:       payTo = PI 动态地址 → Facilitator 验证 → Stripe capture PI → 完成
+Pure Coinbase x402:  payTo = static wallet → Facilitator verify → done
+Stripe x402:         payTo = PI dynamic address → Facilitator verify → Stripe capture PI → done
 ```
 
-一句话：**402 响应里的 `payTo` 不是随便写的钱包，而是 Stripe 说「往这个地址打钱，我会认账」。**
+In short: **`payTo` in the 402 is not a random wallet — it is Stripe saying “pay this address and I will recognize the funds.”**
 
-### 4.3 技术栈
+### 4.3 Stack
 
-| 组件 | 作用 |
+| Component | Role |
 |------|------|
-| `@x402/hono` / `@x402/express` | 框架中间件，拦截路由、返回 402、校验 payment 头 |
-| `@x402/core/server` | `HTTPFacilitatorClient`、`x402ResourceServer` |
-| `@x402/evm/exact/server` | EVM 链「精确金额」支付 scheme |
-| Stripe SDK `2026-03-04.preview` | 创建 crypto PaymentIntent，获取充值地址 |
+| `@x402/hono` / `@x402/express` | Framework middleware: intercept routes, return 402, validate `payment` |
+| `@x402/core/server` | `HTTPFacilitatorClient`, `x402ResourceServer` |
+| `@x402/evm/exact/server` | EVM “exact amount” scheme |
+| Stripe SDK `2026-03-04.preview` | Create crypto PaymentIntent, get deposit address |
 
-### 4.4 `createPayToAddress`：动态收款地址
+### 4.4 `createPayToAddress`: dynamic payee
 
-Stripe 模式下，`payTo` 不是写死的钱包地址，而是一个**异步函数**：
+Under Stripe, `payTo` is not a hardcoded wallet — it is an **async function**:
 
-1. **首次请求**：调用 `stripe.paymentIntents.create`，`payment_method_types: ["crypto"]`，`mode: "deposit"`，指定 `networks: ["base"]`；从 `next_action.crypto_display_details.deposit_addresses.base.address` 取出充值地址。
-2. **重试/验证请求**：从 `payment` 头解码出 `authorization.to`，与缓存中的地址比对，防止伪造收款方。
-3. **缓存**：示例用 `node-cache`（TTL 5 分钟）；生产环境应换 Redis 等分布式缓存。
+1. **First request**: `stripe.paymentIntents.create` with `payment_method_types: ["crypto"]`, `mode: "deposit"`, `networks: ["base"]`; read address from `next_action.crypto_display_details.deposit_addresses.base.address`.
+2. **Retry / verify**: decode `authorization.to` from `payment` and match cache — block forged payees.
+3. **Cache**: sample uses `node-cache` (TTL 5 min); production should use Redis (or similar).
 
 ```typescript
 const paymentIntent = await stripe.paymentIntents.create({
@@ -265,9 +265,9 @@ const paymentIntent = await stripe.paymentIntents.create({
 });
 ```
 
-链上到账后，Stripe 自动 capture 对应 PaymentIntent，资金进入 Stripe 余额。
+After on-chain deposit, Stripe auto-captures the PaymentIntent into Stripe balance.
 
-### 4.5 中间件配置
+### 4.5 Middleware config
 
 ```typescript
 app.use(
@@ -275,10 +275,10 @@ app.use(
     {
       "GET /paid": {
         accepts: [{
-          scheme: "exact",           // 精确金额
-          price: "$0.01",            // 每次请求 $0.01
-          network: "eip155:84532",   // Base Sepolia 测试网
-          payTo: createPayToAddress, // 动态地址
+          scheme: "exact",           // exact amount
+          price: "$0.01",            // $0.01 per request
+          network: "eip155:84532",   // Base Sepolia
+          payTo: createPayToAddress, // dynamic address
         }],
         description: "Data retrieval endpoint",
         mimeType: "application/json",
@@ -292,68 +292,68 @@ app.use(
 );
 ```
 
-网络标识使用 [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md) 格式：`eip155:84532`（Base Sepolia）、`eip155:8453`（Base 主网）。
+Networks use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md): `eip155:84532` (Base Sepolia), `eip155:8453` (Base mainnet).
 
-### 4.6 支持的网络与代币
+### 4.6 Supported networks and tokens
 
-Stripe crypto PaymentIntent（deposit 模式）当前支持：
+Stripe crypto PaymentIntent (deposit mode) currently supports:
 
-| 网络 | 代币 | 合约地址 |
+| Network | Token | Contract |
 |------|------|----------|
 | Base | USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 | Solana | USDC | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
 | Tempo | USDC | `0x20c000000000000000000000b9537d11c60e8b50` |
 
-### 4.7 接入前提
+### 4.7 Prerequisites
 
-1. Stripe 账户已开通 **Stablecoins and Crypto** 支付方式（Dashboard 申请，美国商户可用；客户全球可用稳定币付款）。
-2. 环境变量：`STRIPE_SECRET_KEY`、`FACILITATOR_URL`。
-3. API 版本：`2026-03-04.preview`。
+1. Stripe account with **Stablecoins and Crypto** enabled (Dashboard application; US merchants; customers worldwide can pay with stablecoins).
+2. Env: `STRIPE_SECRET_KEY`, `FACILITATOR_URL`.
+3. API version: `2026-03-04.preview`.
 
-测试：无 payment 头时 `curl -iv http://localhost:4242/paid` 应得 402；可用 Stripe 的 `purl` 工具模拟完整客户端流程。沙箱环境不监听测试网链上交易，需用 test helper 模拟充值。
+Test: `curl -iv http://localhost:4242/paid` without a payment header should return 402; Stripe’s `purl` can simulate the full client flow. Sandbox does not watch testnet chain activity — use test helpers to simulate deposits.
 
-## 5. Coinbase 侧：Agent.market 与代理经济
+## 5. Coinbase side: Agent.market and the agent economy
 
-Coinbase 孵化的 x402 生态推出了 **[Agent.market](https://agent.market)**——统一的 AI Agent 应用商店，聚合推理、数据、搜索、媒体、基础设施、社交、交易等类别的工具与 API。
+Coinbase’s x402 ecosystem launched **[Agent.market](https://agent.market)** — a unified AI agent app store for inference, data, search, media, infra, social, trading, and more.
 
-**代理经济的运作方式：**
+**How the agent economy works:**
 
-- **按量计费**：Agent 调用 API、检索数据、使用算力时实时扣费。
-- **订阅模型**：高频工作负载可选用包月/包量。
-- **Agentic Premium**：高价值 AI 服务的分级定价。
+- **Usage billing**: agents pay in real time for API calls, data, compute.
+- **Subscriptions**: monthly/volume plans for high-frequency workloads.
+- **Agentic Premium**: tiered pricing for high-value AI services.
 
-**生态集成方**包括 OpenAI、Bloomberg、CoinGecko、LinkedIn、X、AWS Lambda 等，Agent 可在同一平台串联多工具完成复杂任务。
+**Integrations** include OpenAI, Bloomberg, CoinGecko, LinkedIn, X, AWS Lambda, etc. — agents can chain tools on one platform.
 
-**网络规模（截至 2026 年初报道）：** 约 69,000 活跃 Agent，累计 1.65 亿+ 笔交易，总交易量约 $5,000 万。Stripe 入局进一步把 x402 从加密原生场景推向主流支付基础设施。
+**Scale (early 2026 reports):** ~69,000 active agents, 165M+ transactions, ~$50M volume. Stripe’s entry pushes x402 from crypto-native niches into mainstream payment rails.
 
-## 6. x402 vs 其他 Agent 支付方案
+## 6. x402 vs other agent payment options
 
-| 维度 | x402 | Stripe MPP | 传统 API Key |
+| Dimension | x402 | Stripe MPP | Traditional API key |
 |------|------|------------|--------------|
-| 付费粒度 | 按请求微支付 | 会话内流式扣费 | 订阅/配额 |
-| 开放程度 | 开放协议，多 Facilitator | Stripe 托管 | 各平台私有 |
-| 身份要求 | 钱包签名即可 | Stripe 账户体系 | 注册 + Key |
-| 合规/对账 | 需自建或选 Stripe 层 | Dashboard 内置 | 平台负责 |
-| 典型场景 | 单次 API 调用 $0.01 | 长时间 Agent 会话 | 人类开发者 |
+| Granularity | Per-request micropay | Streaming within a session | Subscription / quota |
+| Openness | Open protocol, many facilitators | Stripe-hosted | Per-platform proprietary |
+| Identity | Wallet signature | Stripe accounts | Register + key |
+| Compliance / books | DIY or Stripe layer | Built into Dashboard | Platform-owned |
+| Typical use | Single API call at $0.01 | Long agent sessions | Human developers |
 
-Google 的 Pay.sh（Solana + x402 SDK）是另一条路线：代理 HTTP 请求、注入 402 握手、用 Solana USDC 结算，适合已部署在 Google Cloud 的 Agent 工作流。
+Google’s Pay.sh (Solana + x402 SDK) is another path: proxy HTTP, inject 402 handshake, settle in Solana USDC — fits agents already on Google Cloud.
 
-## 7. 机遇与挑战
+## 7. Opportunities and challenges
 
-**机遇：**
+**Opportunities:**
 
-- Agent 成为独立经济参与者，7×24 自主购买算力、数据、工具。
-- USDC 提供价格稳定，Base 提供低 gas、亚秒级确认。
-- 无需重构现有 HTTP API，加一层中间件即可 monetize。
+- Agents as economic actors — buy compute, data, and tools 24/7.
+- USDC for price stability; Base for low gas and sub-second confirmation.
+- Monetize existing HTTP APIs with middleware — no full rewrite.
 
-**挑战：**
+**Challenges:**
 
-- 退款与争议：全自动场景下的纠纷处理尚无成熟范式。
-- 合规：制裁地址筛查、KYC/AML 在纯链上路径中需额外设计。
-- 安全：动态充值地址缓存、Facilitator 信任、Agent 钱包私钥管理。
-- 测试与主网：沙箱不监听测试网，主网需对接支持主网的 Facilitator。
+- Refunds and disputes: no mature pattern for fully automated flows yet.
+- Compliance: sanctions screening, KYC/AML need extra design on pure on-chain paths.
+- Security: dynamic deposit-address cache, Facilitator trust, agent wallet key management.
+- Test vs mainnet: sandbox does not watch testnets; mainnet needs a mainnet-capable Facilitator.
 
-## 8. 最小可运行示例结构
+## 8. Minimal runnable layout
 
 ```
 stripe-samples/machine-payments/
@@ -362,27 +362,27 @@ stripe-samples/machine-payments/
 └── package.json       # @x402/hono, @x402/core, @x402/evm, stripe
 ```
 
-核心依赖关系：
+Dependency shape:
 
 ```
 paymentMiddleware(routes, x402ResourceServer)
-    ├── routes: 定价 + payTo 地址解析
-    ├── x402ResourceServer: 注册 network → scheme 处理器
-    └── HTTPFacilitatorClient: 连接 Facilitator 验证/结算
+    ├── routes: pricing + payTo resolution
+    ├── x402ResourceServer: register network → scheme handler
+    └── HTTPFacilitatorClient: Facilitator verify / settle
 ```
 
-## 9. 结论
+## 9. Conclusion
 
-x402 把「付费墙」变成了 HTTP 原生能力：服务端说「402，请先付 $0.01 USDC」，Agent 自动签名、付款、重试，全程无需人类点击确认。Stripe 的价值在于**用 PaymentIntent 和 Dashboard 承接运营复杂度**（地址管理、到账检测、capture、报表），开发者仍用熟悉的 Stripe 工作流；Coinbase 则用 Agent.market 把协议扩展为可发现、可计费的 Agent 服务市场。
+x402 turns the paywall into a native HTTP capability: the server says “402, pay $0.01 USDC first”; the agent signs, pays, and retries — no human click. Stripe’s value is **absorbing ops complexity with PaymentIntents and the Dashboard** (addresses, deposit detection, capture, reporting) while developers keep familiar Stripe workflows. Coinbase extends the protocol into a discoverable, billable agent service market via Agent.market.
 
-对构建自主 Agent 的开发者，x402 是目前最轻量的「按次付费 API」路径之一；若已在 Stripe 生态内，官方 quickstart 可在数十行代码内跑通 Base Sepolia 测试流程。
+For builders of autonomous agents, x402 is one of the lightest pay-per-call API paths today; if you are already on Stripe, the official quickstart can run a Base Sepolia flow in a few dozen lines.
 
-## 参考链接
+## References
 
 - [Stripe x402 Quickstart](https://docs.stripe.com/payments/machine/x402/quickstart)
-- [Stripe x402 概述](https://docs.stripe.com/payments/machine/x402)
-- [BitKan：什么是 Stripe 的 x402 协议](https://bitkan.com/zh/learn/%E4%BB%80%E4%B9%88%E6%98%AFstripe%E7%9A%84x402%E5%8D%8F%E8%AE%AE-%E5%AE%83%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0ai%E4%BB%A3%E7%90%86%E6%94%AF%E4%BB%98-71597)
-- [BitKan：Coinbase x402 代理市场解析](https://bitkan.com/zh/learn/coinbase-x402-%E4%BB%A3%E7%90%86%E5%B8%82%E5%9C%BA%E8%A7%A3%E6%9E%90-%E5%85%B6%E4%BB%A3%E7%90%86%E7%BB%8F%E6%B5%8E%E5%A6%82%E4%BD%95%E8%BF%90%E4%BD%9C-73420)
+- [Stripe x402 overview](https://docs.stripe.com/payments/machine/x402)
+- [BitKan: What is Stripe’s x402 protocol](https://bitkan.com/zh/learn/%E4%BB%80%E4%B9%88%E6%98%AFstripe%E7%9A%84x402%E5%8D%8F%E8%AE%AE-%E5%AE%83%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0ai%E4%BB%A3%E7%90%86%E6%94%AF%E4%BB%98-71597)
+- [BitKan: Coinbase x402 agent marketplace](https://bitkan.com/zh/learn/coinbase-x402-%E4%BB%A3%E7%90%86%E5%B8%82%E5%9C%BA%E8%A7%A3%E6%9E%90-%E5%85%B6%E4%BB%A3%E7%90%86%E7%BB%8F%E6%B5%8E%E5%A6%82%E4%BD%95%E8%BF%90%E4%BD%9C-73420)
 - [stripe-samples/machine-payments](https://github.com/stripe-samples/machine-payments)
-- [x402 规范 v2](https://github.com/coinbase/x402/blob/main/specs/x402-specification-v2.md)
+- [x402 specification v2](https://github.com/coinbase/x402/blob/main/specs/x402-specification-v2.md)
 - [exact scheme on EVM](https://github.com/x402-foundation/x402/blob/main/specs/schemes/exact/scheme_exact_evm.md)

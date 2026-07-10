@@ -1,57 +1,58 @@
 ---
-title: "Merkle 叶子哈希、域分离与稀疏树证明（MerkleDropHelper）"
+title: "Merkle leaf hashing, domain separation, and sparse proofs (MerkleDropHelper)"
 date: 2022-09-15
 draft: false
 tags: ["cryptography", "ethereum", "merkle", "security"]
+author: Ron
 ---
 
-## 结论速记
+## TL;DR
 
-- **关键不是“多 hash 一次更强”**：`keccak256(keccak256(...))` 的主要价值在于**域分离（domain separation）**，让“叶子哈希”和“内部节点哈希”的构造形状不同，避免 Merkle 结构里的“角色混淆”讨论。
-- **更标准**：显式前缀（leaf/internal）通常比 `~hash` 或双 keccak 更容易被审计/跨语言实现接受。
-- **验证端必须逐字对齐**：叶子公式、内部节点哈希顺序（是否排序）、稀疏缺失节点默认值（0）必须完全一致。
+- **The point is not “hash twice = stronger”**: the main value of `keccak256(keccak256(...))` is **domain separation** — leaf hashes and internal-node hashes have different construction shapes, which avoids “role confusion” between leaves and internal nodes in Merkle trees.
+- **More standard**: explicit prefixes (`leaf` / `internal`) are usually easier for auditors and cross-language ports than `~hash` or double keccak.
+- **Verifier must match byte-for-byte**: leaf formula, internal hash order (sorted or not), and sparse missing-node default (`0`) must be identical on both sides.
 
-## `keccak256(keccak256(abi.encode(member, amount)))` 是否足以避免 second preimage？
+## Is `keccak256(keccak256(abi.encode(member, amount)))` enough against second preimage?
 
-在 Merkle 语境里，大家常担心的不是去破 Keccak 的 preimage，而是：
+In Merkle trees, the usual worry is not breaking Keccak’s preimage resistance. It is:
 
-- 叶子与内部节点若缺少明确区分，理论上会讨论“能否拿某个内部节点值来冒充叶子值”造成**叶子/内部节点角色混淆**。
+- If leaves and internal nodes are not clearly distinguished, one can discuss whether an **internal node value could be passed off as a leaf** — **leaf / internal role confusion**.
 
-若内部节点固定为：
+If internal nodes are fixed as:
 
 ```solidity
 parent = keccak256(abi.encode(min(left, right), max(left, right)));
 ```
 
-那么把叶子定义成：
+and leaves are:
 
 ```solidity
 leaf = keccak256(keccak256(abi.encode(member, amount)));
 ```
 
-通常可视为足够的**域分离**：叶子是“对 32 字节 digest 再 hash”，内部节点是“对两个 digest（排序后）再 hash”，两者在构造形态上可区分。
+that is usually enough **domain separation**: a leaf is “hash of a 32-byte digest again”; an internal node is “hash of two digests (sorted)”. The construction shapes differ.
 
-更常见、更直观的域分离写法是显式前缀：
+A clearer, more common form uses explicit prefixes:
 
 ```solidity
 leaf   = keccak256(abi.encodePacked(uint8(0x00), member, amount));
 parent = keccak256(abi.encodePacked(uint8(0x01), min(left,right), max(left,right)));
 ```
 
-## `MerkleDropHelper` 代码解读（稀疏 + 排序哈希）
+## Reading `MerkleDropHelper` (sparse + sorted hashing)
 
 ### `constructTree(members, claimAmounts)`
 
-- **树高**：不断把 \(n\) 变成 \(\lceil n/2 \rceil\) 直到 0，得到层数 `height`。
-- **叶子层**：每个叶子为：
+- **Height**: repeatedly replace \(n\) with \(\lceil n/2 \rceil\) until 0 → layer count `height`.
+- **Leaf layer**: each leaf is:
 
 ```solidity
 nodes[i] = ~keccak256(abi.encode(members[i], claimAmounts[i]));
 ```
 
-`~`（按位取反）是一个“与内部节点区分开”的技巧（非标准，但能达到域分离目标的一种实现）。
+`~` (bitwise NOT) is a non-standard trick to distinguish leaves from internal nodes — another way to get domain separation.
 
-- **内部节点**：缺失的右孩子视为 `bytes32(0)`（稀疏），并且兄弟始终按排序顺序哈希：
+- **Internal nodes**: missing right child is `bytes32(0)` (sparse); siblings are always hashed in sorted order:
 
 ```solidity
 hashes[i / 2] = keccak256(a > b ? abi.encode(b, a) : abi.encode(a, b));
@@ -59,19 +60,19 @@ hashes[i / 2] = keccak256(a > b ? abi.encode(b, a) : abi.encode(a, b));
 
 ### `createProof(memberIndex, tree)`
 
-- `memberIndex` 是叶子数组中的下标。
-- 每层取兄弟下标：偶数取 `+1`，奇数取 `-1`；越界则该层 sibling 为 `0`（稀疏默认值）。
-- `leafIndex /= 2` 上移继续。
+- `memberIndex` is the index in the leaf array.
+- Each layer: sibling index is `+1` if even, `-1` if odd; out of range → sibling `0` (sparse default).
+- `leafIndex /= 2` and climb.
 
-### 验证端必须满足的三条
+### Three rules the verifier must obey
 
-要写 `verify(member, amount, index, proof, root)`，必须与建树逻辑一致：
+A `verify(member, amount, index, proof, root)` must match tree construction:
 
-- 叶子：同一公式（这里是 `~keccak256(abi.encode(...))`；若你换成双 keccak/前缀，两端一起换）。
-- 父节点：同样的 sibling 排序规则。
-- 缺失 sibling：按 `0` 参与计算。
+- **Leaf**: same formula (here `~keccak256(abi.encode(...))`; if you switch to double keccak / prefixes, change both ends together).
+- **Parent**: same sibling sort rule.
+- **Missing sibling**: treat as `0` in the hash.
 
-## `MerkleDropHelper` 源码
+## `MerkleDropHelper` source
 
 ```solidity
 contract MerkleDropHelper {
@@ -149,4 +150,3 @@ contract MerkleDropHelper {
     }
 }
 ```
-
