@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Notes: LMD GHOST + Casper FFG (Eth2Book Capella §2.3.3–2.3.4)</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Ron's Notes"/><meta property="og:title" content="Notes: LMD GHOST + Casper FFG (Eth2Book Capella §2.3.3–2.3.4)"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Notes: LMD GHOST + Casper FFG (Eth2Book Capella §2.3.3–2.3.4)"/><meta name="twitter:description" content="Bilingual study notes on §2.3.3 LMD Ghost and §2.3.4 Casper FFG (Ben Edgington, Capella). Section summaries only — not a full translation."/><meta property="og:description" content="Bilingual study notes on §2.3.3 LMD Ghost and §2.3.4 Casper FFG (Ben Edgington, Capella). Section summaries only — not a full translation."/><meta property="og:image:alt" content="Bilingual study notes on §2.3.3 LMD Ghost and §2.3.4 Casper FFG (Ben Edgington, Capella). Section summaries only — not a full translation."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/post/2024-05-12-eth2book-lmd-ghost-casper-ffg"/><meta property="twitter:url" content="https://yrong.github.io/notes/post/2024-05-12-eth2book-lmd-ghost-casper-ffg"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="Bilingual study notes on §2.3.3 LMD Ghost and §2.3.4 Casper FFG (Ben Edgington, Capella). Section summaries only — not a full translation."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/post/2024-05-12-eth2book-lmd-ghost-casper-ffg-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/post/2024-05-12-eth2book-lmd-ghost-casper-ffg-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/post/2024-05-12-eth2book-lmd-ghost-casper-ffg-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="post/2024-05-12-eth2book-lmd-ghost-casper-ffg" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Ron's Notes</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; !b2.isFolder) {\n      const dateA = a2.data?.date ? new Date(a2.data.date).getTime() : 0;\n      const dateB = b2.data?.date ? new Date(b2.data.date).getTime() : 0;\n      if (dateA !== dateB) {\n        return dateB - dateA;\n      }\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-76" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-76" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../post/">post</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Notes: LMD GHOST + Casper FFG (Eth2Book Capella §2.3.3–2.3.4)</a></div></nav><h1 class="article-title">Notes: LMD GHOST + Casper FFG (Eth2Book Capella §2.3.3–2.3.4)</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../tags/blockchain" class="internal internal-link tag-link">blockchain</a><span class="note-properties-separator">, </span><a href="../tags/ethereum" class="internal internal-link tag-link">ethereum</a><span class="note-properties-separator">, </span><a href="../tags/consensus" class="internal internal-link tag-link">consensus</a><span class="note-properties-separator">, </span><a href="../tags/eth2" class="internal internal-link tag-link">eth2</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2024-05-11T16:20:00.000Z">May 11, 2024</time><span>22 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p>Bilingual study notes on <a href="https://eth2book.info/capella/part2/consensus/lmd_ghost/" class="external external-link">§2.3.3 LMD Ghost<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> and <a href="https://eth2book.info/capella/part2/consensus/casper_ffg/" class="external external-link">§2.3.4 Casper FFG<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> (Ben Edgington, Capella). Section summaries only — not a full translation. Gasper / proposer boost deferred.</p>
+
+<h1 id="english">English<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#english" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="tldr">TL;DR<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#tldr" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>LMD GHOST</strong> = fork choice: pick the best head from local blocks + attestations; GHOST follows the heaviest subtree; LMD tallies only each validator’s latest head vote.</li>
+<li><strong>LMD ≠ forgiveness</strong>: fork choice may use only the latest vote; conflicting signed messages remain <strong>slashable</strong>.</li>
+<li><strong>Casper FFG</strong> = finality gadget: justify → finalize checkpoints; classical safety when &lt; 1/3 adversarial; conflicting finals priced by <strong>accountable safety</strong> (≥ ~1/3 stake slashable).</li>
+<li>One attestation, three votes: <code>beacon_block_root</code> (LMD) + <code>source</code>/<code>target</code> (FFG).</li>
+</ul>
+<h2 id="1-naming">1. Naming<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-naming" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Piece</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>GHOST</strong></td><td><em>Greedy Heaviest-Observed Sub-Tree</em> (Sompolinsky &amp; Zohar, 2013) — more stable under latency than longest-chain</td></tr><tr><td><strong>LMD</strong></td><td><em>Latest Message Driven</em> — fork choice driven by attestations (messages), keeping only each validator’s newest vote</td></tr></tbody></table></div>
+<p><strong>Related variants (not Ethereum’s production rule):</strong> IMD (all attestations at their time), FMD (current + previous epoch only), RLMD (latest vote expires after <em>N</em> epochs).</p>
+<p>In PoW, “votes” are proposers building on a tip. In Ethereum PoS, <strong>every validator</strong> attests ~once per epoch (~every 6.4 minutes on average), so the network has far denser view information.</p>
+<h2 id="2-role-in-consensus">2. Role in consensus<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-role-in-consensus" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LMD GHOST is a <strong>fork choice rule</strong> (like Nakamoto’s heaviest/longest chain): given a block tree and votes, output a head → linear history back to a root.</p>
+<ul>
+<li>View is <strong>local</strong> (your Store) — no global God’s eye.</li>
+<li>Honest nodes build and attest on the best head they see.</li>
+<li>Desiderata: majority-honest progress, stability (good predictor of future head), manipulation resistance.</li>
+</ul>
+<p>Happy path here; failure modes → Issues and Fixes; FFG → §11.</p>
+<h2 id="3-latest-messages-the-lmd-part">3. Latest messages (the LMD part)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-latest-messages-the-lmd-part" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="where-the-vote-lives">Where the vote lives<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#where-the-vote-lives" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>In attestation data, the LMD vote is <code>beacon_block_root</code>:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="python" data-theme="github-light github-dark"><code data-language="python" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> AttestationData</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Container</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">):</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    slot: Slot</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    index: CommitteeIndex</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    beacon_block_root: Root   </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># LMD GHOST vote</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    source: Checkpoint        </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># FFG</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    target: Checkpoint        </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># FFG</span></span></code></pre></figure>
+<ul>
+<li>Each validator attests once per epoch (one assigned slot); ~1/32 of the set per slot.</li>
+<li>Votes arrive via attestation gossip and inside blocks.</li>
+</ul>
+<h3 id="store-updates-on_attestation">Store updates (<code>on_attestation</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#store-updates-on_attestation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Before recording a vote, basic checks (among others):</p>
+<ul>
+<li>Not too old (current/previous epoch) or too new (no later than previous slot)</li>
+<li>Voted block is known</li>
+<li>Signature OK; not slashably conflicting</li>
+</ul>
+<p>Then <code>update_latest_messages()</code>: keep <strong>one</strong> latest head vote per validator (newer replaces older).</p>
+<p><strong>Key property:</strong> a vote must be <em>heard</em> soon after it is made to enter the Store, but once stored it <strong>persists indefinitely</strong> until a newer vote replaces it (unlike Goldfish / RLMD).</p>
+<h2 id="4-finding-the-head-the-ghost-part">4. Finding the head (the GHOST part)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-finding-the-head-the-ghost-part" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>GetHead(Store) → HeadBlock</code>. Relevant Store pieces:</p>
+<ul>
+<li>Block tree (parent links)</li>
+<li>Latest messages</li>
+<li>Effective balances (vote weights; usually 32 ETH max)</li>
+</ul>
+<p>Algorithm starts from a <strong>root</strong> (genesis in pure GHOST; <strong>last justified checkpoint</strong> in full Ethereum Gasper) and ignores blocks not descending from it.</p>
+<h3 id="weights">Weights<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#weights" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Vote weight</strong> for a block = sum of effective balances of validators whose <strong>latest</strong> head vote points at that block.</li>
+<li><strong>Branch / subtree weight</strong> = votes for the root block <strong>plus</strong> weights of child branches<br/>
+→ a vote for a descendant also supports all ancestors.</li>
+</ul>
+<h3 id="walk">Walk<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#walk" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>From the root, recursively take the <strong>heaviest child branch</strong>. Ties → highest child block hash (arbitrary). Stop at a leaf → that leaf is the head.</p>
+<p><strong>Contrast with longest chain:</strong> longest chain might pick a deep minority branch; GHOST picks the branch with greatest <strong>total</strong> validator support (e.g. prefer (A \leftarrow C \leftarrow E) over a longer thin branch ending at (G)).</p>
+<p>Spec entry points: <code>get_head()</code>, <code>get_weight()</code> (production <code>get_weight</code> also includes <strong>proposer boost</strong> — a temporary weight bump for the current slot’s block, to blunt balance attacks; deferred).</p>
+<h2 id="5-why-ghost-over-longest-chain">5. Why GHOST over longest chain?<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-why-ghost-over-longest-chain" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>When propagation latency ≈ slot time, forks are common and not everyone sees every block in time. Votes on different children of the same parent still confirm support for the <strong>parent’s</strong> branch. GHOST keeps that information; longest chain throws it away and can let a deep <strong>minority</strong> branch win (more blocks ≠ more stake).</p>
+<h2 id="6-confirmation-rule-not-finality">6. Confirmation rule (not finality)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-confirmation-rule-not-finality" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LMD GHOST alone does <strong>not</strong> finalize. A research confirmation rule (Asgaonkar) can say a block is <strong>safe</strong> under synchrony:</p>
+<ul>
+<li>(q_b^n) = weight of subtree at (b) at slot (n) / total vote weight cast since (b) was produced<br/>
+(e.g. 80% of post-(b) votes on (b)’s subtree → (q = 0.8))</li>
+<li>(q_{\min} = \tfrac{1}{2} + \beta) where (\beta) is assumed adversarial stake fraction ((&lt; \tfrac{1}{3}))</li>
+<li>If (q > q_{\min}) for (b) and all non-finalized ancestors → <strong>confirmed</strong></li>
+</ul>
+<p>Idea: once a branch has a durable majority of available weight, honest validators keep voting for it. (\beta) pads against dishonest vote-switching; still needs network synchrony. Integration with FFG and proposer boost adds subtleties (see paper). Clients: aimed at <strong>safe block</strong> API; not universally shipped when the chapter was written.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>Confirmation</th><th>Finality</th></tr></thead><tbody><tr><td>Time</td><td>~1 slot ideal; usually &lt; ~1 min</td><td>≥ 2 epochs (~13 min)</td></tr><tr><td>Assumptions</td><td>Stay synchronous until finality</td><td>No synchrony assumption</td></tr><tr><td>Breakage</td><td>Reorg if synchrony fails</td><td>Conflicting finality if > 1/3 slashable</td></tr></tbody></table></div>
+<h2 id="7-incentives">7. Incentives<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-incentives" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>Proposers:</strong> implicit — build on wrong head → orphan → lose block rewards.</li>
+<li><strong>Attesters:</strong> explicit micro-reward for accurate head vote included in the <strong>next</strong> slot (~22% of a perfect validator’s rewards). Proposers get a cut for including those attestations.</li>
+<li>Accurate = matches what becomes canonical (including correctly voting a skip).</li>
+<li><strong>No penalty</strong> for wrong/missed head votes (removed in Altair; stress/late blocks make head voting hard).</li>
+</ul>
+<h2 id="8-slashing-nothing-at-stake">8. Slashing (nothing at stake)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-slashing-nothing-at-stake" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>PoS signing is cheap → temptation to vote on every fork. <strong>Slash</strong> on cryptographic proof of contradictory signed messages: burn stake + eject.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Kind</th><th>What is punished</th><th>Proof</th></tr></thead><tbody><tr><td><strong>Proposer</strong></td><td>Two blocks in the same slot</td><td><code>ProposerSlashing</code> = two signed headers</td></tr><tr><td><strong>Attester</strong></td><td>Equivocation or FFG commandment break (double / surround)</td><td><code>AttesterSlashing</code> = two conflicting signed attestations</td></tr></tbody></table></div>
+<p>Detection is out-of-band (clients / slashers); a later proposer includes the proof and is rewarded.</p>
+<h2 id="9-history-one-line">9. History (one line)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-history-one-line" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Zamfir’s Casper CBC / “Friendly Ghost” → Eth2 mini-spec switched IMD → <strong>LMD GHOST</strong> (Nov 2018) for stability → today’s shape, wrapped by Gasper + proposer boost.</p>
+<h2 id="10-bridge-lmd-vs-ffg-vs-slashing-and-polkadot">10. Bridge: LMD vs FFG vs slashing (and Polkadot)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-bridge-lmd-vs-ffg-vs-slashing-and-polkadot" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="two-layers-in-one-attestation">Two layers in one attestation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#two-layers-in-one-attestation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Field</th><th>Layer</th><th>Role</th></tr></thead><tbody><tr><td><code>beacon_block_root</code></td><td>LMD GHOST</td><td>Current <strong>head</strong></td></tr><tr><td><code>source</code></td><td>Casper FFG</td><td>Highest <strong>justified</strong> known (round-2 hard commit)</td></tr><tr><td><code>target</code></td><td>Casper FFG</td><td>Next checkpoint to justify (round-1 soft commit)</td></tr></tbody></table></div>
+<p>LMD updates the tip every slot (~12s). FFG works on <strong>epoch checkpoints</strong> (32 slots ≈ 6.4 min). Detail in §11.</p>
+<h3 id="latest-message">“Latest message”<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#latest-message" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>Store: <strong>one</strong> latest head vote per validator; newer (by slot) replaces older in LMD weights.</li>
+<li>Older votes may already count in FFG history; an offline validator’s last vote <strong>keeps weighting</strong> until replaced.</li>
+</ul>
+<h3 id="lmd-tolerance--no-slashing">LMD tolerance ≠ no slashing<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lmd-tolerance--no-slashing" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Concern</th><th>Fork choice (LMD)</th><th>Protocol law</th></tr></thead><tbody><tr><td>Conflicting signed messages</td><td>Tally <strong>latest</strong> only</td><td>Still <strong>slashable</strong> on-chain</td></tr><tr><td>Same slot, two heads</td><td>Latest for weights</td><td>Attestation equivocation</td></tr><tr><td>Surround / double FFG</td><td>—</td><td>Casper commandments (§11)</td></tr><tr><td>Two blocks in one slot</td><td>—</td><td>Proposer slashing</td></tr></tbody></table></div>
+<p>Slash sketch: immediate penalty → forced exit (~36 days) → <strong>correlation penalty</strong> (solo cheap; mass simultaneous can burn up to 32 ETH).</p>
+<h3 id="vs-polkadot-babe--grandpa">vs Polkadot (BABE + GRANDPA)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#vs-polkadot-babe--grandpa" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>Ethereum (Gasper)</th><th>Polkadot</th></tr></thead><tbody><tr><td>Tip</td><td>LMD GHOST</td><td>BABE fork choice</td></tr><tr><td>Finality</td><td>Casper FFG (~2 epochs typical)</td><td>GRANDPA (async rounds; often ~12–60s)</td></tr><tr><td>Double vote</td><td>Slash when proven; LMD still tallies latest</td><td>GRANDPA equivocation → slash (no latest-wins soft landing)</td></tr></tbody></table></div>
+<p>GRANDPA rounds ≠ BABE’s 6s slot: a round ends at ≥ 2/3 pre-vote/pre-commit; under stress it can stall then <strong>batch-finalize</strong>.</p>
+<h2 id="11-casper-ffg-234">11. Casper FFG (<a href="https://eth2book.info/capella/part2/consensus/casper_ffg/" class="external external-link">§2.3.4<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-casper-ffg-234" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="why-it-exists">Why it exists<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#why-it-exists" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>LMD alone never forbids a competing branch forever. <strong>Casper FFG</strong> is a <strong>finality gadget</strong> on tip consensus: checkpoints honest nodes will not revert when &lt; 1/3 adversarial, plus <strong>accountable safety</strong> if conflicting finals appear.</p>
+<p>Two ideas: <strong>two-phase commit</strong> (justify → finalize) and <strong>accountable safety</strong> (slash commandment breakers).</p>
+<h3 id="naming--place">Naming &amp; place<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#naming--place" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Casper</strong> from Zamfir’s “Friendly Ghost” lineage; Vitalik’s <strong>FFG</strong> = <em>Friendly Finality Gadget</em> — not CBC/TFG, and <strong>does not use GHOST</strong>.</li>
+<li>Meta-protocol on top of underlying chain consensus (here LMD); the paper barely discusses the base chain.</li>
+</ul>
+<p>Async BFT: (n > 3f) → tolerate &lt; <strong>1/3</strong> faulty/adversarial stake.</p>
+<h3 id="epochs-checkpoints-votes">Epochs, checkpoints, votes<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#epochs-checkpoints-votes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>Epoch = 32 slots. Each validator attests <strong>once per epoch</strong> (assigned to one slot via committees / RANDAO) → ~1/32 of the set votes each slot. Same attestation carries FFG + LMD votes.</li>
+<li>Per-validator: one attestation / epoch. Network-wide: every slot has an on-duty committee refreshing LMD head weight; their <code>source</code>/<code>target</code> usually aim at the <strong>same epoch-boundary checkpoint</strong>.</li>
+<li><strong>Checkpoint</strong> = first slot of an epoch (slot (32N)) + block root. The protocol finalizes <strong>checkpoints</strong>, not “whole epochs” (finalizing (N) covers through slot (32N)).</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="python" data-theme="github-light github-dark"><code data-language="python" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Checkpoint</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Container</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">):</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    epoch: Epoch</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    root: Root</span></span></code></pre></figure>
+<p><strong>Link</strong> (s \rightarrow t): source + target in one message.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Half</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>Target</strong></td><td>“Next checkpoint I want justified” — soft / conditional (round 1)</td></tr><tr><td><strong>Source</strong></td><td>“Highest justified I know; hard-commit never to revert it” (round 2)</td></tr></tbody></table></div>
+<p>Honest pattern: source = highest justified in view; target = current-epoch checkpoint descending from source (jumps allowed). Invalid link (target not a descendant of source) contradicts yourself but is <strong>not</strong> itself slashable.</p>
+<p><strong>Eth2 detail:</strong> FFG tallies only votes <strong>included in blocks</strong> (shared record). LMD may use gossiped attestations; FFG does not.</p>
+<p><strong>Supermajority link:</strong> same (s \rightarrow t) from > 2/3 stake, timely, in blocks.</p>
+<h3 id="justify-and-finalize">Justify and finalize<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#justify-and-finalize" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Rule (paper / ideal)</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>Justify</strong> (c_2)</td><td>Supermajority link from justified (c_1) to (c_2)</td><td>Soft agreement forming</td></tr><tr><td><strong>Finalize</strong> (c_1)</td><td>Supermajority (c_1 \rightarrow c_2) with (c_2) the <strong>direct child</strong> of justified (c_1)</td><td>“2/3 have seen that 2/3 committed to (c_1)” — revert needs ≥ 1/3 slashable flip</td></tr></tbody></table></div>
+<p>Pipeline: ~<strong>1 epoch to justify</strong>, ~<strong>2 epochs (~12.8 min) end-to-end to finalize</strong>; once primed, one checkpoint can finalize <strong>every epoch</strong>. On-chain settlement at <strong>epoch processing</strong>.</p>
+<p><strong>k-finality (Eth2: 2-finality):</strong> finalize (a_m) via (a_m \rightarrow a_{m+k}) if intermediates are justified. Beacon keeps a short justification window (four epochs / two-epoch targets).</p>
+<h3 id="casper-commandments-slash-if-broken">Casper commandments (slash if broken)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#casper-commandments-slash-if-broken" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li><strong>No double vote:</strong> at most one vote per <strong>target epoch</strong> (h(t)).</li>
+<li><strong>No surround vote:</strong> no distinct links with (h(s_1) &lt; h(s_2) &lt; h(t_2) &lt; h(t_1)).</li>
+</ol>
+<p>Detection often off-protocol (esp. surround); on-chain proof = two conflicting signed attestations. Slash size scales with <strong>correlation</strong> in a window — underpins economic finality.</p>
+<h3 id="fork-choice-modification">Fork-choice modification<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#fork-choice-modification" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Underlying rule: <strong>follow the chain containing the highest justified checkpoint.</strong></p>
+<p>→ LMD starts from <strong>highest justified</strong>, ignores tips not descending from it. That pins finality into tip-following and matches <strong>plausible liveness</strong>.</p>
+<h3 id="guarantees">Guarantees<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#guarantees" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Guarantee</th><th>Claim</th></tr></thead><tbody><tr><td><strong>Classical-style safety</strong> (&lt; 1/3 bad)</td><td>Honest nodes never revert a finalized checkpoint</td></tr><tr><td><strong>Accountable safety / economic finality</strong></td><td>Conflicting finals ⇒ ≥ ~1/3 stake broke a commandment (burnable)</td></tr><tr><td><strong>Plausible liveness</strong></td><td>≥ 2/3 honest + tip extends highest justified ⇒ can keep finalizing <strong>without honest self-slash</strong></td></tr></tbody></table></div>
+<p>Sketch: two conflicting finals ⇒ surround of supermajority links ⇒ ≥ 1/3 surround voters. With asynchrony + > 1/3 attacker, partitions can still diverge; economic finality + social recovery are the backstop.</p>
+<h3 id="incentives-chapter-numbers">Incentives (chapter numbers)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#incentives-chapter-numbers" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Ideal staking reward share: <strong>~22% source</strong>, <strong>~41% target</strong> (vs ~22% LMD head). Wrong/late source or target → <strong>penalty ≈ reward</strong>. Wrong source ≈ wrong branch → treated as missing both FFG votes.</p>
+<h2 id="see-also">See also<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#see-also" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>Next: <strong>Gasper</strong> (FFG ⨯ LMD, empty slots, timeliness).</li>
+<li>Spec: <code>get_head</code> / <code>get_weight</code> / <code>on_attestation</code>; epoch processing justify/finalize; attester slashing.</li>
+<li>Issues and Fixes (proposer boost, attacks); RLMD GHOST paper.</li>
+</ul>
+<h2 id="source">Source<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#source" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="https://eth2book.info/capella/part2/consensus/lmd_ghost/" class="external external-link">2.3.3 LMD Ghost<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> · <a href="https://eth2book.info/capella/part2/consensus/casper_ffg/" class="external external-link">2.3.4 Casper FFG<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> (Ben Edgington, CC BY-SA 4.0)</li>
+</ul>
+<hr/>
+<h1 id="中文">中文<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#中文" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>基于 <a href="https://eth2book.info/capella/part2/consensus/lmd_ghost/" class="external external-link">§2.3.3 LMD Ghost<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> 与 <a href="https://eth2book.info/capella/part2/consensus/casper_ffg/" class="external external-link">§2.3.4 Casper FFG<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> 的双语学习笔记。章节摘要，非全书翻译。Gasper / proposer boost 另述。</p>
+<h2 id="要点速览">要点速览<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#要点速览" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>LMD GHOST</strong> = 分叉选择：根据本地区块 + attestation 选最佳 head；GHOST 走最重子树；LMD 计票只认最新 head 票。</li>
+<li><strong>LMD ≠ 免罚</strong>：计票可只认最新票；冲突签名仍可 slash。</li>
+<li><strong>Casper FFG</strong> = 最终性插件：checkpoint 上 justify → finalize；&lt; 1/3 作恶时经典安全，冲突最终性则靠 <strong>accountable safety</strong>（至少约 1/3 权益应被 slash）。</li>
+<li>一张 attestation 三票：<code>beacon_block_root</code>（LMD）+ <code>source</code>/<code>target</code>（FFG）。</li>
+</ul>
+<h2 id="1-命名">1. 命名<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-命名" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>部分</th><th>含义</th></tr></thead><tbody><tr><td><strong>GHOST</strong></td><td><em>Greedy Heaviest-Observed Sub-Tree</em>（Sompolinsky &amp; Zohar, 2013）— 高延迟下比最长链更稳</td></tr><tr><td><strong>LMD</strong></td><td><em>Latest Message Driven</em> — 由 attestation（消息）驱动分叉选择，只保留每个验证者最新一票</td></tr></tbody></table></div>
+<p><strong>相关变体（非以太坊生产规则）：</strong> IMD（保留各时刻证明）、FMD（仅当前与上一 epoch）、RLMD（最新票在 <em>N</em> 个 epoch 后过期）。</p>
+<p>PoW 里 “投票” 是矿工在 tip 上出块。以太坊 PoS 中<strong>每个验证者</strong>大约每个 epoch 投一次（平均约每 6.4 分钟），网络对视图的信息密度高得多。</p>
+<h2 id="2-在共识中的角色">2. 在共识中的角色<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-在共识中的角色" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LMD GHOST 是<strong>分叉选择规则</strong>（类似中本聪最重/最长链）：给定区块树和选票，输出 head → 回溯到某 root 的线性历史。</p>
+<ul>
+<li>视图是<strong>本地的</strong>（你的 Store）— 没有上帝视角。</li>
+<li>诚实节点在自己看到的最佳 head 上出块和投票。</li>
+<li>期望性质：多数诚实可推进、稳定性（能预测未来 head）、抗操纵。</li>
+</ul>
+<p>此处只讲 happy path；异常 → Issues and Fixes；FFG → §11。</p>
+<h2 id="3-最新消息lmd-部分">3. 最新消息（LMD 部分）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-最新消息lmd-部分" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="选票在哪里">选票在哪里<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#选票在哪里" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>attestation 数据里，LMD 票是 <code>beacon_block_root</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="python" data-theme="github-light github-dark"><code data-language="python" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> AttestationData</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Container</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">):</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    slot: Slot</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    index: CommitteeIndex</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    beacon_block_root: Root   </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># LMD GHOST 票</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    source: Checkpoint        </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># FFG</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    target: Checkpoint        </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># FFG</span></span></code></pre></figure>
+<ul>
+<li>每个验证者每个 epoch 投一次（分到某一 slot）；每个 slot 约 1/32 集合在投票。</li>
+<li>票经 attestation gossip 以及区块内传播。</li>
+</ul>
+<h3 id="store-更新on_attestation">Store 更新（<code>on_attestation</code>）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#store-更新on_attestation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>记入前的基本检查（等）：</p>
+<ul>
+<li>不太旧（当前/上一 epoch）也不太新（不晚于上一 slot）</li>
+<li>所投区块已知</li>
+<li>签名正确；无 slashable 冲突</li>
+</ul>
+<p>然后 <code>update_latest_messages()</code>：每个验证者只保留<strong>一条</strong>最新 head 票（更新者覆盖旧票）。</p>
+<p><strong>关键性质：</strong> 票必须在发出后较快被听到才能进入 Store；一旦进入则<strong>长期保留</strong>，直到被更新（不同于 Goldfish / RLMD）。</p>
+<h2 id="4-找-headghost-部分">4. 找 head（GHOST 部分）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-找-headghost-部分" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>GetHead(Store) → HeadBlock</code>。相关 Store 内容：</p>
+<ul>
+<li>区块树（parent 链接）</li>
+<li>最新消息</li>
+<li>effective balance（票权；通常上限 32 ETH）</li>
+</ul>
+<p>算法从某 <strong>root</strong> 开始（纯 GHOST 为创世；完整以太坊 Gasper 为<strong>最近 justified checkpoint</strong>），忽略非其后代的块。</p>
+<h3 id="权重">权重<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#权重" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>某块的<strong>投票权重</strong> = 最新 head 票指向该块的验证者 effective balance 之和。</li>
+<li><strong>分支 / 子树权重</strong> = 根块上的票权 <strong>加上</strong> 子分支权重<br/>
+→ 对后代的投票也支持所有祖先。</li>
+</ul>
+<h3 id="行走">行走<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#行走" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>从 root 起，递归选<strong>最重的子分支</strong>。平局 → 子块 hash 更大者（任意打破平局）。到叶子 → 该叶子为 head。</p>
+<p><strong>对比最长链：</strong> 最长链可能选出又深又窄的少数派分支；GHOST 选<strong>总支持</strong>最大的分支（例如偏好 (A \leftarrow C \leftarrow E)，而不是更长但更瘦、止于 (G) 的分支）。</p>
+<p>规范入口：<code>get_head()</code>、<code>get_weight()</code>（生产里 <code>get_weight</code> 还含 <strong>proposer boost</strong> — 给当 slot 块的临时权重加成，缓解 balance attack；另述）。</p>
+<h2 id="5-为何用-ghost-而非最长链">5. 为何用 GHOST 而非最长链？<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-为何用-ghost-而非最长链" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>当传播延迟 ≈ slot 时间时，分叉常见，并非人人及时看到每个块。对同一父块的不同子块投票，仍确认对<strong>父分支</strong>的支持。GHOST 保留这些信息；最长链丢掉它们，可能让又深又窄的<strong>少数派</strong>分支胜出（块更多 ≠ 权益更多）。</p>
+<h2 id="6-confirmation-rule不是最终性">6. Confirmation rule（不是最终性）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-confirmation-rule不是最终性" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>单独的 LMD GHOST <strong>不提供</strong> finality。研究中的 confirmation rule（Asgaonkar）可在同步假设下称某块 <strong>safe</strong>：</p>
+<ul>
+<li>(q_b^n) = slot (n) 时以 (b) 为根的子树权重 / 自 (b) 产生以来投下的总票权<br/>
+（例如 (b) 之后 80% 票在 (b) 子树上 → (q = 0.8)）</li>
+<li>(q_{\min} = \tfrac{1}{2} + \beta)，(\beta) 为假设敌方权益比例（(&lt; \tfrac{1}{3})）</li>
+<li>若 (b) 及其所有未 finalized 祖先都有 (q > q_{\min}) → <strong>confirmed</strong></li>
+</ul>
+<p>直觉：一旦某分支对可用票权形成可持续多数，诚实验证者会继续投它。(\beta) 用来抵御不诚实换票；仍依赖网络同步。与 FFG、proposer boost 结合有细节（见论文）。客户端方向是 <strong>safe block</strong> API；该章写作时尚未普遍落地。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>Confirmation</th><th>Finality</th></tr></thead><tbody><tr><td>时间</td><td>理想约 1 个 slot；通常 &lt; ~1 分钟</td><td>≥ 2 个 epoch（约 13 分钟）</td></tr><tr><td>假设</td><td>直至 finality 保持同步</td><td>无同步假设</td></tr><tr><td>破坏</td><td>失同步可被 reorg</td><td>> 1/3 slashable 才可能冲突 finalize</td></tr></tbody></table></div>
+<h2 id="7-激励">7. 激励<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-激励" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>提议者：</strong> 隐式 — head 选错 → 孤儿块 → 丢出块奖励。</li>
+<li><strong>证明者：</strong> 显式 — 准确 head 票在<strong>下一</strong> slot 被打进块则有微奖励（完美验证者约 22% 协议奖励来自准确 head 票）。提议者因收录这些票也获分成。</li>
+<li>准确 = 与最终规范链一致（包括正确投 skip）。</li>
+<li><strong>无惩罚</strong> 错误/错过的 head 票（Altair 去掉；压力/迟到块下 head 很难投对）。</li>
+</ul>
+<h2 id="8-slashingnothing-at-stake">8. Slashing（nothing at stake）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-slashingnothing-at-stake" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>PoS 签名几乎无成本 → 易在每个分叉上投票。对矛盾的签名消息做密码学证明后 <strong>slash</strong>：罚没权益 + 踢出。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>类型</th><th>惩罚什么</th><th>证明</th></tr></thead><tbody><tr><td><strong>Proposer</strong></td><td>同一 slot 两个块</td><td><code>ProposerSlashing</code> = 两个已签名 header</td></tr><tr><td><strong>Attester</strong></td><td>双签或违反 FFG 戒律（double / surround）</td><td><code>AttesterSlashing</code> = 两份冲突已签名 attestation</td></tr></tbody></table></div>
+<p>检测在协议外（客户端 / slasher）；后续提议者打包证明并获奖励。</p>
+<h2 id="9-历史一行">9. 历史（一行）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-历史一行" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Zamfir 的 Casper CBC / “Friendly Ghost” → Eth2 mini-spec 因稳定性将 IMD 改为 <strong>LMD GHOST</strong>（2018-11）→ 形态基本沿用至今，再由 Gasper + proposer boost 包装。</p>
+<h2 id="10-桥接lmd-vs-ffg-vs-slashing及-polkadot">10. 桥接：LMD vs FFG vs Slashing（及 Polkadot）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-桥接lmd-vs-ffg-vs-slashing及-polkadot" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="一张-attestation-里的两层">一张 attestation 里的两层<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#一张-attestation-里的两层" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>字段</th><th>层级</th><th>作用</th></tr></thead><tbody><tr><td><code>beacon_block_root</code></td><td>LMD GHOST</td><td>当前 <strong>head</strong></td></tr><tr><td><code>source</code></td><td>Casper FFG</td><td>已知最高 <strong>justified</strong>（round-2 硬承诺）</td></tr><tr><td><code>target</code></td><td>Casper FFG</td><td>希望下一站 justified（round-1 软承诺）</td></tr></tbody></table></div>
+<p>LMD 每个 slot（~12s）更新 tip；FFG 在 <strong>epoch checkpoint</strong>（32 slot ≈ 6.4 分钟）上工作。细节见 §11。</p>
+<h3 id="最新消息">「最新消息」<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#最新消息" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>Store：每验证者一条最新 head 票；更新者覆盖 LMD 计权。</li>
+<li>旧票可能已进入 FFG 历史；掉线后最后一票<strong>持续计权</strong>直至被更新。</li>
+</ul>
+<h3 id="lmd-计票宽容--免罚">LMD 计票宽容 ≠ 免罚<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lmd-计票宽容--免罚" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>情形</th><th>分叉选择（LMD）</th><th>协议法律</th></tr></thead><tbody><tr><td>冲突签名</td><td>只认<strong>最新</strong>计权</td><td>证据上链仍可 <strong>slash</strong></td></tr><tr><td>同 slot 两 head</td><td>最新票计权</td><td>attestation equivocation</td></tr><tr><td>Surround / double FFG</td><td>—</td><td>Casper 戒律（§11）</td></tr><tr><td>同 slot 两块</td><td>—</td><td>proposer slashing</td></tr></tbody></table></div>
+<p>Slash 略：即时扣款 → 强制退出（~36 天）→ <strong>correlation penalty</strong>（单独误配轻；大量同时 slash 可罚至满额 32 ETH）。</p>
+<h3 id="对比-polkadotbabe--grandpa">对比 Polkadot（BABE + GRANDPA）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#对比-polkadotbabe--grandpa" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>以太坊（Gasper）</th><th>Polkadot</th></tr></thead><tbody><tr><td>Tip</td><td>LMD GHOST</td><td>BABE 分叉选择</td></tr><tr><td>最终性</td><td>Casper FFG（常约 2 epoch）</td><td>GRANDPA（异步 round；顺畅时常 12–60s）</td></tr><tr><td>双投</td><td>可证则 slash；LMD 仍用最新票</td><td>GRANDPA equivocation → slash（无「只认最新」软着陆）</td></tr></tbody></table></div>
+<p>GRANDPA round ≠ BABE 的 6s slot：≥ 2/3 才结束一轮；卡顿时可 stall 后<strong>批量 finalize</strong>。</p>
+<h2 id="11-casper-ffg234">11. Casper FFG（<a href="https://eth2book.info/capella/part2/consensus/casper_ffg/" class="external external-link">§2.3.4<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-casper-ffg234" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="为何需要">为何需要<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#为何需要" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>单独 LMD 无法禁止永久另开分支。<strong>Casper FFG</strong> 是 tip 共识上的 <strong>finality gadget</strong>：在 &lt; 1/3 作恶时给出诚实节点不回滚的 checkpoint；若出现冲突最终性，则用 <strong>accountable safety</strong>（破戒律者 slash）定价。</p>
+<p>两大支柱：<strong>两阶段提交</strong>（justify → finalize）与 <strong>可问责安全</strong>。</p>
+<h3 id="命名与位置">命名与位置<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#命名与位置" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>名字承接 Zamfir「Friendly Ghost」谱系；Vitalik 的 <strong>FFG</strong> = <em>Friendly Finality Gadget</em> — 不是 CBC/TFG，也<strong>不用 GHOST</strong>。</li>
+<li>元协议：跑在底层链共识之上（此处为 LMD）；论文几乎不谈底层链。</li>
+</ul>
+<p>异步 BFT：(n > 3f) → 容忍 &lt; <strong>1/3</strong> 故障/敌对权益。</p>
+<h3 id="epochcheckpoint选票">Epoch、checkpoint、选票<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#epochcheckpoint选票" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>Epoch = 32 slot。每验证者每 epoch <strong>投一次</strong>（经委员会 / RANDAO 分到某一 slot）→ 每 slot 约 1/32 集合在投票。同一 attestation 携带 FFG + LMD 票。</li>
+<li>对单个验证者：每 epoch 一张票。对全网：每个 slot 都有当班委员会刷新 LMD head 权重；其 <code>source</code>/<code>target</code> 通常指向<strong>同一 epoch 边界 checkpoint</strong>。</li>
+<li><strong>Checkpoint</strong> = epoch 首 slot（(32N)）+ 区块 root。协议 finalize 的是 <strong>checkpoint</strong>，不是「整个 epoch」（finalize (N) = 确认到 slot (32N)）。</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="python" data-theme="github-light github-dark"><code data-language="python" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Checkpoint</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Container</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">):</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    epoch: Epoch</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    root: Root</span></span></code></pre></figure>
+<p><strong>Link</strong> (s \rightarrow t)：source + target 合成一条消息。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>半票</th><th>含义</th></tr></thead><tbody><tr><td><strong>Target</strong></td><td>「我想 justify 的下一 checkpoint」— 软/有条件承诺（round 1）</td></tr><tr><td><strong>Source</strong></td><td>「我见过的最高 justified；硬承诺永不回滚它」（round 2）</td></tr></tbody></table></div>
+<p>诚实模式：source = 视图中最高 justified；target = 源自 source 的当前 epoch checkpoint（允许跳跃）。target 非 source 后代 = 自相矛盾，但<strong>本身不是</strong> slash 条件。</p>
+<p><strong>Eth2 要点：</strong> FFG 只统计<strong>打进区块</strong>的票（共同记录）。LMD 可用 gossip；FFG 不行。</p>
+<p><strong>Supermajority link：</strong> > 2/3 权益投同一 (s \rightarrow t)（及时入块）。</p>
+<h3 id="justify-与-finalize">Justify 与 Finalize<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#justify-与-finalize" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>步骤</th><th>规则（论文理想形）</th><th>含义</th></tr></thead><tbody><tr><td><strong>Justify</strong> (c_2)</td><td>从已 justified 的 (c_1) 到 (c_2) 的超多数 link</td><td>软共识形成</td></tr><tr><td><strong>Finalize</strong> (c_1)</td><td>超多数 (c_1 \rightarrow c_2) 且 (c_2) 是 (c_1) 的<strong>直接子</strong> checkpoint</td><td>「2/3 已见 2/3 承诺了 (c_1)」— 回滚需 ≥ 1/3 可证改口</td></tr></tbody></table></div>
+<p>流水线：理想约 <strong>1 epoch justify</strong>，端到端约 <strong>2 epoch（~12.8 分钟）finalize</strong>；管道灌满后可每 epoch finalize 一个。链上在 <strong>epoch processing</strong> 时结算。</p>
+<p><strong>k-finality（Eth2：2-finality）：</strong> 若中间 checkpoint 都已 justified，可用 (a_m \rightarrow a_{m+k}) finalize (a_m)。Beacon 保留短 justification 窗口（四 epoch / 两 epoch target）。</p>
+<h3 id="casper-戒律违反则-slash">Casper 戒律（违反则 slash）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#casper-戒律违反则-slash" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li><strong>No double vote：</strong> 同一 <strong>target epoch</strong> 高度至多一票。</li>
+<li><strong>No surround vote：</strong> 禁止 (h(s_1) &lt; h(s_2) &lt; h(t_2) &lt; h(t_1))。</li>
+</ol>
+<p>检测常链下（尤其 surround）；上链证明 = 两份冲突已签名 attestation。罚没随窗口内其他 slash <strong>相关放大</strong> — 支撑经济最终性。</p>
+<h3 id="分叉选择改写">分叉选择改写<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#分叉选择改写" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>底层必须：<strong>跟随含有最高 justified checkpoint 的那条链。</strong></p>
+<p>→ LMD 从<strong>最高 justified</strong> 起步，忽略不在其下的 tip。最终性由此钉住 tip 算法，并匹配 <strong>plausible liveness</strong>。</p>
+<h3 id="保证">保证<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#保证" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>保证</th><th>含义</th></tr></thead><tbody><tr><td><strong>类经典安全</strong>（&lt; 1/3 坏）</td><td>已 finalize 的 checkpoint 诚实节点不回滚</td></tr><tr><td><strong>Accountable safety / 经济最终性</strong></td><td>冲突 finalize ⇒ 至少约 1/3 权益破戒律（可被烧）</td></tr><tr><td><strong>Plausible liveness</strong></td><td>≥ 2/3 诚实且 tip 延伸最高 justified ⇒ 可继续 finalize，<strong>无需诚实者自砍</strong></td></tr></tbody></table></div>
+<p>直觉：两冲突 finalize ⇒ 超多数 link 互相 surround ⇒ ≥ 1/3 surround。异步 + > 1/3 攻击仍可能分区；经济最终性 + 社群分叉选择是后手。</p>
+<h3 id="激励章内比例">激励（章内比例）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#激励章内比例" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>理想质押奖励粗分：<strong>source ~22%</strong>，<strong>target ~41%</strong>（LMD head ~22%）。错/晚的 source 或 target → <strong>惩罚 ≈ 奖励</strong>。source 错 ≈ 在错误分支 → 等同 FFG 两票都缺席。</p>
+<h2 id="延伸阅读">延伸阅读<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#延伸阅读" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>下一章：<strong>Gasper</strong>（FFG ⨯ LMD、空 slot、时效规则）。</li>
+<li>规范：<code>get_head</code> / <code>get_weight</code> / <code>on_attestation</code>；epoch processing 的 justify/finalize；attester slashing。</li>
+<li>Issues and Fixes（proposer boost、攻击）；RLMD GHOST 论文。</li>
+</ul>
+<h2 id="来源">来源<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#来源" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="https://eth2book.info/capella/part2/consensus/lmd_ghost/" class="external external-link">2.3.3 LMD Ghost<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> · <a href="https://eth2book.info/capella/part2/consensus/casper_ffg/" class="external external-link">2.3.4 Casper FFG<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>（Ben Edgington, CC BY-SA 4.0）</li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-71" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#english" data-for="english">English</a></li><li class="depth-1"><a href="#tldr" data-for="tldr">TL;DR</a></li><li class="depth-1"><a href="#1-naming" data-for="1-naming">1. Naming</a></li><li class="depth-1"><a href="#2-role-in-consensus" data-for="2-role-in-consensus">2. Role in consensus</a></li><li class="depth-1"><a href="#3-latest-messages-the-lmd-part" data-for="3-latest-messages-the-lmd-part">3. Latest messages (the LMD part)</a></li><li class="depth-2"><a href="#where-the-vote-lives" data-for="where-the-vote-lives">Where the vote lives</a></li><li class="depth-2"><a href="#store-updates-on_attestation" data-for="store-updates-on_attestation">Store updates (on_attestation)</a></li><li class="depth-1"><a href="#4-finding-the-head-the-ghost-part" data-for="4-finding-the-head-the-ghost-part">4. Finding the head (the GHOST part)</a></li><li class="depth-2"><a href="#weights" data-for="weights">Weights</a></li><li class="depth-2"><a href="#walk" data-for="walk">Walk</a></li><li class="depth-1"><a href="#5-why-ghost-over-longest-chain" data-for="5-why-ghost-over-longest-chain">5. Why GHOST over longest chain?</a></li><li class="depth-1"><a href="#6-confirmation-rule-not-finality" data-for="6-confirmation-rule-not-finality">6. Confirmation rule (not finality)</a></li><li class="depth-1"><a href="#7-incentives" data-for="7-incentives">7. Incentives</a></li><li class="depth-1"><a href="#8-slashing-nothing-at-stake" data-for="8-slashing-nothing-at-stake">8. Slashing (nothing at stake)</a></li><li class="depth-1"><a href="#9-history-one-line" data-for="9-history-one-line">9. History (one line)</a></li><li class="depth-1"><a href="#10-bridge-lmd-vs-ffg-vs-slashing-and-polkadot" data-for="10-bridge-lmd-vs-ffg-vs-slashing-and-polkadot">10. Bridge: LMD vs FFG vs slashing (and Polkadot)</a></li><li class="depth-2"><a href="#two-layers-in-one-attestation" data-for="two-layers-in-one-attestation">Two layers in one attestation</a></li><li class="depth-2"><a href="#latest-message" data-for="latest-message">“Latest message”</a></li><li class="depth-2"><a href="#lmd-tolerance--no-slashing" data-for="lmd-tolerance--no-slashing">LMD tolerance ≠ no slashing</a></li><li class="depth-2"><a href="#vs-polkadot-babe--grandpa" data-for="vs-polkadot-babe--grandpa">vs Polkadot (BABE + GRANDPA)</a></li><li class="depth-1"><a href="#11-casper-ffg-234" data-for="11-casper-ffg-234">11. Casper FFG (§2.3.4)</a></li><li class="depth-2"><a href="#why-it-exists" data-for="why-it-exists">Why it exists</a></li><li class="depth-2"><a href="#naming--place" data-for="naming--place">Naming &amp; place</a></li><li class="depth-2"><a href="#epochs-checkpoints-votes" data-for="epochs-checkpoints-votes">Epochs, checkpoints, votes</a></li><li class="depth-2"><a href="#justify-and-finalize" data-for="justify-and-finalize">Justify and finalize</a></li><li class="depth-2"><a href="#casper-commandments-slash-if-broken" data-for="casper-commandments-slash-if-broken">Casper commandments (slash if broken)</a></li><li class="depth-2"><a href="#fork-choice-modification" data-for="fork-choice-modification">Fork-choice modification</a></li><li class="depth-2"><a href="#guarantees" data-for="guarantees">Guarantees</a></li><li class="depth-2"><a href="#incentives-chapter-numbers" data-for="incentives-chapter-numbers">Incentives (chapter numbers)</a></li><li class="depth-1"><a href="#see-also" data-for="see-also">See also</a></li><li class="depth-1"><a href="#source" data-for="source">Source</a></li><li class="depth-0"><a href="#中文" data-for="中文">中文</a></li><li class="depth-1"><a href="#要点速览" data-for="要点速览">要点速览</a></li><li class="depth-1"><a href="#1-命名" data-for="1-命名">1. 命名</a></li><li class="depth-1"><a href="#2-在共识中的角色" data-for="2-在共识中的角色">2. 在共识中的角色</a></li><li class="depth-1"><a href="#3-最新消息lmd-部分" data-for="3-最新消息lmd-部分">3. 最新消息（LMD 部分）</a></li><li class="depth-2"><a href="#选票在哪里" data-for="选票在哪里">选票在哪里</a></li><li class="depth-2"><a href="#store-更新on_attestation" data-for="store-更新on_attestation">Store 更新（on_attestation）</a></li><li class="depth-1"><a href="#4-找-headghost-部分" data-for="4-找-headghost-部分">4. 找 head（GHOST 部分）</a></li><li class="depth-2"><a href="#权重" data-for="权重">权重</a></li><li class="depth-2"><a href="#行走" data-for="行走">行走</a></li><li class="depth-1"><a href="#5-为何用-ghost-而非最长链" data-for="5-为何用-ghost-而非最长链">5. 为何用 GHOST 而非最长链？</a></li><li class="depth-1"><a href="#6-confirmation-rule不是最终性" data-for="6-confirmation-rule不是最终性">6. Confirmation rule（不是最终性）</a></li><li class="depth-1"><a href="#7-激励" data-for="7-激励">7. 激励</a></li><li class="depth-1"><a href="#8-slashingnothing-at-stake" data-for="8-slashingnothing-at-stake">8. Slashing（nothing at stake）</a></li><li class="depth-1"><a href="#9-历史一行" data-for="9-历史一行">9. 历史（一行）</a></li><li class="depth-1"><a href="#10-桥接lmd-vs-ffg-vs-slashing及-polkadot" data-for="10-桥接lmd-vs-ffg-vs-slashing及-polkadot">10. 桥接：LMD vs FFG vs Slashing（及 Polkadot）</a></li><li class="depth-2"><a href="#一张-attestation-里的两层" data-for="一张-attestation-里的两层">一张 attestation 里的两层</a></li><li class="depth-2"><a href="#最新消息" data-for="最新消息">「最新消息」</a></li><li class="depth-2"><a href="#lmd-计票宽容--免罚" data-for="lmd-计票宽容--免罚">LMD 计票宽容 ≠ 免罚</a></li><li class="depth-2"><a href="#对比-polkadotbabe--grandpa" data-for="对比-polkadotbabe--grandpa">对比 Polkadot（BABE + GRANDPA）</a></li><li class="depth-1"><a href="#11-casper-ffg234" data-for="11-casper-ffg234">11. Casper FFG（§2.3.4）</a></li><li class="depth-2"><a href="#为何需要" data-for="为何需要">为何需要</a></li><li class="depth-2"><a href="#命名与位置" data-for="命名与位置">命名与位置</a></li><li class="depth-2"><a href="#epochcheckpoint选票" data-for="epochcheckpoint选票">Epoch、checkpoint、选票</a></li><li class="depth-2"><a href="#justify-与-finalize" data-for="justify-与-finalize">Justify 与 Finalize</a></li><li class="depth-2"><a href="#casper-戒律违反则-slash" data-for="casper-戒律违反则-slash">Casper 戒律（违反则 slash）</a></li><li class="depth-2"><a href="#分叉选择改写" data-for="分叉选择改写">分叉选择改写</a></li><li class="depth-2"><a href="#保证" data-for="保证">保证</a></li><li class="depth-2"><a href="#激励章内比例" data-for="激励章内比例">激励（章内比例）</a></li><li class="depth-1"><a href="#延伸阅读" data-for="延伸阅读">延伸阅读</a></li><li class="depth-1"><a href="#来源" data-for="来源">来源</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-bb4910c9.js" type="module" data-persist="true"></script></html>
