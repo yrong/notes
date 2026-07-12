@@ -12,6 +12,9 @@ configuration:
     - private
     - templates
     - .obsidian
+    # Full vault symlink (local only). Published tech notes live in content/01-Technology/.
+    - obsidian
+    - obsidian/**
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
