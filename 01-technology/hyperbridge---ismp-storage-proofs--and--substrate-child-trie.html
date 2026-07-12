@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Hyperbridge ISMP storage proofs &amp; Substrate child trie</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Ron's Notes"/><meta property="og:title" content="Hyperbridge ISMP storage proofs &amp; Substrate child trie"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Hyperbridge ISMP storage proofs &amp; Substrate child trie"/><meta name="twitter:description" content="Hyperbridge ISMP storage proofs &amp; Substrate child trie Blog (original, unchanged): yrong-blog/content/post/2023-04-11-hyperbridge-ismp-state-overlay-mmr.md → /post/2023-04-11-hyperbridge-ismp-state-overlay-mmr/."/><meta property="og:description" content="Hyperbridge ISMP storage proofs &amp; Substrate child trie Blog (original, unchanged): yrong-blog/content/post/2023-04-11-hyperbridge-ismp-state-overlay-mmr.md → /post/2023-04-11-hyperbridge-ismp-state-overlay-mmr/."/><meta property="og:image:alt" content="Hyperbridge ISMP storage proofs &amp; Substrate child trie Blog (original, unchanged): yrong-blog/content/post/2023-04-11-hyperbridge-ismp-state-overlay-mmr.md → /post/2023-04-11-hyperbridge-ismp-state-overlay-mmr/."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/01-technology/hyperbridge---ismp-storage-proofs--and--substrate-child-trie"/><meta property="twitter:url" content="https://yrong.github.io/notes/01-technology/hyperbridge---ismp-storage-proofs--and--substrate-child-trie"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="Hyperbridge ISMP storage proofs &amp; Substrate child trie Blog (original, unchanged): yrong-blog/content/post/2023-04-11-hyperbridge-ismp-state-overlay-mmr.md → /post/2023-04-11-hyperbridge-ismp-state-overlay-mmr/."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/01-technology/hyperbridge---ismp-storage-proofs--and--substrate-child-trie-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/01-technology/hyperbridge---ismp-storage-proofs--and--substrate-child-trie-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/01-technology/hyperbridge---ismp-storage-proofs--and--substrate-child-trie-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-technology/hyperbridge---ismp-storage-proofs--and--substrate-child-trie" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Ron's Notes</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; !b2.isFolder) {\n      const dateA = a2.data?.date ? new Date(a2.data.date).getTime() : 0;\n      const dateB = b2.data?.date ? new Date(b2.data.date).getTime() : 0;\n      if (dateA !== dateB) {\n        return dateB - dateA;\n      }\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-3" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-3" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../01-technology/">Technology (from Obsidian)</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Hyperbridge ISMP storage proofs &amp; Substrate child trie</a></div></nav><h1 class="article-title">Hyperbridge ISMP storage proofs &amp; Substrate child trie</h1><p show-comma="true" class="content-meta"><time datetime="2026-07-12T18:25:17.000Z">Jul 12, 2026</time><span>17 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="hyperbridge-ismp-storage-proofs--substrate-child-trie">Hyperbridge ISMP storage proofs &amp; Substrate child trie<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#hyperbridge-ismp-storage-proofs--substrate-child-trie" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><strong>Blog (original, unchanged):</strong> <code>yrong-blog/content/post/2023-04-11-hyperbridge-ismp-state-overlay-mmr.md</code> → <code>/post/2023-04-11-hyperbridge-ismp-state-overlay-mmr/</code>.</p>
+<p><strong>Blog (addendum — state vs log, coprocessor GET flow, relayer queue):</strong> <code>yrong-blog/content/post/2026-04-22-hyperbridge-ismp-addendum-state-vs-log-workflow.md</code> → <code>/post/2026-04-22-hyperbridge-ismp-addendum-state-vs-log-workflow/</code>.</p>
+<p>Site base: <code>https://yrong.github.io/blog</code>.</p>
+<p><strong>Summary:</strong> For Substrate / Hyperbridge parachain flows, ISMP storage proofs are built and verified against Substrate’s <strong>child trie</strong> machinery: data lives under <code>ChildInfo::new_default(&quot;ISMP&quot;)</code>, the runtime updates the child trie root with <code>storage::child::root</code>, RPC uses <code>read_child_proof</code>, and the state machine verifies MPT proofs against the <strong>child trie root</strong> carried in the state commitment (overlay).</p>
+<p><strong>Role split (same mental model as the blog “root map” post):</strong> <strong>trie proofs</strong> answer “does this key exist in state, and with what pallet metadata?”; <strong>MMR proofs</strong> answer “is this message in the ordered log at this place?” — that is <strong>state vs log</strong>, not a clean rule that “Substrate = trie, Ethereum = MMR.”</p>
+<p><strong>Repo:</strong> <code>hyperbridge</code> (local clone paths like <code>modules/pallets/ismp/...</code>).</p>
+<hr/>
+<h2 id="trie-vs-mmr-state-vs-log-not-substrate-vs-ethereum">Trie vs MMR: state vs log, not “Substrate vs Ethereum”<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#trie-vs-mmr-state-vs-log-not-substrate-vs-ethereum" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The useful split is:</p>
+<ul>
+<li><strong>Trie proofs (main trie + ISMP child trie):</strong> prove <strong>key existence / absence</strong> in Substrate state — membership of commitment records, receipts, fee metadata, “not yet handled” timeout checks, etc.</li>
+<li><strong>MMR proofs:</strong> prove <strong>inclusion in an append-only message log</strong> — the canonical ordered history of requests/responses for succinct batching and cheap on-chain verification.</li>
+</ul>
+<p><strong>Not a hard platform rule:</strong></p>
+<ul>
+<li>Substrate integrators still frequently fetch <strong>MMR proofs</strong> (e.g. <code>mmr_queryProof</code>) when the <em>verifier on the other side</em> is an EVM host that checks <code>overlayRoot</code> via MMR multiproofs.</li>
+<li>EVM integrators still care about <strong>receipt / commitment state</strong> on the host contract, but for <em>message delivery</em> the handler’s common path is <strong>MMR inclusion</strong> against <code>overlayRoot</code> (for Hyperbridge coprocessor: the message MMR root).</li>
+</ul>
+<p>So: <strong>trie = state / index layer; MMR = log / history layer</strong> — both can appear in both worlds, depending on what you’re proving <em>to</em>.</p>
+<p><strong>Fetch proofs (what to ask for) depends on what the <em>verifier</em> checks</strong> — MMR / log inclusion vs child-trie key — not on “am I on Substrate or EVM” alone.</p>
+<hr/>
+<h2 id="1-design--ismp-data-in-a-child-trie">1. Design — ISMP data in a child trie<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-design--ismp-data-in-a-child-trie" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>From <code>modules/pallets/ismp/src/child_trie.rs</code>:</p>
+<blockquote>
+<p>pallet-ismp leverages a child trie to store outgoing/incoming requests and responses — child tries provide cheaper state proofs than the global state trie.</p>
+</blockquote>
+<p>Reads/writes use Frame’s child storage API with default child trie id <code>&quot;ISMP&quot;</code> (<code>CHILD_TRIE_PREFIX</code>):</p>
+<ul>
+<li><code>child::get</code> / <code>child::put</code> with <code>ChildInfo::new_default(CHILD_TRIE_PREFIX)</code></li>
+</ul>
+<hr/>
+<h2 id="2-runtime--child-trie-root-storagechildroot">2. Runtime — child trie root (<code>storage::child::root</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-runtime--child-trie-root-storagechildroot" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>In <code>on_finalize</code>, the pallet computes the child trie root and records it (consensus / light clients). See <code>modules/pallets/ismp/src/lib.rs</code>:</p>
+<ul>
+<li><code>storage::child::root(&amp;ChildInfo::new_default(CHILD_TRIE_PREFIX), state_version)</code></li>
+<li>Stored as <code>ChildTrieRoot</code> and used in digest (<code>ConsensusDigest { child_trie_root, ... }</code>)</li>
+</ul>
+<hr/>
+<h2 id="3-proof-rpc--read_child_proof--child-root-from-state">3. Proof RPC — <code>read_child_proof</code> + child root from state<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-proof-rpc--read_child_proof--child-root-from-state" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>ismp_queryChildTrieProof</code> (<code>modules/pallets/ismp/rpc/src/lib.rs</code>):</p>
+<ul>
+<li><code>ChildInfo::new_default(CHILD_TRIE_PREFIX)</code></li>
+<li><code>client.read_child_proof(at, &amp;child_info, keys)</code></li>
+<li>Child root read via <code>state.storage(child_info.prefixed_storage_key()...)</code></li>
+<li>Proof material built with <code>sp_trie</code> (<code>LayoutV0</code>, <code>TrieDBBuilder</code>, recorder)</li>
+</ul>
+<hr/>
+<h2 id="4-verification--proof-vs-child-trie-root-overlay_root">4. Verification — proof vs <strong>child trie root</strong> (<code>overlay_root</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-verification--proof-vs-child-trie-root-overlay_root" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>SubstrateStateMachine</code> (<code>modules/ismp/state-machines/substrate/src/lib.rs</code>):</p>
+<ul>
+<li>Documents: <em>Assumes requests are stored in a child trie.</em></li>
+<li>Membership verification uses <code>state.overlay_root</code> (child trie root) unless coprocessor special-case — error text: <em>“Child trie root is not available for provided state commitment”</em></li>
+<li>Verifies with <code>sp_trie::StorageProof</code> + <code>TrieDBBuilder::&lt;LayoutV0&lt;...>></code> against that root (standard Substrate trie layout).</li>
+</ul>
+<hr/>
+<h2 id="scope-note">Scope note<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#scope-note" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>EVM chains</strong> use Ethereum-style <strong>contract storage</strong> proofs where the state machine verifies Solidity-side storage; that is a different layout than Substrate’s <strong>Patricia + <code>LayoutV0</code></strong>. For <em>Hyperbridge message delivery</em> to an EVM host, the common path is still <strong>MMR multiproof</strong> vs <code>StateCommitment.overlayRoot</code> (message MMR on Hyperbridge coprocessor), not “EVM = never MMR / only trie.”</li>
+<li>The <strong>child trie</strong> story applies to <strong>Substrate ISMP pallet storage</strong> (commitments/receipts) and related paths (e.g. Substrate-EVM may combine main trie + contract child tries — see <code>modules/ismp/state-machines/evm/src/substrate_evm.rs</code>).</li>
+</ul>
+<hr/>
+<h2 id="code-references-line-anchored">Code references (line-anchored)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#code-references-line-anchored" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="child_triers--module-intent"><code>child_trie.rs</code> — module intent<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#child_triers--module-intent" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>modules/pallets/ismp/src/child_trie.rs (lines ~16–20, 129–136)</span></span></code></pre></figure>
+<h3 id="librs--storagechildroot-in-on_finalize"><code>lib.rs</code> — <code>storage::child::root</code> in <code>on_finalize</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#librs--storagechildroot-in-on_finalize" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>modules/pallets/ismp/src/lib.rs (lines ~256–266)</span></span></code></pre></figure>
+<h3 id="rpc--query_child_trie_proof">RPC — <code>query_child_trie_proof</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#rpc--query_child_trie_proof" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>modules/pallets/ismp/rpc/src/lib.rs (lines ~284–318)</span></span></code></pre></figure>
+<h3 id="state-machine--overlay--child-trie-root-verification">State machine — overlay = child trie root, verification<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#state-machine--overlay--child-trie-root-verification" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>modules/ismp/state-machines/substrate/src/lib.rs (lines ~96–137, 155–190)</span></span></code></pre></figure>
+<hr/>
+<h2 id="5-writing-to-the-child-trie-low-level">5. Writing to the child trie (low-level)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-writing-to-the-child-trie-low-level" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>All ISMP child-trie values go through <code>frame_support::storage::child::put</code> with <code>ChildInfo::new_default(CHILD_TRIE_PREFIX)</code> (<code>b&quot;ISMP&quot;</code>). Pallet helpers in <code>modules/pallets/ismp/src/child_trie.rs</code> wrap this (<code>RequestCommitments::insert</code>, <code>ResponseCommitments::insert</code>, <code>RequestReceipts::insert</code>, <code>ResponseReceipts::insert</code>, <code>StateCommitments::insert</code>).</p>
+<p><strong>Main call paths</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>What</th><th>Where it’s written</th><th>Trigger</th></tr></thead><tbody><tr><td>Outgoing request metadata + fee</td><td><code>RequestCommitments</code></td><td><code>dispatch_request</code> (<code>impls.rs</code>) after <code>OffchainDB::push(Leaf::Request)</code>; also <code>fund_message</code>, relayer <code>claimed</code> updates, timeouts / <code>store_request_commitment</code></td></tr><tr><td>Outgoing response metadata + fee</td><td><code>ResponseCommitments</code></td><td><code>dispatch_response</code>; same style of updates</td></tr><tr><td>Incoming request receipt (relayer)</td><td><code>RequestReceipts</code></td><td><code>store_request_receipt</code> from <code>handlers/request.rs</code> after proof + before module <code>on_accept</code></td></tr><tr><td>Incoming response receipt</td><td><code>ResponseReceipts</code></td><td><code>store_response_receipt</code> from <code>handlers/response.rs</code> (<code>ResponseReceipt</code>: response hash + relayer — <code>utils.rs</code>)</td></tr><tr><td>Remote state commitments</td><td><code>StateCommitments</code></td><td><code>store_state_machine_commitment</code> (e.g. <code>handlers/consensus.rs</code>)</td></tr></tbody></table></div>
+<p><code>pallet-hyperbridge</code> uses the <strong>same</strong> <code>CHILD_TRIE_PREFIX</code> for payment keys (<code>RequestPayments</code> / <code>ResponsePayments</code>) — same physical child trie, different key prefixes.</p>
+<p>Removals use <code>child::kill</code> via <code>*::remove</code> on the same types (<code>host.rs</code> delete paths).</p>
+<p>Root in the digest is computed in <code>on_finalize</code> <strong>after</strong> these extrinsic-time writes.</p>
+<hr/>
+<h2 id="6-source-vs-destination--child-trie-vs-offchain-mmr">6. Source vs destination — child trie vs offchain MMR<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-source-vs-destination--child-trie-vs-offchain-mmr" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Dispatching chain (source of the POST request or POST response)</strong> — model you described:</p>
+<ul>
+<li><strong>Child trie:</strong> <code>RequestCommitments</code> / <code>ResponseCommitments</code> hold <code>RequestMetadata</code>: <strong>MMR/offchain pointer</strong> (<code>LeafIndexAndPos</code>), <strong>fee</strong> (<code>FeeMetadata</code>), <strong><code>claimed</code></strong>, etc. — <strong>not</strong> the full POST body.</li>
+<li><strong>Offchain MMR:</strong> <code>T::OffchainDB::push(Leaf::Request(request))</code> or <code>push(Leaf::Response(response))</code> stores the <strong>full encoded</strong> request/response as the leaf. This only appears in <code>dispatch_request</code> / <code>dispatch_response</code> (<code>impls.rs</code>).</li>
+</ul>
+<p><strong>Receiving chain (destination of request, or requester receiving response)</strong> — <strong>different</strong> shape:</p>
+<ul>
+<li><strong>Not</strong> the same “metadata + MMR leaf index for this chain” pattern for that message.</li>
+<li><strong>Incoming request:</strong> child trie gets <strong><code>RequestReceipts</code></strong> — <strong>relayer id bytes</strong> only (<code>store_request_receipt</code> in <code>host.rs</code>). Raw request is in the <strong>delivering ISMP message</strong> / extrinsic and passed to <code>on_accept</code>; it is <strong>not</strong> pushed via local <code>dispatch_request</code>.</li>
+<li><strong>Incoming response:</strong> child trie gets <strong><code>ResponseReceipt</code></strong> — <strong>response hash (<code>H256</code>) + relayer</strong> (<code>utils.rs</code>), not MMR metadata on this chain. Full response bodies for <strong>outgoing</strong> responses still live on the <strong>responder’s</strong> offchain MMR.</li>
+</ul>
+<p><strong>Short mnemonic</strong></p>
+<ul>
+<li><strong>Yes:</strong> on the chain that <strong>dispatches</strong>, child trie ≈ commitment + <strong>MMR pointer + fees</strong>; <strong>full</strong> payload in <strong>offchain MMR</strong>.</li>
+<li><strong>No:</strong> on the <strong>receiver</strong>, child trie ≈ <strong>receipts</strong> (relayer / response hash), not “our leaf index + body in our MMR” for that message.</li>
+</ul>
+<hr/>
+<h2 id="7-raw-request-in-the-delivering-message--on_accept">7. Raw request in the delivering message → <code>on_accept</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-raw-request-in-the-delivering-message--on_accept" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="payload-requestmessage">Payload: <code>RequestMessage</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#payload-requestmessage" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Delivery uses <code>Message::Request(RequestMessage)</code>. The struct carries <strong>full</strong> <code>PostRequest</code> values (including <code>body</code>), plus membership <code>proof</code> and <code>signer</code> — not only a commitment.</p>
+<ul>
+<li><strong>File:</strong> <code>modules/ismp/core/src/messaging.rs</code> — <code>RequestMessage { requests: Vec&lt;PostRequest>, proof: Proof, signer: Vec&lt;u8> }</code></li>
+<li><strong>File:</strong> <code>modules/ismp/core/src/router.rs</code> — <code>PostRequest</code> fields: <code>source</code>, <code>dest</code>, <code>nonce</code>, <code>from</code>, <code>to</code>, <code>timeout_timestamp</code>, <strong><code>body</code></strong> (opaque app payload)</li>
+</ul>
+<p>The relayer / submitter <strong>includes the scale-encoded <code>PostRequest</code>s</strong> inside <code>Vec&lt;Message></code> in the extrinsic. The destination does <strong>not</strong> load <code>body</code> from its own child trie or MMR for this step.</p>
+<h3 id="pallet-entry">Pallet entry<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pallet-entry" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong><code>handle_unsigned</code></strong> (<code>modules/pallets/ismp/src/lib.rs</code>) → <strong><code>execute</code></strong> (<code>impls.rs</code>) → <strong><code>handle_incoming_message</code></strong> for each <code>Message</code>.</li>
+</ul>
+<h3 id="dispatch">Dispatch<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#dispatch" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong><code>handle_incoming_message</code></strong> (<code>modules/ismp/core/src/handlers.rs</code>): <code>Message::Request(req) => request::handle(host, req)</code>.</li>
+</ul>
+<h3 id="requesthandle-modulesismpcoresrchandlersrequestrs"><code>request::handle</code> (<code>modules/ismp/core/src/handlers/request.rs</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#requesthandle-modulesismpcoresrchandlersrequestrs" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>Validate proof height / state machine (challenge period, etc.).</li>
+<li><strong><code>verify_membership</code></strong> — proves the requests are committed on the <strong>source</strong> at <code>msg.proof.height</code>. Uses <code>msg.requests</code> (as <code>Request::Post</code>) so the <strong>same</strong> structs must match the source commitment.</li>
+<li>For each <code>request</code> in <code>msg.requests</code>:
+<ul>
+<li><code>router.module_for_id(request.to)</code> → destination <code>IsmpModule</code></li>
+<li><strong><code>store_request_receipt</code></strong> (relayer id in child trie — reentrancy guard)</li>
+<li><strong><code>cb.on_accept(request.clone())</code></strong> — full <code>PostRequest</code> including <strong><code>body</code></strong></li>
+<li>On module error: <strong><code>delete_request_receipt</code></strong> so the request can time out</li>
+</ul>
+</li>
+</ol>
+<h3 id="module-trait">Module trait<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#module-trait" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong><code>IsmpModule::on_accept(&amp;self, request: PostRequest)</code></strong> — <code>modules/ismp/core/src/module.rs</code></li>
+</ul>
+<h3 id="mnemonic">Mnemonic<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#mnemonic" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Source:</strong> commitment + MMR metadata on-chain; full leaf offchain.</li>
+<li><strong>Destination:</strong> proof checks that the <strong>supplied</strong> <code>PostRequest</code> batch matches source state; <strong><code>on_accept</code></strong> runs on that <strong>in-memory / extrinsic-supplied</strong> struct.</li>
+</ul>
+<hr/>
+<h2 id="8-verify_membership-and-msgproofheight">8. <code>verify_membership</code> and <code>msg.proof.height</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-verify_membership-and-msgproofheight" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Yes:</strong> <code>verify_membership</code> checks that the <strong><code>PostRequest</code> values in the message</strong> are <strong>members</strong> of the <strong>source</strong> state trie at the <strong>height</strong> given in the proof.</p>
+<p><strong>Mechanism (conceptual):</strong></p>
+<ol>
+<li><code>msg.proof</code> includes <code>height: StateMachineHeight</code> (which state machine + block height).</li>
+<li><code>host.state_machine_commitment(msg.proof.height)?</code> loads the <strong><code>StateCommitment</code> already stored on the host</strong> for that height (from an earlier consensus update) — trusted trie root(s), not a live RPC to the source.</li>
+<li><code>state_machine.verify_membership(..., state, &amp;msg.proof)</code> uses that commitment and the encoded proof to show the <strong>commitment-derived keys</strong> for those requests exist in that state.</li>
+</ol>
+<p>So verification is against <strong>“the source state we committed to at that height.”</strong> The intended use is <code>proof.height</code> = the source height where those requests were committed. If height / state id were wrong, checks should fail (wrong trie or proxy / routing rules in <code>request::handle</code>).</p>
+<hr/>
+<h2 id="9-trusted-roots-vs-consensus--statecommitment">9. “Trusted roots” vs consensus — <code>StateCommitment</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-trusted-roots-vs-consensus--statecommitment" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong><code>StateCommitment</code> commits to <em>state</em>, not to “consensus” in the GRANDPA/BABE sense.</strong></p>
+<p>Fields (<code>modules/ismp/core/src/consensus.rs</code>):</p>
+<ul>
+<li><strong><code>state_root</code></strong> — root of the <strong>global state trie</strong> at that height (Substrate header–style storage root).</li>
+<li><strong><code>overlay_root</code></strong> (optional) — e.g. <strong>ISMP child trie root</strong> on Substrate, for membership proofs over commitments.</li>
+</ul>
+<p>These are <strong>storage / Merkle trie roots</strong> used inside <code>verify_membership</code>, not a separate “consensus root” object.</p>
+<p><strong>Role of consensus:</strong> a <strong>consensus client update</strong> (relay proof, BEEFY, etc.) is what makes the host <strong>trust</strong> that <code>(state_machine, height)</code> reached that header; from the verified header the client <strong>fills</strong> <code>StateCommitment</code> (timestamp + those roots). So consensus <strong>authorizes</strong> the update; the <strong>roots in <code>StateCommitment</code> are state (and optional overlay) roots</strong> for trie checks.</p>
+<hr/>
+<h2 id="10-state_root-vs-overlay_root-vs-mmr_root--mental-model">10. <code>state_root</code> vs <code>overlay_root</code> vs <code>mmr_root</code> — mental model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-state_root-vs-overlay_root-vs-mmr_root--mental-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>What each name refers to</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Name</th><th>Meaning</th></tr></thead><tbody><tr><td><strong><code>state_root</code></strong></td><td>Root of the chain’s <strong>main</strong> Substrate state trie (<code>Header::state_root</code>). Commits to <strong>all</strong> pallets; child tries are included <strong>under</strong> this trie.</td></tr><tr><td><strong><code>mmr_root</code></strong></td><td>Root of the <strong>ISMP MMR</strong> after <code>pallet-mmr</code> finalizes the block — append-only accumulator over <strong>message leaves</strong> (bodies off-chain). Lives in <strong><code>ConsensusDigest</code></strong> in the header (<code>mmr_root</code> field), not as a standalone field on <code>StateCommitment</code>.</td></tr><tr><td><strong><code>overlay_root</code> on <code>StateCommitment</code></strong></td><td>The <strong>ISMP overlay</strong> slot in the consensus proof — <strong>not</strong> a third physical trie by itself. Its <strong>meaning depends on which chain</strong> produced the commitment (see packing below).</td></tr></tbody></table></div>
+<p><strong>How <code>ConsensusDigest</code> relates:</strong> each block, <code>on_finalize</code> deposits <code>ConsensusDigest { mmr_root, child_trie_root }</code> (field names in <code>modules/pallets/ismp/src/utils.rs</code>). <strong><code>child_trie_root</code></strong> = <code>storage::child::root</code> for prefix <code>b&quot;ISMP&quot;</code>; <strong><code>mmr_root</code></strong> = <code>OffchainDB::finalize()</code> from the MMR pallet.</p>
+<p><strong>Packing into <code>StateCommitment</code></strong> (<code>modules/ismp/clients/parachain/client/src/consensus.rs</code>)</p>
+<ul>
+<li><strong>Normal parachain (not coprocessor):</strong> <code>state_root</code> = header state root; <code>overlay_root</code> = <strong><code>child_trie_root</code></strong> from digest.</li>
+<li><strong>Hyperbridge as coprocessor:</strong> <code>state_root</code> = <strong><code>child_trie_root</code></strong>; <code>overlay_root</code> = <strong><code>mmr_root</code></strong>. (So on Hyperbridge the MMR root is stored in <strong><code>overlay_root</code></strong>; child trie root is in <strong><code>state_root</code></strong>.)</li>
+</ul>
+<p><strong>Verification paths</strong> (<code>modules/ismp/state-machines/substrate/src/lib.rs</code>)</p>
+<ul>
+<li><strong>POST membership (Patricia, commitment keys in child trie):</strong> <code>OverlayProof</code> only. Root selection: if verifying proofs <strong>about</strong> the coprocessor state machine → use <strong><code>state.state_root</code></strong> (which is the child trie root for that commitment); else → <strong><code>state.overlay_root</code></strong> (child trie root on other chains). This path does <strong>not</strong> use the MMR.</li>
+<li><strong>GET / arbitrary storage:</strong> <code>StateProof</code> → trie root = <strong><code>state_root</code></strong>. <code>OverlayProof</code> in <code>verify_state_proof</code> → same overlay vs coprocessor root pick as above.</li>
+<li><strong>EVM batch delivery of POST messages:</strong> Solidity verifies <strong>MMR multiproofs</strong> against <strong><code>overlayRoot</code></strong> on the stored commitment — for Hyperbridge that value <strong>is</strong> the <strong><code>mmr_root</code></strong>.</li>
+</ul>
+<p><strong>Scenario cheat-sheet</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Scenario</th><th>Prove against</th><th>Roots</th></tr></thead><tbody><tr><td>Substrate trie membership of commitments</td><td>Child trie</td><td><code>OverlayProof</code>; root = <code>overlay_root</code> (normal) or <code>state_root</code> (target = Hyperbridge coprocessor — still <strong>child trie</strong>).</td></tr><tr><td>GET / read arbitrary key</td><td>Main trie</td><td><code>StateProof</code> vs <strong><code>state_root</code></strong>.</td></tr><tr><td>Deliver POST batch to EVM</td><td>MMR</td><td><strong><code>StateCommitment.overlayRoot</code></strong> = <strong><code>mmr_root</code></strong> for Hyperbridge; MMR multiproof.</td></tr><tr><td>“What commits the whole chain?”</td><td>—</td><td><strong><code>state_root</code></strong>. Child trie + MMR are also committed under that economics; ISMP exposes <strong>smaller</strong> roots for proofs where possible.</td></tr></tbody></table></div>
+<p><strong>One-line intuition:</strong> <strong><code>state_root</code></strong> = whole chain; <strong>child trie</strong> = small trie for ISMP commitment/receipt keys; <strong><code>mmr_root</code></strong> = ordered message log for <strong>succinct</strong> batch proofs — on Hyperbridge exposed as <strong><code>overlay_root</code></strong> for MMR-speaking clients.</p>
+<hr/>
+<h2 id="11-why-a-child-trie-for-requestresponse-data">11. Why a child trie for request/response data<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-why-a-child-trie-for-requestresponse-data" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>From <code>modules/pallets/ismp/src/child_trie.rs</code>: pallet-ismp stores outgoing/incoming request and response <strong>metadata</strong> under <code>ChildInfo::new_default(&quot;ISMP&quot;)</code> because <strong>child tries yield cheaper Merkle–Patricia proofs than proving through the global state trie</strong>.</p>
+<p><strong>Benefits</strong></p>
+<ol>
+<li><strong>Smaller proofs</strong> — <code>OverlayProof</code> verification walks only the <strong>ISMP subtree</strong> (keys under the child trie root), not arbitrary long paths under <strong><code>state_root</code></strong> across all pallets.</li>
+<li><strong>Clear separation</strong> — one <strong><code>child_trie_root</code></strong> per block in <code>ConsensusDigest</code>; ISMP overlay vs full <strong><code>state_root</code></strong> is explicit (<code>SubstrateStateProof::OverlayProof</code> vs <code>StateProof</code>).</li>
+<li><strong>Better for light clients / cross-chain verifiers</strong> — <code>read_child_proof</code> style proofs target the child trie; verifying on a destination is less data / gas than full-state proofs for the same logical keys.</li>
+</ol>
+<p><strong>Short version:</strong> the child trie is a <strong>dedicated, smaller trie</strong> for ISMP commitment/receipt keys so <strong>membership proofs are shorter and cheaper</strong> than proving the same keys only via the <strong>entire</strong> runtime state trie.</p>
+<hr/>
+<h2 id="12-coprocessor-vs-non-coprocessor">12. Coprocessor vs non-coprocessor<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-coprocessor-vs-non-coprocessor" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>pallet_ismp::Config::Coprocessor: Get&lt;Option&lt;StateMachine>></code> names an optional <strong>ISMP proxy</strong> (typically <strong>Hyperbridge</strong>). Docs: <a href="https://docs.hyperbridge.network/protocol/ismp/proxies" class="external external-link">ISMP proxies / coprocessor<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th><strong>Non-coprocessor</strong> (<code>None</code>)</th><th><strong>Coprocessor</strong> (<code>Some(Hyperbridge, …)</code>)</th></tr></thead><tbody><tr><td><strong>Meaning</strong></td><td>No single proxy configured on this host</td><td>This chain treats Hyperbridge as the party that performs <strong>heavy</strong> consensus/state verification and <strong>aggregates</strong> cross-chain traffic</td></tr><tr><td><strong><code>StateCommitment</code> packing</strong> (parachain client)</td><td><code>state_root</code> = header root; <code>overlay_root</code> = <strong>child trie</strong> root</td><td><code>state_root</code> = <strong>child trie</strong> root; <code>overlay_root</code> = <strong>MMR</strong> root (swap)</td></tr><tr><td><strong>Overlay trie proof root</strong> (<code>SubstrateStateMachine</code>)</td><td>Use <strong><code>state.overlay_root</code></strong> for child trie</td><td>When proof targets the <strong>coprocessor</strong> id, use <strong><code>state.state_root</code></strong> (there = child trie root)</td></tr><tr><td><strong>Protocol / routing</strong></td><td>Incoming requests should have <strong><code>source</code></strong> matching the real origin unless another rule applies</td><td>Proxy semantics: consumer chains may receive traffic <strong>via</strong> Hyperbridge; <code>allowed_proxy()</code> = <code>Coprocessor::get()</code> (<code>host.rs</code>). Some pallets (e.g. <code>pallet-hyperbridge</code> host ops) require <code>request.source == Coprocessor::get()</code>.</td></tr></tbody></table></div>
+<p><strong>One line:</strong> <strong>Non-coprocessor</strong> = no designated proxy in config. <strong>Coprocessor</strong> = “we name Hyperbridge (or one proxy) so expensive verification can be centralized there and downstream verification uses <strong>cheaper</strong> proofs / routing.”</p>
+<hr/>
+<h2 id="13-why-two-paths-for-messages--child-trie-vs-mmr">13. Why two “paths” for messages — child trie vs MMR<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#13-why-two-paths-for-messages--child-trie-vs-mmr" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>They are <strong>not</strong> two redundant checks of the <strong>same</strong> Merkle fact.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Path</th><th>What it proves</th><th>Typical use</th></tr></thead><tbody><tr><td><strong>Child trie (<code>OverlayProof</code>)</strong></td><td>The <strong>runtime state</strong> contains <code>RequestCommitments</code> / <code>ResponseCommitments</code> at the commitment key (metadata: fees, MMR index, etc.) — “<strong>registered in pallet storage</strong>.”</td><td>Substrate <code>verify_membership</code>, trie-based verifiers</td></tr><tr><td><strong>MMR (<code>mmr_root</code> / <code>overlay_root</code> on Hyperbridge)</strong></td><td>The commitment appears as a <strong>leaf in the append-only message MMR</strong> — “<strong>in the relay / batch log</strong>” used for delivery.</td><td>EVM <code>HandlerV1</code>: <code>MerkleMountainRange.VerifyProof</code> vs <code>overlayRoot</code></td></tr></tbody></table></div>
+<p><strong>Why both exist</strong></p>
+<ol>
+<li><strong>Different structures, different jobs</strong> — Trie = <strong>state commitment</strong> (replay protection, fee accounting). MMR = <strong>ordered log</strong> for <strong>succinct batch</strong> proofs to gas‑limited chains.</li>
+<li><strong>Different <em>verifiers</em>, not a Substrate/EVM law</strong> — pick <strong>trie</strong> when the check is “this <strong>key</strong> exists in <strong>state</strong> with this metadata”; pick <strong>MMR</strong> when the check is “this <strong>message</strong> is a <strong>leaf</strong> in the <strong>ordered</strong> log at this height” (e.g. <code>HandlerV1</code>). A Substrate relayer can still build <strong><code>mmr_queryProof</code></strong> to feed an EVM handler.</li>
+<li><strong>Usually one proof per delivery</strong> — the destination verifier expects <strong>either</strong> trie-style <strong>or</strong> MMR-style membership, not both for the same execution.</li>
+</ol>
+<p><strong>Mnemonic:</strong> trie proof = “<strong>stored on chain</strong> in ISMP state”; MMR proof = “<strong>in the canonical message accumulator</strong> for relay.” Same <strong>commitment hash</strong>, two commitments; pick the proof type that matches the <strong>verifier’s</strong> interface (see <em>Trie vs MMR: state vs log</em> at the top).</p>
+<hr/>
+<h2 id="14-layoutv0--trie-layout-vs-ethereum-how-proofs-are-verified">14. <code>LayoutV0</code> — trie layout vs Ethereum; how proofs are verified<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#14-layoutv0--trie-layout-vs-ethereum-how-proofs-are-verified" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong><code>LayoutV0&lt;H></code></strong> (<code>sp_trie</code>) is Substrate’s standard <strong>Patricia trie layout</strong> (v0 node encoding). The type parameter <strong><code>H</code></strong> is the <strong>node hasher</strong> (<code>Keccak256</code>, <code>BlakeTwo256</code>, …) and must match the chain that produced the proof. ISMP Substrate proofs document this in <code>modules/ismp/state-machines/substrate/src/lib.rs</code> (<code>SubstrateStateProof</code>).</p>
+<p><strong>Not the same as Ethereum storage proofs.</strong> Execution-layer Ethereum uses a different layout (e.g. RLP node codec, EIP-1186). This repo defines <strong><code>EIP1186Layout</code></strong> in <code>modules/trees/ethereum/src/lib.rs</code> — use that path for Ethereum trie verification, <strong><code>LayoutV0</code></strong> for Substrate overlay/state proofs.</p>
+<p><strong>In-memory test tries</strong> (<code>TrieDBMutBuilder::&lt;LayoutV0&lt;KeccakHasher>>::new</code> + <code>MemoryDB</code>) build a <strong>Substrate-layout</strong> trie in RAM — useful to mimic ISMP keys (e.g. <code>request_commitment_storage_key</code>) in simtests (<code>parachain/simtests/src/pallet_ismp.rs</code>). That is <strong>not</strong> FRAME <code>storage::child</code> itself, but the <strong>same layout</strong> as verification.</p>
+<h3 id="verifying-a-layoutv0-storageproof-production-pattern">Verifying a <code>LayoutV0</code> <code>StorageProof</code> (production pattern)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#verifying-a-layoutv0-storageproof-production-pattern" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Canonical verification lives in <strong><code>SubstrateStateMachine</code></strong> (<code>modules/ismp/state-machines/substrate/src/lib.rs</code>):</p>
+<ol>
+<li>Decode <code>SubstrateStateProof</code> (<code>OverlayProof</code> / <code>StateProof</code> + hasher).</li>
+<li>Choose trie root (<code>overlay_root</code> / <code>state_root</code> / coprocessor rules — see §10).</li>
+<li><strong><code>StorageProof::new(...).into_memory_db::&lt;H>()</code></strong> — rebuild partial trie DB from proof nodes.</li>
+<li><strong><code>TrieDBBuilder::&lt;LayoutV0&lt;H>>::new(&amp;db, &amp;root).build()</code></strong> — open trie at trusted root.</li>
+<li><strong><code>trie.get(&amp;key)</code></strong> — membership succeeds iff value present (membership checks require <code>Some(value)</code>).</li>
+</ol>
+<p>Same pattern for <strong><code>verify_membership</code></strong> (Keccak vs Blake2 branches) and <strong><code>verify_state_proof</code></strong>.</p>
+<p><strong>Helper:</strong> <code>read_proof_check</code> in the same file (lifted from <code>sp_state_machine::read_proof_check</code>) — <code>into_memory_db</code>, optional <code>db.contains(root, EMPTY_PREFIX)</code>, then <code>TrieDBBuilder::&lt;LayoutV0&lt;H>>::new(&amp;db, root)</code> and per-key <code>get</code>. <strong><code>read_proof_check_for_parachain</code></strong> for parachain header proofs.</p>
+<p><strong>Test reference:</strong> <code>modules/pallets/testsuite/src/tests/child_trie_proof_check.rs</code> — <code>prove_child_read</code> → <code>into_memory_db</code> → <code>TrieDBBuilder::&lt;LayoutV0&lt;BlakeTwo256>></code> / <code>read_proof_check</code> against child trie root.</p>
+<p><strong>One-liner:</strong> verification = <strong>proof bytes → <code>MemoryDB</code> → <code>TrieDBBuilder::&lt;LayoutV0&lt;H>>(db, root)</code> → <code>get(key)</code></strong>, with <strong><code>H</code></strong> matching the source chain’s trie hasher.</p>
+<hr/>
+<h2 id="15-evm-optimismhost-vs-evmhost-vs-handlerv1--where-verification-lives">15. EVM: <code>OptimismHost</code> vs <code>EvmHost</code> vs <code>HandlerV1</code> — where verification lives<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#15-evm-optimismhost-vs-evmhost-vs-handlerv1--where-verification-lives" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Repo paths:</strong> <code>evm/src/hosts/Optimism.sol</code>, <code>evm/src/core/EvmHost.sol</code>, <code>evm/src/core/HandlerV1.sol</code>, <code>evm/src/consensus/*.sol</code>.</p>
+<h3 id="optimismhost"><code>OptimismHost</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#optimismhost" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Thin wrapper: <strong><code>EvmHost</code> + <code>CHAIN_ID</code></strong> (e.g. mainnet <code>10</code>). <strong>No</strong> cryptographic verification in this file — only <code>constructor</code> and <code>chainId()</code>.</p>
+<h3 id="evmhost"><code>EvmHost</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#evmhost" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Storage + dispatch</strong> for ISMP on EVM: commitments, receipts, <code>StateCommitment</code> maps, fee params, <code>dispatchIncoming</code> <strong>only callable by the configured <code>handler</code></strong>. Commented explicitly: <strong>all verification is delegated to <code>IHandler</code></strong> (<code>HostParams.handler</code>, typically <strong><code>HandlerV1</code></strong>).</p>
+<h3 id="handlerv1--actual-checks"><code>HandlerV1</code> — actual checks<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#handlerv1--actual-checks" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>
+<p><strong><code>handleConsensus(IHost host, bytes proof)</code></strong> — calls <strong><code>IConsensus(host.consensusClient()).verifyConsensus(...)</code></strong>, then <strong><code>host.storeConsensusState</code></strong> and <strong><code>host.storeStateMachineCommitment</code></strong> for each <code>IntermediateState</code>. This is how <strong>trusted roots</strong> (incl. Hyperbridge / Polkadot path, depending on deployed consensus client) get onto the host.</p>
+</li>
+<li>
+<p><strong><code>handlePostRequests</code> / <code>handlePostResponses</code></strong> — challenge period, then <strong><code>MerkleMountainRange.VerifyProof</code></strong> against <strong><code>host.stateMachineCommitment(height).overlayRoot</code></strong> (MMR root) + dispatch via <strong><code>host.dispatchIncoming</code></strong>.</p>
+</li>
+</ol>
+<p>Consensus math lives in <strong><code>consensusClient</code></strong> contracts (e.g. BEEFY / <code>ConsensusRouter</code> → <code>BeefyV1</code>, <code>SP1Beefy</code>, etc. under <code>evm/src/consensus/</code>), <strong>not</strong> in <code>OptimismHost</code>.</p>
+<h3 id="message-from-bifrost--optimism-conceptual">Message from Bifrost → Optimism (conceptual)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#message-from-bifrost--optimism-conceptual" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>On Optimism you <strong>do not</strong> verify Bifrost parachain crypto inside <code>OptimismHost</code>. Typical path:</p>
+<ul>
+<li><strong>Bifrost → Hyperbridge</strong> already used parachain / coprocessor verification <strong>on Hyperbridge</strong>.</li>
+<li>On Optimism, relayers <strong><code>handleConsensus</code></strong> to update <strong>Hyperbridge-related</strong> consensus / state commitments (per deployed client).</li>
+<li>Relayers <strong><code>handlePostRequests</code></strong> to prove the POST is in Hyperbridge’s <strong>MMR</strong> at <code>proof.height</code> (<strong><code>overlayRoot</code></strong>).</li>
+</ul>
+<p><strong>Table</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Component</th><th>Role</th></tr></thead><tbody><tr><td><strong><code>OptimismHost</code></strong></td><td>Chain id + inherit <code>EvmHost</code>; no proofs</td></tr><tr><td><strong><code>EvmHost</code></strong></td><td>State; <code>dispatchIncoming</code> only after handler</td></tr><tr><td><strong><code>HandlerV1</code></strong></td><td>MMR verification, timeouts, duplicate checks; calls consensus client</td></tr><tr><td><strong><code>consensusClient</code></strong></td><td><code>verifyConsensus</code> proofs (e.g. BEEFY / routed clients)</td></tr></tbody></table></div>
+<hr/>
+<h2 id="16-iconsensus--interface-and-beefy-implementations-evm">16. <code>IConsensus</code> — interface and BEEFY implementations (EVM)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#16-iconsensus--interface-and-beefy-implementations-evm" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Interface:</strong> <code>sdk/packages/core/contracts/interfaces/IConsensus.sol</code></p>
+<ul>
+<li><strong><code>verifyConsensus(bytes trustedState, bytes proof) → (bytes newState, IntermediateState[] intermediates)</code></strong></li>
+<li>Opaque encoding per client; handler only requires this ABI.</li>
+</ul>
+<p><strong>Concrete contracts</strong> (<code>evm/src/consensus/</code>)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Contract</th><th>File</th><th>Role</th></tr></thead><tbody><tr><td><strong><code>ConsensusRouter</code></strong></td><td><code>ConsensusRouter.sol</code></td><td>Routes by <strong>first byte</strong> of <code>proof</code>: <code>0x00</code> → <strong>BeefyV1</strong> (naive), <code>0x01</code> → <strong>SP1Beefy</strong> (ZK), <code>0x02</code> → <strong>BeefyV1FiatShamir</strong>; strips byte and forwards.</td></tr><tr><td><strong><code>BeefyV1</code></strong></td><td><code>BeefyV1.sol</code></td><td><strong>BEEFY</strong> client: <code>RelayChainProof</code> + <code>ParachainProof</code>; <strong><code>verifyMmrUpdateProof</code></strong> (relay signatures / authority set, MMR root update) then <strong><code>verifyParachainHeaderProof</code></strong> → <strong><code>IntermediateState[]</code></strong>. Docstring: verifies secp256k1 + authority merkle proofs for finalized <strong>Hyperbridge</strong> state.</td></tr><tr><td><strong><code>SP1Beefy</code></strong></td><td><code>SP1Beefy.sol</code></td><td>ZK-wrapped BEEFY verification.</td></tr><tr><td><strong><code>BeefyV1FiatShamir</code></strong></td><td><code>BeefyV1FiatShamir.sol</code></td><td>Fiat–Shamir–style BEEFY variant.</td></tr></tbody></table></div>
+<p><strong>Deployed host:</strong> <code>EvmHost</code> stores <strong><code>consensusClient</code></strong> from <code>HostParams</code>; <strong><code>HandlerV1.handleConsensus</code></strong> calls <strong><code>IConsensus(host.consensusClient()).verifyConsensus(...)</code></strong> — often <strong><code>ConsensusRouter</code></strong> so multiple proof types work.</p>
+<p><strong><code>BeefyV1</code> internal flow (summary)</strong></p>
+<ol>
+<li>Decode <strong><code>BeefyConsensusState</code></strong> + proof as <strong><code>(RelayChainProof, ParachainProof)</code></strong>.</li>
+<li><strong><code>verifyMmrUpdateProof(trustedState, relay)</code></strong> → new consensus state + <strong><code>headsRoot</code></strong> (para heads root from relay path).</li>
+<li><strong><code>verifyParachainHeaderProof(headsRoot, parachain)</code></strong> → <strong><code>IntermediateState[]</code></strong> (per-parachain <strong><code>StateCommitment</code></strong> heights).</li>
+</ol>
+<p><strong>Note:</strong> This path attests <strong>relay + parachain headers</strong> for the <strong>Hyperbridge</strong> light-client model; a chain like <strong>Bifrost</strong> appears as one parachain among <strong><code>IntermediateState</code>s</strong>, not as a separate <code>IConsensus</code> implementation on the EVM.</p>
+<hr/>
+<h2 id="17-two-different-mmrs--relay-beefy-vs-hyperbridge-message-mmr">17. Two different MMRs — relay BEEFY vs Hyperbridge message MMR<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#17-two-different-mmrs--relay-beefy-vs-hyperbridge-message-mmr" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Do <strong>not</strong> confuse these; they use the same <strong>MMR verifier primitive</strong> in Solidity but are <strong>different trees</strong> and <strong>different purposes</strong>.</p>
+<h3 id="1-relay--beefy-mmr-beefyv1verifymmrupdateproof">1. Relay / BEEFY MMR (<code>BeefyV1.verifyMmrUpdateProof</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-relay--beefy-mmr-beefyv1verifymmrupdateproof" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>Part of <strong>Polkadot relay</strong> light-client / <strong>BEEFY</strong> story: relay blocks accumulate into a <strong>relay MMR</strong>; commitments are signed; <strong><code>RelayChainProof</code></strong> carries the update path the client checks (signatures / authority set, <strong>MMR root</strong> advancement).</li>
+<li><strong>Purpose:</strong> <strong>consensus / finality</strong> — trust the relay snapshot so <strong>para heads</strong> (incl. Hyperbridge’s header) can be verified. It does <strong>not</strong> mean “this ISMP POST exists.”</li>
+</ul>
+<h3 id="2-hyperbridge-ismp-message-mmr-handlerv1handlepostrequests">2. Hyperbridge ISMP message MMR (<code>HandlerV1.handlePostRequests</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-hyperbridge-ismp-message-mmr-handlerv1handlepostrequests" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong><code>root</code></strong> = <strong><code>host.stateMachineCommitment(height).overlayRoot</code></strong> for the <strong>Hyperbridge</strong> state machine — i.e. the <strong><code>mmr_root</code></strong> from pallet-ismp’s <strong><code>ConsensusDigest</code></strong> (append-only <strong>message</strong> accumulator on Hyperbridge).</li>
+<li><strong><code>MerkleMountainRange.VerifyProof(...)</code></strong> proves <strong>request commitment hashes</strong> are <strong>leaves</strong> in <strong>that</strong> MMR.</li>
+<li><strong>Purpose:</strong> <strong>message inclusion</strong> for delivery — the POST is in Hyperbridge’s <strong>message log</strong> once the <strong>state commitment</strong> (from §16 / parachain path) is already trusted.</li>
+</ul>
+<h3 id="summary-table">Summary table<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#summary-table" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>Relay BEEFY MMR</th><th>Hyperbridge message MMR</th></tr></thead><tbody><tr><td><strong>Where in code</strong></td><td><code>BeefyV1</code>, <code>RelayChainProof</code></td><td><code>HandlerV1.handlePostRequests</code>, <code>overlayRoot</code></td></tr><tr><td><strong>Role</strong></td><td>Finality + para heads</td><td>ISMP POST <strong>membership</strong> for relay</td></tr><tr><td><strong>Typical proof object</strong></td><td>Relay BEEFY / MMR update proof</td><td><code>multiproof</code> + <code>leafCount</code> on <code>PostRequestMessage</code></td></tr></tbody></table></div>
+<p><strong>Order of operations on EVM:</strong> update <strong>trusted roots</strong> via <strong><code>handleConsensus</code></strong> (incl. relay BEEFY path), then <strong><code>handlePostRequests</code></strong> proves messages against <strong>Hyperbridge’s</strong> message MMR.</p>
+<hr/>
+<p><em>Captured from Cursor assistant session, 2025-03-21. Updated with writes + source/dest MMR model, 2026-03-21. Added §7 delivering message → <code>on_accept</code>, 2026-03-21. Added §8 <code>verify_membership</code> / proof height, 2026-03-21. Added §9 trusted roots vs consensus, 2026-03-21. Added §10 <code>state_root</code> / <code>overlay_root</code> / <code>mmr_root</code> mental model + scenarios, 2026-04-10. Added §11 child trie rationale, §12 coprocessor vs non-coprocessor, §13 trie vs MMR two paths, 2026-04-11. Added §14 <code>LayoutV0</code> vs Ethereum + verifying <code>StorageProof</code>, 2026-04-11. Added §15 EVM OptimismHost / EvmHost / HandlerV1 verification split, 2026-04-11. Added §16 <code>IConsensus</code> + BEEFY / ConsensusRouter, 2026-04-11. Added §17 two MMRs relay BEEFY vs Hyperbridge message MMR, 2026-04-11. Mirrored blog “state vs log” framing + fixed blog path to 2023-04-11 post, 2026-04-22.</em></p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-3" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#hyperbridge-ismp-storage-proofs--substrate-child-trie" data-for="hyperbridge-ismp-storage-proofs--substrate-child-trie">Hyperbridge ISMP storage proofs &amp; Substrate child trie</a></li><li class="depth-1"><a href="#trie-vs-mmr-state-vs-log-not-substrate-vs-ethereum" data-for="trie-vs-mmr-state-vs-log-not-substrate-vs-ethereum">Trie vs MMR: state vs log, not “Substrate vs Ethereum”</a></li><li class="depth-1"><a href="#1-design--ismp-data-in-a-child-trie" data-for="1-design--ismp-data-in-a-child-trie">1. Design — ISMP data in a child trie</a></li><li class="depth-1"><a href="#2-runtime--child-trie-root-storagechildroot" data-for="2-runtime--child-trie-root-storagechildroot">2. Runtime — child trie root (storage::child::root)</a></li><li class="depth-1"><a href="#3-proof-rpc--read_child_proof--child-root-from-state" data-for="3-proof-rpc--read_child_proof--child-root-from-state">3. Proof RPC — read_child_proof + child root from state</a></li><li class="depth-1"><a href="#4-verification--proof-vs-child-trie-root-overlay_root" data-for="4-verification--proof-vs-child-trie-root-overlay_root">4. Verification — proof vs child trie root (overlay_root)</a></li><li class="depth-1"><a href="#scope-note" data-for="scope-note">Scope note</a></li><li class="depth-1"><a href="#code-references-line-anchored" data-for="code-references-line-anchored">Code references (line-anchored)</a></li><li class="depth-2"><a href="#child_triers--module-intent" data-for="child_triers--module-intent">child_trie.rs — module intent</a></li><li class="depth-2"><a href="#librs--storagechildroot-in-on_finalize" data-for="librs--storagechildroot-in-on_finalize">lib.rs — storage::child::root in on_finalize</a></li><li class="depth-2"><a href="#rpc--query_child_trie_proof" data-for="rpc--query_child_trie_proof">RPC — query_child_trie_proof</a></li><li class="depth-2"><a href="#state-machine--overlay--child-trie-root-verification" data-for="state-machine--overlay--child-trie-root-verification">State machine — overlay = child trie root, verification</a></li><li class="depth-1"><a href="#5-writing-to-the-child-trie-low-level" data-for="5-writing-to-the-child-trie-low-level">5. Writing to the child trie (low-level)</a></li><li class="depth-1"><a href="#6-source-vs-destination--child-trie-vs-offchain-mmr" data-for="6-source-vs-destination--child-trie-vs-offchain-mmr">6. Source vs destination — child trie vs offchain MMR</a></li><li class="depth-1"><a href="#7-raw-request-in-the-delivering-message--on_accept" data-for="7-raw-request-in-the-delivering-message--on_accept">7. Raw request in the delivering message → on_accept</a></li><li class="depth-2"><a href="#payload-requestmessage" data-for="payload-requestmessage">Payload: RequestMessage</a></li><li class="depth-2"><a href="#pallet-entry" data-for="pallet-entry">Pallet entry</a></li><li class="depth-2"><a href="#dispatch" data-for="dispatch">Dispatch</a></li><li class="depth-2"><a href="#requesthandle-modulesismpcoresrchandlersrequestrs" data-for="requesthandle-modulesismpcoresrchandlersrequestrs">request::handle (modules/ismp/core/src/handlers/request.rs)</a></li><li class="depth-2"><a href="#module-trait" data-for="module-trait">Module trait</a></li><li class="depth-2"><a href="#mnemonic" data-for="mnemonic">Mnemonic</a></li><li class="depth-1"><a href="#8-verify_membership-and-msgproofheight" data-for="8-verify_membership-and-msgproofheight">8. verify_membership and msg.proof.height</a></li><li class="depth-1"><a href="#9-trusted-roots-vs-consensus--statecommitment" data-for="9-trusted-roots-vs-consensus--statecommitment">9. “Trusted roots” vs consensus — StateCommitment</a></li><li class="depth-1"><a href="#10-state_root-vs-overlay_root-vs-mmr_root--mental-model" data-for="10-state_root-vs-overlay_root-vs-mmr_root--mental-model">10. state_root vs overlay_root vs mmr_root — mental model</a></li><li class="depth-1"><a href="#11-why-a-child-trie-for-requestresponse-data" data-for="11-why-a-child-trie-for-requestresponse-data">11. Why a child trie for request/response data</a></li><li class="depth-1"><a href="#12-coprocessor-vs-non-coprocessor" data-for="12-coprocessor-vs-non-coprocessor">12. Coprocessor vs non-coprocessor</a></li><li class="depth-1"><a href="#13-why-two-paths-for-messages--child-trie-vs-mmr" data-for="13-why-two-paths-for-messages--child-trie-vs-mmr">13. Why two “paths” for messages — child trie vs MMR</a></li><li class="depth-1"><a href="#14-layoutv0--trie-layout-vs-ethereum-how-proofs-are-verified" data-for="14-layoutv0--trie-layout-vs-ethereum-how-proofs-are-verified">14. LayoutV0 — trie layout vs Ethereum; how proofs are verified</a></li><li class="depth-2"><a href="#verifying-a-layoutv0-storageproof-production-pattern" data-for="verifying-a-layoutv0-storageproof-production-pattern">Verifying a LayoutV0 StorageProof (production pattern)</a></li><li class="depth-1"><a href="#15-evm-optimismhost-vs-evmhost-vs-handlerv1--where-verification-lives" data-for="15-evm-optimismhost-vs-evmhost-vs-handlerv1--where-verification-lives">15. EVM: OptimismHost vs EvmHost vs HandlerV1 — where verification lives</a></li><li class="depth-2"><a href="#optimismhost" data-for="optimismhost">OptimismHost</a></li><li class="depth-2"><a href="#evmhost" data-for="evmhost">EvmHost</a></li><li class="depth-2"><a href="#handlerv1--actual-checks" data-for="handlerv1--actual-checks">HandlerV1 — actual checks</a></li><li class="depth-2"><a href="#message-from-bifrost--optimism-conceptual" data-for="message-from-bifrost--optimism-conceptual">Message from Bifrost → Optimism (conceptual)</a></li><li class="depth-1"><a href="#16-iconsensus--interface-and-beefy-implementations-evm" data-for="16-iconsensus--interface-and-beefy-implementations-evm">16. IConsensus — interface and BEEFY implementations (EVM)</a></li><li class="depth-1"><a href="#17-two-different-mmrs--relay-beefy-vs-hyperbridge-message-mmr" data-for="17-two-different-mmrs--relay-beefy-vs-hyperbridge-message-mmr">17. Two different MMRs — relay BEEFY vs Hyperbridge message MMR</a></li><li class="depth-2"><a href="#1-relay--beefy-mmr-beefyv1verifymmrupdateproof" data-for="1-relay--beefy-mmr-beefyv1verifymmrupdateproof">1. Relay / BEEFY MMR (BeefyV1.verifyMmrUpdateProof)</a></li><li class="depth-2"><a href="#2-hyperbridge-ismp-message-mmr-handlerv1handlepostrequests" data-for="2-hyperbridge-ismp-message-mmr-handlerv1handlepostrequests">2. Hyperbridge ISMP message MMR (HandlerV1.handlePostRequests)</a></li><li class="depth-2"><a href="#summary-table" data-for="summary-table">Summary table</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-bb4910c9.js" type="module" data-persist="true"></script></html>
