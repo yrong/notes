@@ -9,7 +9,7 @@ tags:
 title: "Notes: LMD GHOST + Casper FFG (Eth2Book Capella §2.3.3–2.3.4)"
 ---
 
-Bilingual study notes on [§2.3.3 LMD Ghost](https://eth2book.info/capella/part2/consensus/lmd_ghost/) and [§2.3.4 Casper FFG](https://eth2book.info/capella/part2/consensus/casper_ffg/) (Ben Edgington, Capella). Section summaries only — not a full translation. Gasper / proposer boost deferred.
+Bilingual study notes on [§2.3.3 LMD Ghost](https://eth2book.info/capella/part2/consensus/lmd_ghost/) and [§2.3.4 Casper FFG](https://eth2book.info/capella/part2/consensus/casper_ffg/) (Ben Edgington, Capella), plus companion framing from [Xu Fei — Ethereum PoS Part2 LMD GHOST](https://www.xufeisofly.xyz/blog/ethereum-pos-p2). Section summaries only. Gasper / proposer boost deferred.
 
 <!--more-->
 
@@ -21,6 +21,7 @@ Bilingual study notes on [§2.3.3 LMD Ghost](https://eth2book.info/capella/part2
 - **LMD ≠ forgiveness**: fork choice may use only the latest vote; conflicting signed messages remain **slashable**.
 - **Casper FFG** = finality gadget: justify → finalize checkpoints; classical safety when &lt; 1/3 adversarial; conflicting finals priced by **accountable safety** (≥ ~1/3 stake slashable).
 - One attestation, three votes: `beacon_block_root` (LMD) + `source`/`target` (FFG).
+- Consensus stack = **propose** (PoS) + **fork choice** (LMD GHOST) + **finality** (Casper FFG) — Ethereum favors liveness when &gt; 1/3 adversarial; BFT alone would stall.
 
 ## 1. Naming
 
@@ -256,21 +257,56 @@ Sketch: two conflicting finals ⇒ surround of supermajority links ⇒ ≥ 1/3 s
 
 Ideal staking reward share: **~22% source**, **~41% target** (vs ~22% LMD head). Wrong/late source or target → **penalty ≈ reward**. Wrong source ≈ wrong branch → treated as missing both FFG votes.
 
+## 12. Companion: Xu Fei Part2 — framing LMD GHOST
+
+Source: [以太坊的 PoS - Part2 LMD GHOST](https://www.xufeisofly.xyz/blog/ethereum-pos-p2) (2024-08). Complements Eth2Book with a “why this stack” lens; FFG deep dive is his Part3.
+
+### Three rules, not one protocol
+
+| Rule | Job | Ethereum | Contrast |
+|------|-----|----------|----------|
+| **Propose** | Produce blocks | PoS (stake-weighted proposer) | PoW; BFT multi-round propose |
+| **Fork choice** | Pick canonical tip among forks | LMD GHOST | Longest chain; pure BFT has no fork choice |
+| **Finality** | Irreversible checkpoints | Casper FFG | Bitcoin ≈ probabilistic; BFT = instant per commit |
+
+Classical BFT (HotStuff / Tendermint) fuses all three: no forks, instant finality — but needs &lt; 1/3 adversarial for **liveness**. Ethereum prioritizes **keeping the chain moving**; LMD GHOST still advances under &gt; 1/3 adversarial (safety softens; clients can wait on \(q\) / FFG). Chain-based protocols have no hard “stop until 2/3” gate for every block.
+
+### GHOST’s original job (PoW throughput)
+
+GHOST (*Greedy Heaviest-Observed Sub-Tree*) was meant to keep security when block time shrinks and forks explode (Bitcoin 10 min → Ethereum-style ~15s PoW era). Under longest chain, orphaned work is wasted and an attacker needs **less than 50%** hashpower once honest power is split across forks. GHOST counts **subtree weight**: a child is also a vote for every ancestor — so competing siblings still confirm the parent.
+
+### Why plain GHOST + FFG clash → LMD
+
+After a justified/finalized checkpoint, fork choice only runs on the **unfinalized suffix**. Pure GHOST can prefer a heavy branch while another branch is **closer to the next checkpoint** (Xu’s example: green subtree 111 vs yellow 96, but yellow tip near 2/3). That mismatch motivated **LMD** (and Vitalik’s IMD): drive weights from **latest messages**, not full historical vote sums, and keep fork choice aligned with FFG’s justified root.
+
+### Sticky property
+
+Honest validators tend to **keep building on the same branch** as their previous vote. Switching alone rarely flips the head; typically **≥2 others must switch first** before a flip looks rational (Vitalik). Sudden mass side-switching is conspicuous → easier to detect / slash. Honest late/partial views can still vote the “wrong” tip — hence **no head-vote penalty** (already §7).
+
+### Safety without FFG: \(q\) confirmation
+
+Same idea as §6: \(q_b\) = fraction of post-\(b\) vote weight on \(b\)’s subtree; treat \(b\) as safe when \(q_b &gt; q_{\min} = \tfrac{1}{2}+\beta\). Decoupling fork choice from finality lets clients **wait for higher \(q\)** or for FFG even when finality stalls.
+
+### Attack teaser → FFG
+
+Fork rate oscillates safety; an attacker can pre-build a competing branch and publish when attestations are most split (**long-range / timed fork**). Casper FFG (§11) is the protocol’s answer: economic finality on checkpoints.
+
 ## See also
 
-- Next: **Gasper** (FFG ⨯ LMD, empty slots, timeliness).
+- Next: **Gasper** (FFG ⨯ LMD, empty slots, timeliness); Xu Fei Part3 (Casper FFG).
 - Spec: `get_head` / `get_weight` / `on_attestation`; epoch processing justify/finalize; attester slashing.
-- Issues and Fixes (proposer boost, attacks); RLMD GHOST paper.
+- Issues and Fixes (proposer boost, attacks); RLMD GHOST; [protolambda/lmd-ghost](https://github.com/protolambda/lmd-ghost) walkthrough.
 
 ## Source
 
 - [2.3.3 LMD Ghost](https://eth2book.info/capella/part2/consensus/lmd_ghost/) · [2.3.4 Casper FFG](https://eth2book.info/capella/part2/consensus/casper_ffg/) (Ben Edgington, CC BY-SA 4.0)
+- [Xu Fei — Ethereum PoS Part2 LMD GHOST](https://www.xufeisofly.xyz/blog/ethereum-pos-p2)
 
 ---
 
 # 中文
 
-基于 [§2.3.3 LMD Ghost](https://eth2book.info/capella/part2/consensus/lmd_ghost/) 与 [§2.3.4 Casper FFG](https://eth2book.info/capella/part2/consensus/casper_ffg/) 的双语学习笔记。章节摘要，非全书翻译。Gasper / proposer boost 另述。
+基于 [§2.3.3 LMD Ghost](https://eth2book.info/capella/part2/consensus/lmd_ghost/) 与 [§2.3.4 Casper FFG](https://eth2book.info/capella/part2/consensus/casper_ffg/) 的双语学习笔记，并汇入 [徐飞 — 以太坊 PoS Part2 LMD GHOST](https://www.xufeisofly.xyz/blog/ethereum-pos-p2) 的互补视角。章节摘要。Gasper / proposer boost 另述。
 
 ## 要点速览
 
@@ -278,6 +314,7 @@ Ideal staking reward share: **~22% source**, **~41% target** (vs ~22% LMD head).
 - **LMD ≠ 免罚**：计票可只认最新票；冲突签名仍可 slash。
 - **Casper FFG** = 最终性插件：checkpoint 上 justify → finalize；&lt; 1/3 作恶时经典安全，冲突最终性则靠 **accountable safety**（至少约 1/3 权益应被 slash）。
 - 一张 attestation 三票：`beacon_block_root`（LMD）+ `source`/`target`（FFG）。
+- 共识栈 = **出块**（PoS）+ **分叉选择**（LMD GHOST）+ **最终性**（Casper FFG）— 敌对 &gt; 1/3 时以太坊仍优先保活性；纯 BFT 会卡住。
 
 ## 1. 命名
 
@@ -513,12 +550,47 @@ class Checkpoint(Container):
 
 理想质押奖励粗分：**source ~22%**，**target ~41%**（LMD head ~22%）。错/晚的 source 或 target → **惩罚 ≈ 奖励**。source 错 ≈ 在错误分支 → 等同 FFG 两票都缺席。
 
+## 12. 互补：徐飞 Part2 — 如何框住 LMD GHOST
+
+来源：[以太坊的 PoS - Part2 LMD GHOST](https://www.xufeisofly.xyz/blog/ethereum-pos-p2)（2024-08）。补 Eth2Book 的「为何是这套组合」视角；FFG 详解见其 Part3。
+
+### 三条规则，不是单一协议
+
+| 规则 | 职责 | 以太坊 | 对比 |
+|------|------|--------|------|
+| **Propose** | 出块 | PoS（按权益选 proposer） | PoW；BFT 多轮提案 |
+| **Fork choice** | 在分叉中选权威 tip | LMD GHOST | 最长链；纯 BFT 无分叉选择 |
+| **Finality** | 不可回滚的 checkpoint | Casper FFG | 比特币 ≈ 概率最终性；BFT = 每块即时最终性 |
+
+经典 BFT（HotStuff / Tendermint）三者合一：不分叉、即时最终性 — 但 **活性** 要求敌对 &lt; 1/3。以太坊优先**继续出块**；敌对 &gt; 1/3 时 LMD 仍可推进（安全性变软；客户端可等 \(q\) / FFG）。链式协议没有「每个块都必须凑满 2/3 才往前」的硬门槛。
+
+### GHOST 的原初动机（PoW 吞吐）
+
+GHOST 旨在出块变快、分叉暴增时仍保安全（比特币 10 分钟 → 以太坊 PoW 时代约 15 秒）。最长链下孤儿算力被浪费，诚实算力被分叉拆散后，攻击者往往**不到 50%** 也能赢。GHOST 计**子树权重**：子块也是对所有祖先的票 — 互竞的兄弟块仍确认父块。
+
+### 为何裸 GHOST + FFG 冲突 → LMD
+
+Justified/finalized checkpoint 之后，分叉选择只跑在**未最终化后缀**上。纯 GHOST 可能选更重的分支，而另一分支**更接近下一 checkpoint**（文中例：绿子树 111 vs 黄 96，但黄 tip 更接近 2/3）。这种错位催生了 **LMD**（以及 Vitalik 的 IMD）：用**最新消息**驱动权重，并对齐 FFG 的 justified root。
+
+### Sticky 性质
+
+诚实验证者倾向于**继续投自己上次那条分支**。单人改投很少翻转 head；通常需**至少另两人先换边**，改投才显得合理（Vitalik）。突然集体换边很显眼 → 更易检测 / slash。诚实但视图不全仍可能投错 tip — 故 **head 票无惩罚**（见 §7）。
+
+### 无 FFG 时的安全：\(q\) confirmation
+
+同 §6：\(q_b\) = \(b\) 之后落在其子树上的票权占比；\(q_b &gt; q_{\min} = \tfrac{1}{2}+\beta\) 时可视为 safe。分叉选择与最终性解耦后，即使 FFG 卡住，客户端也可**自行等到更高 \(q\)**。
+
+### 攻击预告 → FFG
+
+分叉率波动会使安全强弱起伏；攻击者可预建竞争分支，在 attestation 最分散时放出（**long-range / 择机分叉**）。Casper FFG（§11）用 checkpoint 上的经济最终性回应。
+
 ## 延伸阅读
 
-- 下一章：**Gasper**（FFG ⨯ LMD、空 slot、时效规则）。
+- 下一章：**Gasper**（FFG ⨯ LMD、空 slot、时效）；徐飞 Part3（Casper FFG）。
 - 规范：`get_head` / `get_weight` / `on_attestation`；epoch processing 的 justify/finalize；attester slashing。
-- Issues and Fixes（proposer boost、攻击）；RLMD GHOST 论文。
+- Issues and Fixes（proposer boost、攻击）；RLMD GHOST；[protolambda/lmd-ghost](https://github.com/protolambda/lmd-ghost) 走读。
 
 ## 来源
 
 - [2.3.3 LMD Ghost](https://eth2book.info/capella/part2/consensus/lmd_ghost/) · [2.3.4 Casper FFG](https://eth2book.info/capella/part2/consensus/casper_ffg/)（Ben Edgington, CC BY-SA 4.0）
+- [徐飞 — 以太坊 PoS Part2 LMD GHOST](https://www.xufeisofly.xyz/blog/ethereum-pos-p2)
