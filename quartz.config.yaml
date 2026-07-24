@@ -15,6 +15,11 @@ configuration:
     # Full vault symlink (local only). Published tech notes live in content/01-Technology/.
     - obsidian
     - obsidian/**
+    # Large upstream design mirrors — keep in git for local reading / cross-links;
+    # publish the short index + working notes instead (see speculative-messaging index).
+    - post/speculative-messaging-design.md
+    - post/low-latency-v2-design.md
+    - post/offchain-block-verification-design.md
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
