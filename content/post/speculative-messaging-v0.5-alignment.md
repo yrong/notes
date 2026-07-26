@@ -11,8 +11,10 @@ tags:
 # v0.5 alignment — foundation vs `speculative-messaging-design.md` v0.5
 
 Working note on aligning `rk-spec-msg-*` (my primitives + relay branches) with the v0.5 design and
-lexnv's `spec-msg-poc-mvp` E2E PoC. Condensed; the full blow-by-blow (worked examples, Q&A, superseded
-drafts) is at [`docs/working/speculative-messaging-v0.5-alignment.full.md`](../../docs/working/speculative-messaging-v0.5-alignment.full.md) (git-tracked working log, not published by Quartz).
+lexnv's `spec-msg-poc-mvp` E2E PoC. This is the reconciliation / decision log; for the **as-built PoC component
+reference** (the end-to-end loop, deep-dives, sub-issue status) see
+[Implementation Design](speculative-messaging-impl-design.md). Condensed; the full blow-by-blow (worked
+examples, Q&A, superseded drafts) is at [`docs/working/speculative-messaging-v0.5-alignment.full.md`](../../docs/working/speculative-messaging-v0.5-alignment.full.md) (git-tracked working log, not published by Quartz).
 
 ## v0.5 in brief
 

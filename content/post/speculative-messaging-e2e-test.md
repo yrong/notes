@@ -56,7 +56,20 @@ export PATH="$PWD/target/release:$PATH"
 ```
 (Needs the wasm toolchain — `build.rs` builds `penpal-runtime.wasm` to generate the metadata.)
 
-**2. Run the single E2E test (native provider; metadata generated automatically):**
+**2. Clear any stale relay metadata (one-time, easy to miss):**
+```bash
+rm -f polkadot/zombienet-sdk-tests/metadata-files/rococo-local.scale
+```
+`build.rs` regenerates a `*.scale` file **only when it is absent** (`try_exists() == true` ⇒ skip) — it
+never refreshes an existing one. The `subxt` macros compile a static interface against both
+`rococo-local.scale` (relay) *and* `penpal-local.scale` (penpal). A checkout that already carries an older
+`rococo-local.scale` predating this branch's relay changes (the new spec-msg pallets / `paras_inherent`
+shape) will keep that stale file, and the test fails at runtime with
+`Metadata error: The generated code is not compatible with the node` — after spawning the nodes, ~4 min in,
+so it looks like a logic failure but is not. Deleting the file forces regeneration from this branch's rococo
+runtime. (`penpal-local.scale` is fine as long as it too was generated on this branch.)
+
+**3. Run the single E2E test (native provider; missing metadata regenerated on build):**
 ```bash
 ZOMBIE_PROVIDER=native \
 cargo test --release -p polkadot-zombienet-sdk-tests \

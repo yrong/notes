@@ -3716,138 +3716,11 @@ when the source actually sends (not every block).
 
 # E2E workflow (MVP branch) — full loop with code links + example data
 
-Top-level reference: the complete MVP end-to-end loop across sender pallet, relay, receiver client crate,
-receiver pallet, and PVF. **Running example:** Sender **A=2000** sends 3 XCMs to Receiver **B=2001** on
-`C = Channel{recipient:2001,domain:0,num:0}`; B's ack rides `K = Ack{recipient:2000,domain:0,num:0}`.
-`P_i = SpecMsgKind::Data(X_i).encode()`, `L_i = hash_leaf(0x00, P_i)`. Pallet refs are
-`cumulus/pallets/spec-messaging/src/lib.rs` unless noted; client crate = `cumulus/client/spec-msg/src/`.
-
-**Stage 0 — Channel open (one-time handshake).** `send_signal(OpenChannel)` (`:1091,1447`) → B accepts →
-`publish_register` (`:1485`) emits B's first `Register{ up_to:0, grant:{max_messages:100,max_bytes:1MiB}, closed:false }`
-on `K`. A reads it → `OutChannels[C].register` set → A has credit.
-
-**Stage 1 — Sender: XCM in, credit-gated, appended.** `SpecMsgRouter` (XCM `SendXcm`, `xcm_router.rs`, `:198`) →
-`send` (`:1433`) → `can_send` (`:1401`) → `ensure_credit` (`:1467`) → `append_to_stream` (`:1336`) →
-`OutboundMessages` (`:624`). Gate: `ensure!(meta.sizes.len() < grant.max_messages, NoCredit)` +
-`ensure!(meta.bytes < grant.max_bytes)`. `NoCredit` → router returns `SendError::Transport` (backpressure to the
-XCM caller, `:1462`), no hidden queue. Example: `OutboundMessages[C]=[P0,P1,P2]`, in-flight 3 < 100.
-
-**Stage 2 — Sender: end-of-block commit → `Provides` + digest.** `commit_streams_root` (`:1560`) folds *touched*
-streams → `BlockStreamsRoot`, deposits `DigestItem::Consensus(SPMS_ENGINE_ID, root)`, `provides_root` (`:1932`)
-emits `UMPSignal::Provides(SR)`. **Idle blocks emit nothing** (`!touched → None`). Next block boundary:
-`OutboundMessages::drain()` folds P0..P2 into cumulative `OutboundFrontier[C]` (`:889-894`). Node archiver
-`run_spec_msg_archiver` (`worker.rs:79`) stores payloads+leaves off-chain via `outbound_messages()`. Example:
-`SR = tree_root{ C→SRoot3, K→…, … }`.
-
-**Stage 3 — Relay: included → ring pushed.** `spec_msg::note_provides`
-(`polkadot/runtime/parachains/src/spec_msg.rs:190`) → `RecentProvides::mutate(2000, |r| r.push(SR, now))` (`:149`).
-Example: `RecentProvides[2000] = [ …, SR]`.
-
-**Stage 4 — Receiver: monitor picks up the root.** `run_relay_provides_monitor` (`monitor.rs:258`) →
-`process_relay_block` (`:329`) → `read_recent_provides` (`:229`) → `RelayProvidesEvent::Included(2000, SR, 0xR)`.
-
-**Stage 5 — Receiver: fetch payloads + proofs.** `fetch_included` (`fetch.rs:496`) → `fetch_source` (`:131`) →
-`fetch_channel_stream` (`:164`) → `MessagesRequest` over `/spec-msg/exchange/1` (`exchange.rs`) → sender
-`SpecMsgArchive::serve_messages` (`archive.rs:499`). Example:
-`MessagesRequest{ C, start:0, under:SR, 512KiB }` → `MessagesResponse{ base:0, payloads:[P0,P1,P2], start_peaks:[], extension:EMPTY, tree_proof:⟨C↪SR⟩ }`.
-
-**Stage 6 — Receiver: trust-free verify.** `verify_messages_response` (`verify.rs:94`): hash+append each payload,
-`extension.verify → stream root`, `tree_proof.verify → StreamsRoot`, compare `under`. Mismatch ⇒ discard + peer.
-Example: `{0,[]}→{3,[N01,L2]}`, `root=SRoot3`, `tree→SR==under` ✓ → `VerifiedMessages{ end:{3,[N01,L2]}, head:3 }`.
-
-**Stage 7 — Receiver: pool.** `note_chunk` (`pool.rs:272`) → `ChannelLedger` (`:121`); `complete_round` (`:339`).
-`ChannelLedger{ base:{0,[]}, end:{3,[N01,L2]}, payloads:[P0,P1,P2], leaves:[L0,L1,L2], binding:{root:SR,head:3,extension:EMPTY,tree_proof:⟨C↪SR⟩} }`, `target[2000]=SR`.
-
-**Stage 8 — Receiver: author + consume (budget-sliced).** `inherent_data_at` (`authoring.rs:72`) →
-`build_inherent` (`pool.rs:394`) hands the budget-limited continuation (`InherentBudget` 256KiB/8 streams);
-runtime `consume_channel_item` (`:1690`) hashes each onto `InboundFrontier[(2000,C)]` (`:719`) in order, delivers
-XCM to the sink, records `Interval` in `consumption_record` (`:733`). Leftover stays pooled (partial consumption
-routine). Example: inherent `messages:[(2000,C,[P0,P1,P2])]`; `InboundFrontier: 0→3`; record
-`[(2000,{C:Interval{start:<root@0>, end:{3,[N01,L2]}}})]`.
-
-**Stage 9 — Receiver: POV lift + `Requires` (trust boundary, 3 contexts).** Node-side **generates**:
-`lift_assembler` (`authoring.rs:287`) → `assemble_collation` (`:191`) → `channel_lift` (`pool.rs:480`) → lift in
-POV (`ParachainBlockData::V3`). Runtime does neither (only `consumption_record`). PVF `validate_block` wrapper
-**verifies** the POV lifts + emits `UMPSignal::Requires`; `build_requires` runs node-side *and* PVF-side
-(byte-identical). Example: `channel_lift(endpoint=3)` → `RequiresLift{[],EMPTY,⟨C↪SR⟩}` → `Requires({(2000,SR)})`.
-
-**Stage 10 — Relay: match `Requires` vs ring.** `spec_msg::check_requires` (`spec_msg.rs:200`): each
-`(source,root) ∈ RecentProvides[source]`. `SR ∈ RecentProvides[2000]` ✓ → valid. (B consumed only by *proving* it
-read committed data the relay still vouches for.)
-
-**Stage 11 — Receiver: report watermark back via ack.** `on_initialize` age sweep / ¼-window trigger
-(`:906-918`, `:1533-1546`) → `publish_register` (`:1485`); this is itself Stage 1–3 on **B's** side (B is `K`'s
-sender). Example: B emits `Register{ up_to:3, grant:{100,1MiB}, closed:false }` on `K` → `SR_B` committed +
-pushed to B's ring. Lossy latest-wins.
-
-**Stage 12 — Sender: read ack, free credit, gate next send.** A's monitor picks up `SR_B` → `fetch_register`
-(`fetch.rs:268`) → `verify_event_response` (`verify.rs:152`, inclusion not recomputation) → `note_register`
-(`pool.rs:316`) → `build_inherent` register read → runtime `consume_register_read` (`:1756`) →
-`OutChannels[C].register` + `confirm(up_to)` (`:355`) releases in-flight below the watermark → credit freed. The
-read is lifted (`register_lift`, `pool.rs:525`) → `Requires({(2001,SR_B)})`, matched on the relay. A's archiver
-`prune_payloads(C, 3)` (`archive.rs:418`) drops confirmed payloads (leaf hashes kept per lossy-head/horizon).
-Example: `register.up_to: 0→3`, in-flight released → `ensure_credit` sees 0/100 → A may send X3,X4,… (Stage 1). A
-`grant:{0,…}` (suspend) or `closed:true` blocks / tears down.
-
-**The loop.** Two independent send pipelines (A's data on `C`, B's register on `K`) each run Stages 1–10; coupled
-by Stage 8 (B's frontier) → Stage 11 (B's register) → Stage 12 (A's credit/watermark). Data-plane
-(fetch/verify/consume), consensus-plane (POV lift → `Requires` → ring match), and flow-control-plane (register →
-credit/watermark → prune) all wire together; backpressure (`ensure_credit`) + ring-matched lifts keep it safe and
-bounded. **It closes end-to-end.**
-
-## Stage 9 expanded — POV lift → `Requires`, and UMP-signal transport safety
-
-### The lift/`Requires` path (5 steps, 3 contexts) — consistent with v0.5
-
-1. **Consumption record (runtime output).** `consume_channel_item` (`lib.rs:1690`) / `consume_register_read`
-   (`:1756`) write per-`(source,stream)` `Interval`s into transient `ConsumptionOutbox`, exposed by
-   `consumption_record()`. Runtime stores **only frontiers** (`InboundFrontier`) + this record — enough to
-   *verify* a lift, never to *generate* one.
-2. **Lift generation (node-side).** `lift_assembler` → `assemble_collation` (`authoring.rs:191`) →
-   `channel_lift`/`register_lift` (`pool.rs:480/525`) pulls extension-over-retained-leaf-hashes + tree proof from
-   the pool; multi-block candidates stitch interval chains in bundle order (`chain_endpoint`).
-3. **POV carriage.** Lifts ride in `ParachainBlockData::V3` — the PVF's *input*.
-4. **PVF synthesis (`validate_block` wrapper, post-execution).** Reads `consumption_record()`, takes POV lifts,
-   `build_requires(records, lifts)` **advances each endpoint to a current in-window root** (extension+tree →
-   `StreamsRoot`; invalid → `LiftError` fails candidate; per source must converge → `DivergentRoots` else),
-   produces canonical `RequiresSet`, appends `UMPSignal::Requires(set)` to `UpwardMessages`.
-5. **Byte-identity.** Collator also runs `build_requires` node-side to declare the same signal; PVF re-derives
-   it — a mismatch is rejected at backing.
-
-**v0.5 consistency: yes, and the primitive encodes it.** `UMPSignal::Requires` doc (`polkadot/primitives/src/v9/mod.rs:2750-2761`):
-*"NEVER emitted by parachain block execution … the validate_block wrapper synthesizes this signal from the record
-via POV-carried lifts … Relay-side semantics are window membership only."* `Provides` (`:2744`): *"Emitted only
-by blocks that touched at least one stream."* Matches `[[spec-msg-lift-validate-block-hook]]` +
-`[[spec-msg-pov-format-rollout]]`.
-
-### `UpwardMessages` + UMP signals — what it is and why it's safe
-
-The emitter snippet (`append(UMP_SEPARATOR)` then each signal) builds the candidate's `upward_messages`
-commitment, which has **two regions split by `UMP_SEPARATOR = vec![]`** (`v9:2867`):
-- **before** the separator → real UMP (XCM to relay, queued);
-- **after** → **UMP signals** (`SelectCore`/`ApprovedPeer`/`Provides`/`Requires`) — parsed and acted on, **never
-  queued as XCM**.
-
-So yes, `Provides` (sender) and `Requires` (receiver, from the wrapper) are appended as post-separator signals.
-
-**Does not break relay UMP processing — safe by construction:**
-1. **XCM queueing excludes signals** — the relay uses `skip_ump_signals` (`inclusion/mod.rs:950,1004`) =
-   `take_while(m != separator)` (`v9:2870`); post-separator signals are never dispatched as XCM.
-2. **Signals don't consume XCM UMP budget** — count/size checks run on the `skip_ump_signals` output (pre-sep
-   only); signal count is separately bounded by `MAX_UMP_SIGNALS = 4` (`v9:2770`; duplicates → error).
-3. **Mechanism pre-exists** — same separator+signal transport as `SelectCore`/`ApprovedPeer`; `Provides`/`Requires`
-   add two enum variants + two handlers: `note_provides` (`inclusion:918-921` → ring) and `check_requires`
-   (`paras_inherent:1044-1052` → drop candidate if root not in window). Parsed via `commitments.ump_signals()`
-   (`v9:2879`).
-
-**Real hazard = uneven deploy (not the mechanism).** Emitting `Provides`/`Requires` to a relay whose runtime
-lacks the enum variants → `UMPSignal::decode` fails → candidate rejected. Needs: (a) primitives/variants reach
-the **relay first** (decode-first order, `[[spec-msg-pov-format-rollout]]`); (b) a **consumer-side feature gate**
-(`SpeculativeMessaging` bit, `[[spec-msg-ump-signal-compat]]`) so the relay *ignores* the signals while disabled
-(a `paras_inherent` drop-while-disabled, not an emitter check). **PoC gap:** on lexnv's branch `note_provides`
-and `check_requires` run **unconditionally** (no feature gate) — it assumes the relay is already upgraded+enabled;
-the uneven-deploy gate is a production hardening item (our `rk-spec-msg-relay` direction), not in the PoC. The
-transport is sound; the rollout gating isn't wired yet.
+> **Moved.** The 12-stage worked loop *and* its Stage 9 deep-dive (POV lift → `Requires` + UMP-signal transport
+> safety) — code links + example data, refs verified against `lexnv/spec-msg-poc-mvp`, feature-gate framing
+> reconciled to release-first — now live in
+> [speculative-messaging-impl-design.md](../../content/post/speculative-messaging-impl-design.md)
+> ("End-to-end walkthrough" + "Stage 9 deep-dive").
 
 ## Post-sync delta (branch @ 0fe8c0b1c83, 07-23) — node-side hardening only, no design change
 
@@ -3873,6 +3746,33 @@ Themes (client crate `cumulus/client/spec-msg/src/` + node wiring):
 the `specmsg0` inherent **is** wired into the omni-node aura collator (I'd only grepped
 `cumulus/client/consensus/aura/src/` before). So the #12594 collator-side wiring is done (in the omni-node node
 layer, not the aura crate).
+
+### How the omni-node `spec_msg_inherent` is used after `inherent_data_at`
+
+In `cumulus/polkadot-omni-node/lib/src/nodes/aura.rs` (slot-based / lookahead collators), the
+`create_inherent_data_providers` closure builds:
+
+```text
+(storage_proof providers, SpecMsgInherentData)  // from inherent_data_at(pool, parent, InherentBudget)
+```
+
+`SpecMsgInherentData` implements `sp_inherents::InherentDataProvider` (`cumulus-primitives-spec-messaging::inherent`):
+
+- **non-empty** → `put_data(INHERENT_IDENTIFIER = "specmsg0", self)` into the authoring `InherentData`
+- **empty** (no pool / nothing to consume) → puts **nothing**; the block simply carries no spec-msg inherent
+
+Flow into the authored block:
+
+1. Aura collator (`cumulus_client_consensus_aura::collator`) calls
+   `create_inherent_data_providers(parent).create_inherent_data()` → `other_inherent_data` (already includes
+   `specmsg0` when present).
+2. That bag is merged with parachain inherent data and passed to the proposer as
+   `ProposeArgs.inherent_data`.
+3. Runtime `pallet_spec_messaging::ProvideInherent::create_inherent` reads `specmsg0` and, if non-empty,
+   emits `Call::enact_messages { data }` — the mandatory inherent extrinsic that runs
+   `consume_channel_item` / `consume_register_read` (Stage 8 above).
+
+One-liner: **pool → `inherent_data_at` → `InherentData["specmsg0"]` → proposer → `Call::enact_messages`.**
 
 ## DHT discovery: source genesis via local governance now; relay-lookup is a relay-side proposal
 
