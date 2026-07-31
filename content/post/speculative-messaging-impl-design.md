@@ -64,8 +64,9 @@ Legend: ✅ implemented in the PoC · ⬜ not yet / deferred (see §8).
 ## Sub-issue status — [#12531](https://github.com/paritytech/polkadot-sdk/issues/12531)
 
 The overarching MVP issue decomposes into five work streams (15 leaf issues). Status against the PoC
-(`lexnv/spec-msg-poc-mvp`) — **14 / 15 implemented**; the gaps are monitoring metrics (#12597) and dynamic
-DHT peer discovery (part of #12595).
+(`lexnv/spec-msg-poc-mvp`) — **14 / 15 implemented**; the one gap is monitoring metrics (#12597). Dynamic DHT
+peer discovery (part of #12595) was the other deferred item and is now implemented on the stacked branch
+[#12736](https://github.com/paritytech/polkadot-sdk/pull/12736).
 
 | Work stream | Leaf issue | PoC |
 |---|---|---|
@@ -75,7 +76,7 @@ DHT peer discovery (part of #12595).
 | **[#12349](https://github.com/paritytech/polkadot-sdk/issues/12349) relay** | [#12347](https://github.com/paritytech/polkadot-sdk/issues/12347) Expose `Provides`/`Requires` UMP signals | ✅ `polkadot-primitives` v9 |
 | | [#12704](https://github.com/paritytech/polkadot-sdk/issues/12704) `RecentProvides` checks on the relay | ✅ `spec_msg` pallet |
 | **[#12707](https://github.com/paritytech/polkadot-sdk/issues/12707) node/client** | [#12593](https://github.com/paritytech/polkadot-sdk/issues/12593) `SpeculationStore` | ✅ `SpecMsgArchive` (+ `SpecMsgPool`) |
-| | [#12595](https://github.com/paritytech/polkadot-sdk/issues/12595) p2p layer for fetching messages | ✅ fetch/serve over `/spec-msg/exchange/1` · ⚠️ dynamic DHT peer discovery deferred (MVP uses a static `PeerRegistry`) |
+| | [#12595](https://github.com/paritytech/polkadot-sdk/issues/12595) p2p layer for fetching messages | ✅ fetch/serve over `/spec-msg/exchange/1` · ✅ on-chain-driven relay-DHT peer discovery ([#12736](https://github.com/paritytech/polkadot-sdk/pull/12736), reusing RFC-0008 `/paranode`; supersedes the static `PeerRegistry`) |
 | | [#12583](https://github.com/paritytech/polkadot-sdk/issues/12583) Monitor relay for `Provides` | ✅ `monitor.rs` |
 | **[#12708](https://github.com/paritytech/polkadot-sdk/issues/12708) parachain** | [#12350](https://github.com/paritytech/polkadot-sdk/issues/12350) `pallet-spec-messaging` sender part | ✅ sender half |
 | | [#12591](https://github.com/paritytech/polkadot-sdk/issues/12591) Forward messages to XCM queue | ✅ enqueue under `SpecMsg(source)` |
@@ -134,11 +135,15 @@ Example: `{0,[]}→{3,[N01,L2]}`, `root=SRoot3`, `tree→SR==under` ✓ → `Ver
 
 **Stage 8 — Receiver: author + consume (budget-sliced).** `inherent_data_at` (`authoring.rs:89`) — first
 grants any in-flight fetch round a bounded grace window (`wait_for_in_flight_rounds`, `pool.rs:600`; see the
-client-timing deep-dive below) so a message fetched a few ms ago still makes *this* block — then
+client-side timing deep-dive in [PoC internals](speculative-messaging-poc-internals.md#12707--nodeclient-cumulus-client-spec-msg))
+so a message fetched a few ms ago still makes *this* block — then
 `build_inherent` (`pool.rs:774`) hands the budget-limited continuation (`InherentBudget` 256KiB/8 streams);
 runtime `consume_channel_item` (`:1690`) hashes each onto `InboundFrontier[(2000,C)]` (`:720`) in order, delivers
-XCM to the sink, appends `Interval` to `ConsumptionOutbox` (`:1745`). Leftover stays pooled (partial consumption
-routine). Example: inherent `messages:[(2000,C,[P0,P1,P2])]`; `InboundFrontier: 0→3`; record
+XCM to the sink, appends `Interval` to `ConsumptionOutbox` (`:1745`). Leftover stays pooled — partial
+consumption is routine **once the fetch has caught up to the head** (any prefix is liftable from the retained
+leaves); a **mid-backlog** stream (`ledger.end < head`) drains only **wholesale** until the fetch reaches the
+head, as only its endpoint is then liftable (§8). Example: inherent `messages:[(2000,C,[P0,P1,P2])]`;
+`InboundFrontier: 0→3`; record
 `[(2000,{C:Interval{start:<root@0>, end:{3,[N01,L2]}}})]`.
 
 **Stage 9 — Receiver: POV lift + `Requires` (trust boundary, 3 contexts).** Node-side **generates**:
@@ -171,349 +176,11 @@ by Stage 8 (B's frontier) → Stage 11 (B's register) → Stage 12 (A's credit/w
 credit/watermark → prune) all wire together; backpressure (`ensure_credit`) + ring-matched lifts keep it safe and
 bounded. **It closes end-to-end.**
 
-Expanded below with code links and worked data: sender (0–2), relay ring (3 & 10), proof shapes,
-verification (5–7), client-side timing (4–8), lift (9), ack stream (0, 11–12), flow control (11–12).
-
-## Sender deep-dive — Stages 0–2: sends → `StreamsRoot`
-
-How three XCMs become one 32-byte commitment, in `cumulus-pallet-spec-messaging` (refs `lib.rs`).
-
-**Credit gate (Stage 1).** `can_send` (`:1401`) / `ensure_credit` (`:1467`): a send needs room in the peer's
-granted window. *In-flight* = the count and byte-sum of leaves at positions ≥ B's read watermark; `send`
-requires in-flight strictly below **both** `grant.max_messages` and `grant.max_bytes`. Over either →
-`SendError::Transport`, surfaced to the XCM caller as backpressure (no hidden queue). With B's opening grant
-`{100, 1 MiB}` and watermark 0, A's three sends sit at `3 / 100` msgs and `|P0|+|P1|+|P2| / 1 MiB` — admitted.
-
-**Append (Stage 1).** `append_to_stream` (`:1336`) pushes each payload onto `OutboundMessages[C]` (`:625`) —
-*this block's* sends, host-appended O(1). The stored `OutboundFrontier[C]` (`:616`) is untouched mid-block, so
-`position = frontier.leaf_count + index` is stable across the whole block (frontier 0 → P0@0, P1@1, P2@2).
-
-**Commit (Stage 2, `on_finalize` `:931`).** `commit_streams_root` (`:1560`) runs the fold *transiently* —
-`OutboundFrontier` is not mutated yet:
-
-```
-leaves      L_i = hash_leaf(LEAF_VERSION=0x0, SpecMsgKind::Data(X_i).encode())   (mmr.rs:90)
-              preimage domain-tagged LEAF_TAG=0x1 (lib.rs:143)
-stream MMR  fold C's stored frontier (empty) + [L0,L1,L2]:
-              N01 = merge(INNER_TAG=0x2, L0, L1);  peaks = [N01, L2]
-              SRoot3 = bag(PEAK_TAG=0x3, peaks)          ← C's new root at leaf_count 3
-commit tree leaf(C) = tree_leaf_hash(C, SRoot3)          (tree.rs:75, TREE_LEAF_TAG=0x5)
-              inner via tree_inner_hash(bit, l, r)        (tree.rs:88, TREE_INNER_TAG=0x6)
-              SR = compute_streams_root({C→SRoot3, K→…})  (tree.rs:195)   ← the StreamsRoot
-```
-
-`commit_streams_root` then **memoizes** `SR` for `provides_root` (`:1932` → `UMPSignal::Provides(SR)`) and
-deposits the header digest `DigestItem::Consensus(SPMS_ENGINE_ID, SR)` (`lib.rs:170`), ≤ 1 per header. An idle
-block (no touched stream) folds nothing, emits nothing, deposits nothing.
-
-**Advance (next `on_initialize` `:874`).** The pending `[L0,L1,L2]` are hashed into `OutboundFrontier[C]`
-(leaf_count 0 → 3) and `OutboundMessages` cleared — one atomic step. So block N's sends stay readable in **N's**
-state, where the `outbound_messages()` runtime API extracts them for the archiver (Stage 2), never via storage
-after the fact.
-
-```
-block N   : append P0,P1,P2 (frontier stays 0) → on_finalize: fold → SR + digest + Provides(SR)
-              OutboundMessages[C]=[P0,P1,P2], OutboundFrontier[C]=0
-block N+1 : on_initialize: frontier[C] 0→3, OutboundMessages cleared
-              (N's sends already committed under SR; archiver already read them from N's state)
-```
-
-Key invariant: the commitment is *derived, never declared* — `SR` is recomputable from the frontiers alone, so
-anyone with the payloads can reproduce it. That is exactly what makes the fetch trust-free (verification
-deep-dive below).
-
-**Marker leaf — an opened channel is never empty.** The `StreamsRoot` commitment is inclusion-only, so you
-cannot prove a stream is *empty* — "empty", "peer lagging" and "peer withholding" would be indistinguishable (a
-real attack surface). The fix is a marker leaf: `open_channel` (`lib.rs:1067`) commits `OpenChannel` as the
-channel stream's **leaf 0** at open (`open_channel` → `send_signal` → `append_to_stream`). So an opened channel
-always carries ≥ 1 leaf; **cursor 0 is always provable**, and the receiver can tell "nothing sent yet" (only the
-`OpenChannel` leaf) from a stalled or withholding peer. The `OpenChannel` leaf is window-counted like any send.
-
-## Relay-ring deep-dive — Stages 3 & 10: `RecentProvides` window match
-
-The relay's only spec-msg state (`spec_msg` pallet, refs `spec_msg.rs`). Everything below `SR` is
-parachain-side; the relay just remembers *which roots each sender recently committed* and checks receiver
-`Requires` against them.
-
-**Push (Stage 3).** On each *enactment* of a sender candidate that emitted `Provides`, `inclusion::enact_candidate`
-calls `note_provides` (`:190`) → pushes `SR` into `RecentProvides[A]` (`:149`), a per-sender ring of the last
-`RECENT_PROVIDES_WINDOW = 128` roots (`:58`). Idle blocks push nothing, so an inactive sender's window never
-ages out.
-
-**Match (Stage 10).** In `paras_inherent::sanitize_backed_candidates`, `check_requires` (`:200`) tests every
-`(source, root)` in the candidate's `Requires` set for `root ∈ RecentProvides[source]`. A miss **drops the
-candidate from the inherent — never a dispute** (`paras_inherent:1049`): the submitter regenerates its POV
-lifts against the *then-current* provides and resubmits. Matching is receiver-agnostic — any para may require
-any sender's root.
-
-**Why 128 is slack, not lag tolerance.** The window only has to cover a receiver candidate's authoring →
-backing → inclusion pipeline depth (~2–3 relay blocks, more under elastic scaling). Consumption *lag* is
-absorbed by the POV lift advancing the endpoint to a current root (Stage 9) — not by the window. Outrunning the
-window is not a failure mode; the candidate is just rebuilt.
-
-```
-relay block   RecentProvides[A]  (newest → oldest, cap 128)
-  R           [ …, SR ]                    ← A's candidate enacted (Stage 3)
-  R+1         [ …, SR, SR' ]               B's candidate (Requires {(A,SR)}) backed → check_requires ✓
-  R+2         [ …, SR, SR', SR'' ]         B included; SR still well inside the window
-  …
-  R+128       SR falls off the tail        (matters only if B never got backed → rebuild vs SR_current)
-```
-
-**Dispute revert.** On a revert, `paras_inherent` calls `evict_after_revert` (`:216`) to roll the affected
-sender rings back to the revert height — the PoC evicts explicitly rather than trusting state-revert alone.
-
-## Proof shapes — `MmrInclusionProof` vs `MMRExtensionProof`
-
-Two MMR proof types recur across the read and lift deep-dives below; they split by **shape**, not by stream:
-
-- **`MmrInclusionProof`** (`mmr.rs:263`) — proves **one leaf** is in the stream MMR: `verify_head` (the head,
-  `:299`) or `verify_leaf` (a position, `:332`). Used **only for the ack/register (event) reads** — the single
-  lossy-latest leaf — and re-checked at three points on that path: client fetch (`verify_event_response`), the
-  inherent (`SpecMsgInherentData.register_reads`, `inherent.rs:58`), and in-runtime (`consume_register_read` →
-  `verify_head`, `lib.rs:1779`).
-- **`MMRExtensionProof`** (`mmr.rs:366`) — bridges a **frontier/endpoint → a later root** over a range
-  (`verify`, `:409`). Used for **two** things: message-payload fetch verification (`MessagesResponse.extension`,
-  verification deep-dive) **and every POV lift** (`RequiresLift.extension` / `advances`, `lift.rs:62`), verified
-  by `build_requires` node- and PVF-side.
-
-So `MMRExtensionProof` is *not* message-only: a **register read touches both** — `MmrInclusionProof` for the
-read itself, `MMRExtensionProof` for its lift (`register_lift` → `Requires`). Rule of thumb: **one leaf →
-inclusion; a range or endpoint→root → extension**. Either way, the proof binds to the `StreamsRoot` only
-through the accompanying `TreeInclusionProof`.
-
-## Verification deep-dive — Stages 5–7: trust-free response checking
-
-Why the receiver can fetch payloads from an **untrusted** peer and safely act on them: it never trusts the
-response — it *recomputes* the sender's commitment from the bytes and compares to the root the relay already
-vouches for.
-
-**Request names the root.** `MessagesRequest{ stream, start, under, max_bytes }` — `under` is the exact
-`StreamsRoot` the requester will depend on (from `RecentProvides`, Stage 4). The response is proven under *that*
-root or discarded.
-
-**Response.** `MessagesResponse{ base, payloads, start_peaks, extension, tree_proof }` — `base` = frontier the
-payloads extend from, `extension` = `MMRExtensionProof` bridging the recomputed leaves to the stream root,
-`tree_proof` = `TreeInclusionProof` from the stream root up to `SR`.
-
-**`verify_messages_response` (`verify.rs:94`)** — pure recompute-and-compare:
-
-```
-1. from base {0,[]}, for each payload: L_i = hash_leaf(0x0, P_i); append → frontier {3,[N01,L2]}
-2. extension.verify(&frontier) → SRoot3          (mmr.rs:409, MMRExtensionProof::verify)
-3. tree_proof.verify(&C, &SRoot3) → SR'          (tree.rs:143, TreeInclusionProof::verify)
-4. SR' == under ?   yes → VerifiedMessages{ end:{3,[N01,L2]}, head:3 }
-                    no  → discard response AND peer (poisoned) → refetch elsewhere
-```
-
-No signature, no trusted transport, no relay-state read below the root: the payloads are self-authenticating
-against a hash the relay chain already put in `RecentProvides`. A lying peer can only produce bytes that hash to
-something ≠ `under`, which step 4 rejects. Register (ack) reads follow the same recompute-and-compare
-discipline but over a single-leaf **head** proof rather than a range extension, because the ack stream is lossy
-latest-wins — see the ack-stream deep-dive below. Verified message runs land in `SpecMsgPool` as a
-`ChannelLedger` binding
-`{root: SR, head, extension, tree_proof}` — the exact material the lift assembler re-serves as the POV lift
-(Stage 9) without re-fetching.
-
-## Client-side timing deep-dive — the fetcher↔proposer grace window (Stages 4–8)
-
-Stages 4–8 hide a race: the **fetcher** (monitor → fetch → pool, Stages 4–7) and the **proposer**
-(`inherent_data_at`, Stage 8) both fire off the *same* relay-block import and run concurrently. A fetch round
-takes ~15–40 ms on loopback; if the proposer snapshots the pool a few ms before the round lands, the message
-misses this block's inherent and slips to the receiver's *next* block — a full receiver-block of latency,
-defeating the HRMP-latency target.
-
-**The fix.** Before snapshotting, `inherent_data_at` waits on any in-flight round for a bounded
-`ROUND_GRACE_WINDOW` (`authoring.rs:80`, 250 ms) via `wait_for_in_flight_rounds` (`pool.rs:600`). Idle (no
-round) the wait is free. 250 ms is generous for the ~15–40 ms it targets yet ≤ ⅛ of the ~2 s authoring budget,
-so a *hung* fetch can't wedge authoring — it gives up and builds without the message (correctness intact: the
-relay ring still vouches `SR`, so it just arrives next block).
-
-**Three states** (`RoundsInFlight`, `pool.rs:307`), because fetcher and proposer aren't in lockstep:
-
-| State | Meaning | Set / cleared |
-|---|---|---|
-| `started` | a round is actively running | `begin_round` (`pool.rs:523`) / `end_round` (`:560`) |
-| `pending_offers` | monitor pushed the offer, fetcher hasn't begun the round yet | `note_pending_offer` (`:545`, from `monitor.rs:395`), superseded by `begin_round` |
-| `completed` | round finished a hair before the snapshot; writes not yet in the read view | `end_round` retains for `COMPLETION_RETENTION` (`:301`, 5 ms) |
-
-Without `pending_offers` the proposer could snapshot in the gap after the offer is sent but before the round
-starts (nothing `started` yet); without `completed` retention it could seal an empty inherent microseconds
-after a round dropped its guard.
-
-**Worked timeline** — B authors block N+1; relay block R carries A's included `SR` over stream `C = [P0,P1,P2]`:
-
-```
-t=0ms   R imported → both fire off it:
-        · monitor:  note_pending_offer(A)  → pending_offers={A}; sends the offer
-        · proposer: inherent_data_at → wait_for_in_flight_rounds(250ms);
-          entry {started:∅, pending:{A}, completed:∅} → waits (not an empty snapshot)
-t=2ms   fetcher:  begin_round(A) → {started:{A}, pending:∅}; fetch + verify P0..P2
-t=28ms  end_round(A) → {started:∅, completed:{A}} (retained 5 ms); waiters woken
-t≈29ms  proposer wakes, retention lapses, writes visible → wait returns (≈29 ms ≪ 250)
-        → inherent messages:[(A, C, [P0,P1,P2])] delivered THIS block ✓
-```
-
-At that exit `started==0 && pending_offers==0` → classified `RetentionElapsed` (a benign settle), logged
-distinctly from a true `BoundExpired` (a round still live after the full 250 ms — e.g. A's collator
-unreachable → build N+1 without the message; it lands in N+2).
-
-**Below the design layer.** The window only decides whether a message lands in block N+1 vs N+2 — a node-local
-latency optimization on the fetcher↔proposer seam. It changes nothing committed, verified, or delivered (a
-missed message just waits one block), which is why it lives entirely in the node/client stream
-([#12707](https://github.com/paritytech/polkadot-sdk/issues/12707)), not the protocol.
-
-## Lift deep-dive — Stage 9: POV lift → `Requires`, and UMP-signal transport safety
-
-### The lift/`Requires` path (5 steps, 3 contexts)
-
-1. **Consumption record (runtime output).** `consume_channel_item` (`lib.rs:1690`) / `consume_register_read`
-   (`:1756`) write per-`(source,stream)` `Interval`s into transient `ConsumptionOutbox`, exposed by
-   `consumption_record()`. Runtime stores **only frontiers** (`InboundFrontier`) + this record — enough to
-   *verify* a lift, never to *generate* one.
-2. **Lift generation (node-side).** `lift_assembler` → `assemble_collation` (`authoring.rs:234`) →
-   `channel_lift`/`register_lift` (`pool.rs:860/905`) pulls extension-over-retained-leaf-hashes + tree proof
-   from the pool; multi-block candidates `stitch` interval chains in bundle order (`chain_endpoint`) —
-   consecutive intervals must chain (`next.start == prev.end.root()`) or an `advances` extension proves the gap
-   is a forward step (present only when a fresher root was read mid-bundle). A mispaired or forged chain can't
-   fold to the committed root — the soundness guard.
-3. **POV carriage.** Lifts ride in `ParachainBlockData::V3` — the PVF's *input*.
-4. **PVF synthesis (`validate_block` wrapper, post-execution).** Reads `consumption_record()`, takes POV lifts,
-   `build_requires(records, lifts)` **advances each endpoint to a current in-window root** (extension+tree →
-   `StreamsRoot`; invalid → `LiftError` fails candidate; per source must converge → `DivergentRoots` else),
-   produces canonical `RequiresSet`, appends `UMPSignal::Requires(set)` to `UpwardMessages`.
-5. **Byte-identity.** Collator also runs `build_requires` node-side to declare the same signal; PVF re-derives
-   it — a mismatch is rejected at backing.
-
-**The primitive encodes the invariant.** `UMPSignal::Requires` doc (`polkadot/primitives/src/v9/mod.rs:2750-2761`):
-*"NEVER emitted by parachain block execution … the validate_block wrapper synthesizes this signal from the record
-via POV-carried lifts … Relay-side semantics are window membership only."* `Provides` (`:2744`): *"Emitted only
-by blocks that touched at least one stream."* Matches the `validate_block`-hook synthesis (§4) and the PoV-format
-rollout order (§7).
-
-### `UpwardMessages` + UMP signals — what it is and why it's safe
-
-The emitter (`append(UMP_SEPARATOR)` then each signal) builds the candidate's `upward_messages` commitment, which
-has **two regions split by `UMP_SEPARATOR = vec![]`** (`v9:2867`):
-- **before** the separator → real UMP (XCM to relay, queued);
-- **after** → **UMP signals** (`SelectCore`/`ApprovedPeer`/`Provides`/`Requires`) — parsed and acted on, **never
-  queued as XCM**.
-
-So `Provides` (sender) and `Requires` (receiver, from the wrapper) are appended as post-separator signals.
-
-**Does not break relay UMP processing — safe by construction:**
-1. **XCM queueing excludes signals** — the relay uses `skip_ump_signals` (`inclusion/mod.rs:950,1004`) =
-   `take_while(m != separator)` (`v9:2873`); post-separator signals are never dispatched as XCM.
-2. **Signals don't consume XCM UMP budget** — count/size checks run on the `skip_ump_signals` output (pre-sep
-   only); signal count is separately bounded by `MAX_UMP_SIGNALS = 4` (`v9:2770`; duplicates → error).
-3. **Mechanism pre-exists** — same separator+signal transport as `SelectCore`/`ApprovedPeer`; `Provides`/`Requires`
-   add two enum variants + two handlers: `note_provides` (`inclusion:918-921` → ring) and `check_requires`
-   (`paras_inherent:1044-1052` → drop candidate if root not in window). Parsed via `commitments.ump_signals()`
-   (`v9:2879`).
-
-**Real hazard = uneven deploy (not the mechanism).** Emitting `Provides`/`Requires` to a relay whose runtime
-lacks the enum variants → `UMPSignal::decode` fails → candidate rejected. The safeguard is **release-first
-ordering** (§7): the relay runtime with UMP-signal support must reach ⅔+ validators *before* any parachain emits
-the new signals (decode-first upgrade order). There is deliberately **no feature bit** — the earlier
-`SpeculativeMessaging` node-feature / consumer-side gate was dropped, so `note_provides` and `check_requires` run
-**unconditionally** (gated only by a `Requires` being present); with no on-chain toggle to hold candidates back,
-deploy-before-emit ordering is the sole migration safeguard. The transport is sound; safety rests on release
-ordering, not a runtime gate.
-
-## Ack-stream deep-dive — Stages 0, 11–12: the register head read
-
-The ack stream `K = Ack{recipient: sender, domain, num}` is an ordinary per-stream MMR like the data stream
-`C`, but consumed under the **opposite discipline — lossy latest-wins**: only B's *newest* `Register` matters,
-so A reads just the **head** leaf of `K`, never the history. (Data stream `C` is ordered no-skip — A reads
-*every* leaf via a range + extension proof, verification deep-dive above.)
-
-**No direct ack — the register is just a stream leaf.** B's `publish_register` (`lib.rs:1485`) only
-`append_to_stream`s the `Register` onto `K`; it never pushes anything to A (the local `Event::RegisterPublished`
-is a FRAME event for RPC, not a cross-chain signal). The `StreamsRoot` update isn't in `publish_register`
-either — it's the ordinary end-of-block `commit_streams_root` fold: `K` is now a touched stream, so B's block
-commits a fresh `SR_B` and emits `Provides(SR_B)`. Delivery to A is then the **identical** path as data,
-just B→A — `note_provides` → `RecentProvides[B]` → monitor → fetch → verify → inherent — with B as `K`'s
-sender and A its reader. So the ack is **asynchronous** (it round-trips through relay inclusion + an
-off-chain fetch), which is exactly why flow control is windowed/advisory: A sends up to the `grant` without
-waiting for a per-message ack, and B's watermarks catch it up later.
-
-**Head read, not range.** `fetch_register` (`fetch.rs:367`) issues `EventRequest{ stream:K, under:SR_B, at:None }`
-— `at:None` = "the head as of `under`". The reply is a single leaf, not a run:
-`EventResponse{ payload: Register.encode(), inclusion: MmrInclusionProof, tree_proof }`.
-
-**`verify_event_response` (`verify.rs:152`)** — head branch:
-
-```
-leaf = hash_leaf(LEAF_VERSION, payload)                              (= the served Register)
-(position, frontier) = inclusion.verify_head(leaf)   (mmr.rs:299)    → position = leaf_count-1
-root = frontier.root()
-streams_root = tree_proof.verify(K, root)            (tree.rs:143)
-streams_root == under ?   yes → VerifiedEvent{ position, frontier }
-                          no  → RootMismatch → discard + peer
-```
-
-**What `verify_head` proves (head-ness, not mere inclusion).** `MmrInclusionProof{ mmr_size, items }` — `mmr_size`
-fixes `leaf_count`. The head leaf is the rightmost leaf of the last (smallest) peak's subtree, so its sibling
-path is *exactly* `leaf_count.trailing_zeros()` LEFT siblings plus `count_ones()−1` other peaks; the item count
-is checked exactly, so the proof has **one valid form**. It reconstructs the full frontier and returns
-`position = leaf_count−1`.
-
-**Why lossy-latest-wins is still trust-free.** `under = SR_B` commits `K`'s root at a *specific* leaf count. A
-lagging or malicious peer that serves a **stale** register as the head puts the wrong leaf in the head slot →
-a different frontier root → `≠ under` → rejected (`verify.rs:150`: *"under fixes the stream's leaf count, so a
-stale leaf served as the head yields a different stream root and fails the comparison"*). So A can be *behind*
-(it only sees whichever `SR_B` it points at) but never *fooled* into treating an old register as current.
-
-**Data / timeline** — B acknowledges A's `C=[P0,P1,P2]`; A reads B's register off `K` (B is `K`'s sender, A its
-reader; every register publish touches `K`, so B commits a fresh `StreamsRoot` and pushes it to its ring):
-
-```
-K leaf   Register (B → A on stream K)                 B's StreamsRoot    relay ring RecentProvides[B]
-  0       {up_to:0, grant:{100,1MiB}, closed:false}    SR_B0  (Stage 0)   [ …, SR_B0 ]
-  1       {up_to:3, grant:{100,1MiB}, closed:false}    SR_B1  (Stage 11)  [ …, SR_B0, SR_B1 ]
-  2       {up_to:5, …}   (if B consumes more later)    SR_B2             [ …, SR_B1, SR_B2 ]
-
-A (Stage 12), currently pointing at SR_B1:
-  EventRequest{ K, under:SR_B1, at:None }
-   → EventResponse{ payload: Register#1, inclusion: head @ leaf_count=2, tree_proof: ⟨K↪SR_B1⟩ }
-   → verify_head → position 1, frontier{leaf_count:2}, root → tree → SR_B1 == under ✓
-   → consume_register_read (lib.rs:1756): OutChannels[C].register = {up_to:3}; confirm(3) (lib.rs:355)
-     → credit freed  (→ flow-control deep-dive)
-```
-
-Pointing at `SR_B2` instead would yield `Register#2 {up_to:5}` — the newer head; registers #0/#1 are simply
-superseded, never fetched. The head read always returns exactly the latest register committed under the root A
-depends on. And the read is itself POV-lifted (`register_lift`) → `Requires({(B, SR_B*)})`, matched on the
-relay like any data read — so even reading an ack is proven against a committed root.
-
-## Flow-control deep-dive — Stages 11–12: credit / watermark / prune
-
-Entirely bilateral — no relay involvement. One channel = A's data stream `C` + B's register stream `K`
-(`Ack{recipient:A,…}`, lossy latest-wins). B's whole voice is its `Register` (refs `lib.rs`).
-
-**Register.** `Register{ up_to, grant{max_messages,max_bytes}, closed }` — `up_to` = B's consumption watermark
-(how far it has read `C`), `grant` = advisory credit B extends to A, `closed` = teardown. B publishes on
-acceptance, ~¼-window consumption progress, or age: `note_consumption` (`:1525`) sets the `due` flag,
-`publish_register` (`:1485`) emits it onto `K`.
-
-**The credit loop (Stage 12).** A reads B's register out-of-band over `K` (`fetch_register` → `verify_event_response`
-→ `note_register` → inherent → `consume_register_read` `:1756`), then `confirm(up_to)` (`:355`) releases
-in-flight below the watermark → credit freed for the next send.
-
-```
-A: send P0,P1,P2       → in-flight = 3 msgs, |P0|+|P1|+|P2| bytes   (below grant {100,1MiB} → OK)
-B: consume to pos 3    → InboundFrontier[(A,C)] = 3, watermark up_to = 3
-B: publish Register{ up_to:3, grant:{100,1MiB}, closed:false } on K   (¼-window / age trigger)
-A: read register → confirm(3): no in-flight positions ≥ 3 → in-flight 0 / 100
-   → ensure_credit sees 0/100 → A may send X3, X4, …
-A: prune_payloads(C, 3) (archive.rs:418) → drop confirmed payloads (leaf HASHES kept per horizon)
-```
-
-`grant:{0,…}` suspends (backpressure); `closed:true` tears the channel down. Because the register read is
-proven against a committed root (ack-stream deep-dive), even *credit* accounting is trust-free — never taken on
-a peer's word.
-
----
+Each stage is expanded (code links + worked data) in [PoC internals](speculative-messaging-poc-internals.md),
+by #12531 work stream: proof shapes (#12346); relay ring — stages 3 & 10 (#12349); verification 5–7 +
+client-side timing 4–8 (#12707); sender 0–2, lift 9, ack stream 0/11–12, flow control 11–12 (#12708).
+
+> _The stage-by-stage **deep-dives** (sender, relay-ring, proof shapes, verification, client-side timing, lift, ack-stream, flow-control) moved to [PoC internals](speculative-messaging-poc-internals.md), by #12531 work stream. §1–§8 below are the component summaries._
 
 ## 1. Primitives — `cumulus-primitives-spec-messaging`
 
@@ -683,6 +350,27 @@ UMP-signal support. Rollout safety therefore rests entirely on deploy-before-emi
 - **Live / speculative tier** — header-digest triggers (co-arrival in the same relay block), DA, live push,
   and the virtual window + atomic enactment dependencies — *deferred to super chains*. Only the inclusion tier
   (included-root triggers) is in the MVP.
+- **Expose `PeerRegistry` to the fetch consumer** (#12744). Discovery populates the registry, but nothing
+  external reads it yet — it's created in `start_node` and moved into `run_source_discovery` (loop-internal,
+  drives retry/peerless detection). Intentional follow-up: wire it when the fetch pipeline lands. Preferred
+  mechanism is in-scope shared-`Arc` DI, *not* an `OnceLock` handle — both writer and reader spawn in the same
+  `start_node` scope, so construct the `Arc<PeerRegistry>` once and hand `Arc<PeerRegistry>` to the writer and
+  `Arc<dyn SourcePeers>` to the reader (no `OnceLock`/return-type change; there's no forward reference to solve).
+  Do the hoist + inject atomically when the consumer arrives (pre-hoisting now would be a used-once binding).
+
+Known limitations surfaced in review (correctness/liveness, not yet issue-tracked):
+
+- **Partial consumption under deep backlog (Case-B).** `build_inherent` takes a byte-budget prefix without
+  checking `ledger.end < head`. A mid-backlog stream whose remaining run exceeds the 256 KiB inherent budget
+  yields `endpoint < end` → `channel_lift` returns `NotCovered` → collation fails (liveness, not safety — no
+  invalid candidate; self-resolves once the fetch reaches the head, but until then that stream drains nothing
+  and each block wastes a collation attempt). Fix: in Case-B, take `[cursor..end)` only if the whole run fits,
+  else withhold the stream (a `continue`, like the stale-`binding.root` guard).
+- **`TreeNodes` unbounded growth.** The commitment trie never deletes — streams are eternal, so it grows
+  monotonically (N distinct streams → N−1 inner nodes). This is an MVP *persistence strategy*, not
+  protocol-mandated: the design requires only the root, and the primitives' stateless `streams_root(entries)`
+  recompute needs no persisted tree at all. Bound it by evicting closed + fully-confirmed + horizon-aged
+  leaves, or drop the persisted trie for recompute.
 
 ## Related documents
 
