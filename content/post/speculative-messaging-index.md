@@ -21,6 +21,7 @@ Working notes and mirrors for **Speculative Messaging** (inclusion-tier MVP + v0
 | [Effort estimate (MVP)](speculative-messaging-effort-estimate.md) | ~70 eng-days to productionize inclusion-tier PoC |
 | [E2E runbook](speculative-messaging-e2e-test.md) | `spec_msg_penpal` zombienet cutover test |
 | [v0.5 alignment (condensed)](speculative-messaging-v0.5-alignment.md) | Foundation → v0.5 mapping |
+| [PoC internals (code analysis)](speculative-messaging-poc-internals.md) | Code-analysis deep-dives by #12531 work stream |
 | [Implementers' guide map](polkadot-implementers-guide-map.md) | Annotated reading map for the parachains guide |
 
 ## Design mirrors
