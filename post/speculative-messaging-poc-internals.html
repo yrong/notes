@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Speculative Messaging — PoC Internals (code analysis)</title><meta charset="utf-8"/><link rel="preload" href="../index-47d9ba67.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Ron's Notes"/><meta property="og:title" content="Speculative Messaging — PoC Internals (code analysis)"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Speculative Messaging — PoC Internals (code analysis)"/><meta name="twitter:description" content="Speculative Messaging — PoC Internals (code analysis) Code-analysis deep-dives on the spec-msg PoC (lexnv/spec-msg-poc-mvp), organized by the #12531 work streams."/><meta property="og:description" content="Speculative Messaging — PoC Internals (code analysis) Code-analysis deep-dives on the spec-msg PoC (lexnv/spec-msg-poc-mvp), organized by the #12531 work streams."/><meta property="og:image:alt" content="Speculative Messaging — PoC Internals (code analysis) Code-analysis deep-dives on the spec-msg PoC (lexnv/spec-msg-poc-mvp), organized by the #12531 work streams."/><meta property="twitter:domain" content="yrong.github.io/notes"/><meta property="og:url" content="https://yrong.github.io/notes/post/speculative-messaging-poc-internals"/><meta property="twitter:url" content="https://yrong.github.io/notes/post/speculative-messaging-poc-internals"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="Speculative Messaging — PoC Internals (code analysis) Code-analysis deep-dives on the spec-msg PoC (lexnv/spec-msg-poc-mvp), organized by the #12531 work streams."/><meta name="generator" content="Quartz"/><link href="../index-47d9ba67.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://yrong.github.io/notes/post/speculative-messaging-poc-internals-og-image.webp"/><meta property="og:image:url" content="https://yrong.github.io/notes/post/speculative-messaging-poc-internals-og-image.webp"/><meta name="twitter:image" content="https://yrong.github.io/notes/post/speculative-messaging-poc-internals-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="post/speculative-messaging-poc-internals" data-basepath="/notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">Ron's Notes</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; !b2.isFolder) {\n      const dateA = a2.data?.date ? new Date(a2.data.date).getTime() : 0;\n      const dateB = b2.data?.date ? new Date(b2.data.date).getTime() : 0;\n      if (dateA !== dateB) {\n        return dateB - dateA;\n      }\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-105" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-105" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../post/">post</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Speculative Messaging — PoC Internals (code analysis)</a></div></nav><h1 class="article-title">Speculative Messaging — PoC Internals (code analysis)</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../tags/polkadot" class="internal internal-link tag-link">polkadot</a><span class="note-properties-separator">, </span><a href="../tags/parachain" class="internal internal-link tag-link">parachain</a><span class="note-properties-separator">, </span><a href="../tags/speculative-messaging" class="internal internal-link tag-link">speculative-messaging</a><span class="note-properties-separator">, </span><a href="../tags/code-analysis" class="internal internal-link tag-link">code-analysis</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2026-07-29T16:00:00.000Z">Jul 29, 2026</time><span>47 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="speculative-messaging--poc-internals-code-analysis">Speculative Messaging — PoC Internals (code analysis)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#speculative-messaging--poc-internals-code-analysis" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>Code-analysis deep-dives on the <code>spec-msg</code> PoC (<code>lexnv/spec-msg-poc-mvp</code>), organized by the
+<a href="https://github.com/paritytech/polkadot-sdk/issues/12531" class="external external-link">#12531<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> work streams. These are the “how the code
+works” Q&amp;A findings — split out of the <a href="../post/speculative-messaging-v0.5-alignment" class="internal internal-link alias" data-slug="post/speculative-messaging-v0.5-alignment">v0.5 alignment note</a>
+(reconciliation + proposals) and complementing the linear <a href="../post/speculative-messaging-impl-design" class="internal internal-link alias" data-slug="post/speculative-messaging-impl-design">Implementation Design</a>
+(component reference). Findings surfaced here are summarized in impl-design §8. Deep-dives labeled “Stage N”
+expand the <a href="../post/speculative-messaging-impl-design" class="internal internal-link alias" data-slug="post/speculative-messaging-impl-design">Implementation Design</a> end-to-end walkthrough’s stages.</p>
+<h2 id="12346--primitives-cumulus-primitives-spec-messaging">#12346 — primitives (<code>cumulus-primitives-spec-messaging</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12346--primitives-cumulus-primitives-spec-messaging" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The stateless <code>streams_root(entries)</code> recompute (no persisted tree) is analyzed alongside the pallet’s
+persisted trie under <strong>#12708 → Commitment tree storage</strong> (below).</p>
+<h3 id="proof-shapes--mmrinclusionproof-vs-mmrextensionproof">Proof shapes — <code>MmrInclusionProof</code> vs <code>MMRExtensionProof</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#proof-shapes--mmrinclusionproof-vs-mmrextensionproof" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Two MMR proof types recur across the read and lift deep-dives below; they split by <strong>shape</strong>, not by stream:</p>
+<ul>
+<li><strong><code>MmrInclusionProof</code></strong> (<code>mmr.rs:263</code>) — proves <strong>one leaf</strong> is in the stream MMR: <code>verify_head</code> (the head,
+<code>:299</code>) or <code>verify_leaf</code> (a position, <code>:332</code>). Used <strong>only for the ack/register (event) reads</strong> — the single
+lossy-latest leaf — and re-checked at three points on that path: client fetch (<code>verify_event_response</code>), the
+inherent (<code>SpecMsgInherentData.register_reads</code>, <code>inherent.rs:58</code>), and in-runtime (<code>consume_register_read</code> →
+<code>verify_head</code>, <code>lib.rs:1779</code>).</li>
+<li><strong><code>MMRExtensionProof</code></strong> (<code>mmr.rs:366</code>) — bridges a <strong>frontier/endpoint → a later root</strong> over a range
+(<code>verify</code>, <code>:409</code>). Used for <strong>two</strong> things: message-payload fetch verification (<code>MessagesResponse.extension</code>,
+verification deep-dive) <strong>and every POV lift</strong> (<code>RequiresLift.extension</code> / <code>advances</code>, <code>lift.rs:62</code>), verified
+by <code>build_requires</code> node- and PVF-side.</li>
+</ul>
+<p>So <code>MMRExtensionProof</code> is <em>not</em> message-only: a <strong>register read touches both</strong> — <code>MmrInclusionProof</code> for the
+read itself, <code>MMRExtensionProof</code> for its lift (<code>register_lift</code> → <code>Requires</code>). Rule of thumb: <strong>one leaf →
+inclusion; a range or endpoint→root → extension</strong>. Either way, the proof binds to the <code>StreamsRoot</code> only
+through the accompanying <code>TreeInclusionProof</code>.</p>
+<h2 id="12349--relay-runtimeparachainsspec_msg">#12349 — relay (<code>runtime/parachains::spec_msg</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12349--relay-runtimeparachainsspec_msg" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="relay-ring-deep-dive--stages-3--10-recentprovides-window-match">Relay-ring deep-dive — Stages 3 &amp; 10: <code>RecentProvides</code> window match<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#relay-ring-deep-dive--stages-3--10-recentprovides-window-match" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The relay’s only spec-msg state (<code>spec_msg</code> pallet, refs <code>spec_msg.rs</code>). Everything below <code>SR</code> is
+parachain-side; the relay just remembers <em>which roots each sender recently committed</em> and checks receiver
+<code>Requires</code> against them.</p>
+<p><strong>Push (Stage 3).</strong> On each <em>enactment</em> of a sender candidate that emitted <code>Provides</code>, <code>inclusion::enact_candidate</code>
+calls <code>note_provides</code> (<code>:190</code>) → pushes <code>SR</code> into <code>RecentProvides[A]</code> (<code>:149</code>), a per-sender ring of the last
+<code>RECENT_PROVIDES_WINDOW = 128</code> roots (<code>:58</code>). Idle blocks push nothing, so an inactive sender’s window never
+ages out.</p>
+<p><strong>Match (Stage 10).</strong> In <code>paras_inherent::sanitize_backed_candidates</code>, <code>check_requires</code> (<code>:200</code>) tests every
+<code>(source, root)</code> in the candidate’s <code>Requires</code> set for <code>root ∈ RecentProvides[source]</code>. A miss <strong>drops the
+candidate from the inherent — never a dispute</strong> (<code>paras_inherent:1049</code>): the submitter regenerates its POV
+lifts against the <em>then-current</em> provides and resubmits. Matching is receiver-agnostic — any para may require
+any sender’s root.</p>
+<p><strong>Why 128 is slack, not lag tolerance.</strong> The window only has to cover a receiver candidate’s authoring →
+backing → inclusion pipeline depth (~2–3 relay blocks, more under elastic scaling). Consumption <em>lag</em> is
+absorbed by the POV lift advancing the endpoint to a current root (Stage 9) — not by the window. Outrunning the
+window is not a failure mode; the candidate is just rebuilt.</p>
+<pre><code>relay block   RecentProvides[A]  (newest → oldest, cap 128)
+  R           [ …, SR ]                    ← A's candidate enacted (Stage 3)
+  R+1         [ …, SR, SR' ]               B's candidate (Requires {(A,SR)}) backed → check_requires ✓
+  R+2         [ …, SR, SR', SR'' ]         B included; SR still well inside the window
+  …
+  +128 pushes SR falls off the tail        (128 of *A's Provides pushes*, not relay blocks — idle A-blocks
+                                            push nothing; matters only if B never got backed → rebuild vs SR_current)
+</code></pre>
+<p><strong>Dispute revert.</strong> On a revert, <code>paras_inherent</code> calls <code>evict_after_revert</code> (<code>:216</code>) to roll the affected
+sender rings back to the revert height — the PoC evicts explicitly rather than trusting state-revert alone.</p>
+<h2 id="12707--nodeclient-cumulus-client-spec-msg">#12707 — node/client (<code>cumulus-client-spec-msg</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12707--nodeclient-cumulus-client-spec-msg" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="the-relay-provides-monitor-monitorrs--run_relay_provides_monitor--the-fetch-trigger-stage-4">The relay <code>Provides</code> monitor (<code>monitor.rs</code> / <code>run_relay_provides_monitor</code>) — the fetch trigger (Stage 4)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-relay-provides-monitor-monitorrs--run_relay_provides_monitor--the-fetch-trigger-stage-4" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The receiver’s entry point: it watches imported relay blocks and turns “a source’s inclusion frontier
+moved” into fetch triggers, feeding the pool downstream. Confirmed matching the design.</p>
+<p><strong>Loop (<code>:257</code>).</strong> Subscribes to <code>import_notification_stream()</code>; processes the relay <strong>tip once up front</strong>
+(<code>:284</code>) so a restarted collator doesn’t wait a block to learn the current frontier; then one
+<code>process_relay_block</code> per import. A <strong>major-syncing gate</strong> (<code>:352</code>) skips historical rings, and a
+<code>has_api::&lt;SpecMsgApi></code> gate (<code>:358</code>) makes a non-spec-msg runtime a no-op.</p>
+<p><strong>Source set.</strong> Not just <code>consumed_streams()</code> — it’s <code>consumed_streams()</code> <strong>∪ <code>out_channels()</code> peers</strong>
+(<code>:365–371</code>): register-only outbound peers count, because an outbound handshake completes by reading the
+peer’s ack register under the peer’s <em>included</em> root even if no inbound channel consumes that peer.</p>
+<p><strong>Two-tier trigger</strong> (<code>RelayProvidesEvent</code>):</p>
+<ul>
+<li><strong><code>Included(source, root, relay_block)</code></strong> — the root newly appeared in <code>RecentProvides[source]</code> (the
+ring, read via <code>read_recent_provides</code>, <code>:378</code>). This is the inclusion-tier <strong>trust anchor</strong>: fetch,
+verify, consume, author under it. <code>note_ring</code> (<code>:167</code>) diffs the ring against a bounded <code>SeenRoots</code>
+set and emits each new root <strong>exactly once, oldest first</strong>. <strong>Bootstrap</strong> (first sight of a source)
+offers only the <em>newest</em> ring entry — the rest predate the monitor and, streams being append-only, the
+newest covers the history; the older ones just seed dedup. Pushes <code>pool.note_pending_offer</code> <em>before</em>
+the send (<code>:394</code>) for the issue-10 late-offer grace window.</li>
+<li><strong><code>Pending(source, root, relay_block)</code></strong> — a <strong>pending-availability prefetch hint</strong> (see below).</li>
+</ul>
+<p><strong>Fork-safety</strong> is dedup-by-root across branches; a re-org to a fork without the enactment retracts nothing
+(the root just isn’t in that branch’s state, which the fetch pipeline re-verifies against anyway). Dedup
+memory is bounded (<code>SEEN_ROOTS_BOUND = 512</code>); eviction only ever causes a harmless duplicate offer, never a
+miss.</p>
+<h4 id="pending-availability-prefetch-hints--what-pending-buys">Pending-availability prefetch hints — what <code>Pending</code> buys<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pending-availability-prefetch-hints--what-pending-buys" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>A source candidate goes <strong>backed → pending availability → included</strong>. Its <code>Provides(StreamsRoot)</code> lands in
+<code>RecentProvides</code> only at <strong>inclusion</strong> (availability-confirmed, hard to revert) — the trust anchor. Between
+backing and inclusion sits the <strong>availability period</strong> (a few relay blocks).</p>
+<p>The hint closes that gap: the monitor also reads the source’s <code>candidates_pending_availability</code> (<code>:403</code>),
+pulls the committed root out of the backed-but-not-yet-included candidate (<code>pending_provides</code>, <code>:217</code>), and
+offers it as <code>Pending</code>. The fetcher can then <strong>start downloading + verifying early</strong>, overlapping the fetch
+with the availability period — a pure latency win.</p>
+<p>Crucially it is a <strong>hint, never a trigger</strong>: consumption and authoring key off <code>Included</code> roots
+<strong>exclusively</strong>. A backed candidate can still fail to include (dispute, timeout, re-org), so the receiver
+never consumes/authors on a pending root. If it <em>does</em> include, the monitor re-emits it as <code>Included</code> (the
+real trigger) — by then the fetch may already be done. If it never includes, the prefetch was wasted
+bandwidth, no correctness impact (fetches are root-keyed/idempotent, re-verified against relay state before
+use). <code>note_pending</code> (<code>:195</code>) returns <code>None</code> if the root was already offered as <code>Included</code> (a real trigger
+happened — don’t hint it), and once included a root can’t regress to a hint (test
+<code>pending_roots_hint_once_and_still_trigger_on_inclusion</code>, <code>:521</code>).</p>
+<h3 id="the-fetch-pipeline-fetchrs--run_spec_msg_fetcher--rounds--retry-classification">The fetch pipeline (<code>fetch.rs</code> / <code>run_spec_msg_fetcher</code>) — rounds &amp; retry classification<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-fetch-pipeline-fetchrs--run_spec_msg_fetcher--rounds--retry-classification" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Each <code>Included(source, root)</code> runs one <strong>round</strong> for that source under that root (<code>run_fetch_rounds</code>,
+<code>:506</code>): per consumed channel stream, chunked + resumable <code>MessagesRequest</code>s (512 KiB, resume from
+<code>base + received</code> until <code>end.leaf_count >= head</code>) each MMR-verified against <strong>exactly <code>root</code></strong>; per outbound
+channel, the peer’s ack-register head read (<code>EventRequest{ at: None, under: root }</code>); all landed in the pool,
+then <code>complete_round</code> sets <code>target(source) = root</code> (the lift target). The in-flight marker is set at <strong>trigger
+receipt</strong>, before the round future even exists (<code>begin_round</code>, <code>:540</code>), because the proposer’s inherent
+snapshot can fire ~1–5 ms after the offer — authoring’s grace window (<code>wait_for_in_flight_rounds</code>) must find
+something to await.</p>
+<p><strong>Retry model.</strong> A failed round retries <strong>under the same root</strong> with bounded exponential backoff
+(2→4→8→16 s, <code>MAX_ROUND_RETRIES = 4</code>), because a quiet sender offers no next root — without in-root retry a
+single transient failure would stall the source indefinitely. A fresh included root <strong>supersedes</strong> the
+scheduled retry and <strong>resets</strong> the budget; a completed round clears it.</p>
+<p><strong><code>retryable()</code> (<code>:602</code>) — the classification and <em>why</em>.</strong> Retry only when re-running the identical round
+under the same root can plausibly move forward:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>error</th><th>retry?</th><th>use case / why</th></tr></thead><tbody><tr><td><code>Exchange(_)</code> (transient)</td><td>✅</td><td>flaky peer / rotate to another / the bad-peer set shrinks — backoff lets the network recover</td></tr><tr><td><code>ChunkBound</code></td><td>✅</td><td>backlog > 4096 chunks/round; the retry <strong>resumes</strong> where it stopped — productive by construction</td></tr><tr><td><code>Api</code></td><td>❌</td><td>the local <em>“what do I consume?”</em> read (<code>consumed_streams</code>/<code>out_channels</code>) failed — mid-reorg or state at <code>best_hash</code> unavailable. Same root re-reads the same broken state; the <strong>next block’s trigger</strong> reads a fresh <code>best_hash</code>. Not a network failure at all.</td></tr><tr><td><code>Pool</code></td><td>❌</td><td>a <em>verified</em> chunk was rejected by <code>note_chunk</code> — a deterministic local bug (base/gap mismatch). Re-fetch yields the identical chunk + identical rejection; non-retryable avoids a retry storm on a bug.</td></tr><tr><td><code>NoPeers</code></td><td>❌</td><td>the <code>PeerRegistry</code> is empty (cold start, all banned, no <code>--spec-msg-serve</code> collators). Peers come from the <strong>discovery worker on its own cadence</strong> — backoff conjures none. Recovery = (discovery populates) × (next root re-triggers). Also <strong>marks no target</strong> and clears the in-flight marker, so authoring never blocks on a peerless source (<code>:983</code>, <code>:1247</code>).</td></tr></tbody></table></div>
+<p>The deferral is safe by the retry’s own logic: an <em>active</em> source re-triggers with healed state / found peers
+on its next included root; a <em>quiet</em> source has no new data to fetch, so there is no stall to bridge.</p>
+<p><strong>Never-written tolerance</strong> (distinct from the above): a consumed stream with <code>cursor == 0</code> and no pooled run
+may simply never have been written (the accept-before-open handshake window); the archive can’t prove an empty
+stream under any root, so the server refuses. That refusal is tolerated outright — the round still pools the
+register read, marks the target, and returns <code>Ok</code> <strong>without</strong> scheduling a retry (an in-root retry could never
+serve what no root proves; recovery rides the next included root carrying the first send). Tests <code>:883</code>,
+<code>:1097</code>.</p>
+<h3 id="the-verified-pool-poolrs--specmsgpool--ledgers-bindings-fork-safe-hand-out">The verified pool (<code>pool.rs</code> / <code>SpecMsgPool</code>) — ledgers, bindings, fork-safe hand-out<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-verified-pool-poolrs--specmsgpool--ledgers-bindings-fork-safe-hand-out" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The fork-safe staging area between <code>verify</code> (what’s been <em>proved</em>) and <code>build_inherent</code> + lift assembly (what
+a block <em>consumes</em> and how it proves that to the relay). Two kinds of held state.</p>
+<p><strong>Channel ledger — what for.</strong> Per consumed channel stream, the consumer’s record of <strong>verified inbound
+messages it has proved from one source and is ready to consume + re-prove</strong>. Like an account ledger: a
+contiguous run of entries reconciled against a statement — here the sender’s <strong>included <code>StreamsRoot</code></strong>.</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="rust" data-theme="github-light github-dark"><code data-language="rust" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">struct</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> ChannelLedger</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> { base, end</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> MmrFrontier</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, payloads</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> VecDeque</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Vec</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">u8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">>>, leaves</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> VecDeque</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Hash</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">>,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">                       binding</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Option</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">ChannelBinding</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">> }</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">struct</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> ChannelBinding</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> { root</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> StreamsRoot</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, head</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> u64</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, extension</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> MMRExtensionProof</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, tree_proof }</span></span></code></pre></figure>
+<p><code>base..end</code> is the run; <code>leaves</code> kept even after payloads are handed out (lift needs hashes, not bytes). The
+<strong>binding</strong> is what makes the run <em>liftable</em> — it ties <code>[base,end)</code> to a currently-included root via the
+extension <code>end→head</code> + the stream’s tree proof.</p>
+<p><strong>Flow (S sends <code>p0..p7</code>; included root <code>R1</code>@count5 → <code>R2</code>@count8; consumer R):</strong></p>
+<ol>
+<li><em>Round 1</em> — fetch <code>[0..5)</code> under <code>R1</code>; <code>verify</code> proves it’s S’s prefix → <code>note_chunk</code> creates the ledger:
+<code>base@0 end@5 payloads=[p0..p4] binding{R1, head5, ext=identity}</code>.</li>
+<li><em>Author block N</em> (R’s on-chain cursor = 0) — <code>build_inherent</code>: cursor∈[base,end] ✓, <code>binding.root==target</code> ✓
+→ <strong>clone</strong> <code>[p0..p4]</code> into the inherent (ledger untouched). Runtime consumes → <code>InboundFrontier=5</code>;
+<code>validate_block</code> lifts endpoint 5→<code>R1</code> via the binding; relay checks <code>R1∈RecentProvides</code>.</li>
+<li><em>Round 2</em> — S→8 (<code>R2</code>); fetch <code>[5..8)</code> resuming from <code>end@5</code>; verify <strong>appends</strong> onto frontier@5 →
+<code>note_chunk</code> extends the ledger and the newest binding <strong>re-binds the whole run</strong>:
+<code>base@0 end@8 payloads=[p0..p7] binding{R2, head8}</code> — <code>[0..8)</code> now liftable under <code>R2</code> (append-only prefix).
+<em>Staleness = regeneration, not invalidation</em>: an old-root run is still a valid prefix under every newer
+root, so the next round just re-binds it.</li>
+<li><em>Author N+1</em> (cursor 5) — take <code>[p5..p7]</code> → consume → lift 8→<code>R2</code>.</li>
+</ol>
+<p><strong>Non-destructive hand-out = fork safety.</strong> <code>build_inherent</code> <strong>clones</strong> and never removes; the <strong>cursor</strong>
+(read from the <em>authoring parent’s</em> on-chain <code>InboundFrontier</code>) is the sole truth for “already consumed.” So
+two candidates on different parents (both cursor 0) each get <code>[p0..p4]</code>; whichever branch loses simply never
+applied its consumption — no corruption, because the run was never destroyed. Guardrails: <code>cursor > end</code> ⇒
+another collator consumed material this node never pooled → drop + re-fetch trust-free (pool.rs:791);
+<code>binding.root != target</code> ⇒ withhold a block rather than emit an unliftable record (pool.rs:801).</p>
+<p><strong>Always binds to the <em>latest</em> target — and two limits, two extensions.</strong> <code>pool.target</code> is the newest
+included root the monitor saw for the source; consumption always binds to <em>it</em>, never a stale root — the
+<code>binding.root != target</code> withhold (pool.rs:801) enforces this: a run still bound to an older <code>R1</code> after the
+target advanced to <code>R2</code> is held for a block until the next round re-binds it (else the lift would be against a
+root that may have left <code>RecentProvides</code> → unliftable). So the example’s round-1 bind to <code>R1</code> is only the
+<em>live-receiver</em> timeline (<code>R1</code> <strong>was</strong> the latest then); a receiver catching up when S is already at <code>R2</code>
+targets <code>R2</code> from the start. Two <em>independent</em> capacity limits then decide the endpoints — and <code>head</code> is
+always the stream’s count <strong>under the target root</strong>, not your endpoint:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>limit</th><th>bounds</th><th>proof it shapes</th></tr></thead><tbody><tr><td><strong>fetch</strong> (response size)</td><td><code>ledger.end</code> (how much pooled)</td><td><code>binding.extension = ledger.end → head</code>; pool <code>[0..5)</code> under <code>R2</code>(head 8) ⇒ <code>binding{R2, head 8, ext 5→8}</code></td></tr><tr><td><strong>inherent</strong> budget (<code>build_inherent</code>)</td><td>cursor <code>take</code> (how much a block consumes)</td><td>ledger holds <code>[0..8)</code> (<code>binding.ext = 8→8</code> identity), block consumes <code>[0..5)</code> ⇒ <strong><code>lift.extension = 5→8</code></strong></td></tr></tbody></table></div>
+<p><em>What “mid-backlog” means.</em> <strong>backlog</strong> = <code>head − ledger.end</code> — messages the sender committed (under the
+target root) that the receiver hasn’t fetched yet. <strong>Mid-backlog</strong> = the receiver has pooled <em>some</em> of the
+stream but not all the way to the head:</p>
+<pre><code>positions:  0 ——— pooled [0..40) ———| ——— not yet fetched ——— | 100
+            base                 ledger.end                   head
+     Case A (caught up): ledger.end == head   ·   Case B (mid-backlog): ledger.end &lt; head
+</code></pre>
+<p>The <strong>lift</strong> extension (<code>consumption endpoint → target head</code>) is what a block actually emits, distinct from
+<code>binding.extension</code> (the one fetched <code>ledger.end → head</code>). <code>channel_lift</code> (pool.rs:860) picks it in <strong>two
+cases</strong>, and the split is the real subtlety:</p>
+<ul>
+<li><strong>Case A — fetch caught up (<code>ledger.end ≥ head</code>).</strong> The ledger holds all leaves to the head, so the lift
+extension is <strong>generated fresh from the retained <code>leaves</code></strong> for <em>whatever</em> endpoint the block consumed —
+<code>nodes().extension(endpoint, head)</code>, any endpoint in <code>[base, head]</code>. <em>E.g.</em> ledger <code>[0..8)</code>,
+<code>binding.extension = 8→8</code> (identity); block consumes <code>[0..5)</code> → <code>lift.extension = 5→8</code> from leaves <code>[5..8)</code>.
+<strong>Differs from <code>binding.extension</code>.</strong> (This is <em>why</em> leaves are kept after payloads are handed out.)</li>
+<li><strong>Case B — mid-backlog, fetch incomplete (<code>ledger.end &lt; head</code>).</strong> The ledger has no leaves past <code>end</code>, so
+the <strong>only</strong> liftable point is <code>endpoint == end</code>, reusing the fetched <code>binding.extension</code>. <em>E.g.</em> ledger
+<code>[0..5)</code>, <code>binding.extension = 5→8</code>; block consumes the whole <code>[0..5)</code> → <code>lift.extension = binding.extension = 5→8</code>. <strong>Coincides.</strong> A partial <code>[0..3)</code> → <code>NotCovered</code>.</li>
+</ul>
+<p>So: they <strong>coincide in Case B at <code>endpoint == end</code></strong> (lift <em>is</em> binding); they <strong>diverge in Case A</strong>
+(regenerated per endpoint). And the load-bearing consequence: <strong>whether a partial-prefix consumption is
+liftable depends on whether the fetch reached the head</strong> — caught-up ⇒ any prefix liftable (the “partial
+consumption fully supported” case); mid-backlog ⇒ only the full pooled run.</p>
+<p><strong>A capacity-limited fetch still binds to the target, not to a root matching the fetch count.</strong> The binding
+root is whatever you <em>request <code>under</code></em> (= <code>pool.target</code>), never a function of how many payloads came back. If S
+is at 8/<code>R2</code> and you fetch only <code>[0..5)</code> (payload budget), the archive serves under <code>R2</code>: caps at count 8,
+fills payloads to budget, then <code>extension(served_to=5, count=8)</code> — so the response is <code>payloads[0..5) + extension(5→8) + tree_proof@R2</code>, and the extension (hashes, O(log n)) is <strong>always</strong> included regardless of the
+payload budget. Ledger: <code>end@5, binding{R2, head 8, ext 5→8}</code> — <strong>no <code>R1</code></strong>; <code>5</code> is just <code>ledger.end</code>, <code>head</code>
+is 8. So it’s consumable + liftable under <code>R2</code> immediately, and the per-chunk payload budget just <strong>splits catch-up
+into chunks <em>within</em> a round</strong> — the fetch loop auto-resumes to <code>[5..8)</code> under <code>R2</code> in the <em>same</em> round,
+spilling to the next round only if the per-round chunk cap is exhausted. (A <em>round</em> is one fetch cycle
+triggered by a relay import and keyed by an included root — the source’s lift target; distinct from block /
+candidate production, which drains the pool via <code>build_inherent</code>.) <code>R1</code> only enters if the <strong>monitor is lagging</strong> (target
+still <code>R1</code> when fetching) → <code>binding{R1, head 5}</code>; when the target then advances to <code>R2</code>, the withhold
+(pool.rs:801) holds that ledger until a re-fetch re-binds it — so a stale-root prefix is never <em>consumed</em> once
+a newer target is known.</p>
+<p><strong>Second kind — register head reads.</strong> Symmetrically, as a <em>sender</em>, the node reads its receivers’ registers
+(watermark+grant) off the Ack stream: pooled as <code>RegisterRead{ root, payload:Register, inclusion, frontier, tree_proof }</code>, keyed by read-context leaf count, <strong>newest-wins</strong>. Handed to at most one block (<code>fresh→handed</code>);
+<code>reconcile_handed</code> returns it to handable if that block didn’t land, checked against the parent’s applied
+register view — same fork discipline, explicit marker because only the latest head read matters (vs. a
+channel’s contiguous run). This is what drives Tier-1 watermark pruning (<code>out_channels()</code> → <code>prune_payloads</code>).</p>
+<p><strong>Why <code>reconcile_handed</code> isn’t stateless (explored + abandoned 2026-08-02).</strong> The problem it solves: a
+receiver applies a source’s ack watermark (<code>up_to</code>) on its <em>own speculative chain</em> (the collator authors
+ahead of backing), and the source may go <strong>quiet</strong> — once it has published the watermark there is no new root
+to re-trigger a fetch. If the block that applied the read reorgs away, the surviving branch is missing the
+watermark and, with no re-trigger, R’s send window to S never advances: a <strong>silent flow-control deadlock</strong>
+(the run-3 stall — A#125 carried the read, A#126 built on it, both died at a session boundary, the re-author
+went out empty). So R must <em>retain</em> the verified read and <strong>re-deliver it to whichever fork survives</strong>,
+reconciled against the parent’s applied view (<code>up_to</code>/<code>version</code>/close-latch monotonic; <code>grant</code> advisory,
+excluded) without double-applying on the branch that did land. A stateless recompute — “hand the newest
+target-matching read the parent hasn’t reflected, each block, no markers” — <strong>passes all four fork-redelivery
+tests</strong> (<code>dropped_/hand_outs_reflected_/refreshed_/superseded_register…</code> in authoring.rs): that half of the
+logic <em>is</em> cacheless. It fails on the <strong>second, irreducible</strong> job of the <code>handed</code> marker: an <em>undecodable</em>
+ack leaf (buggy/malicious source; runtime rejects it <code>BadRegister</code>) must be handed <strong>at most once</strong> then
+abandoned, “instead of re-handing it to every block forever” (<code>inherent_hands_the_contiguous_continuation_ within_budget:598</code>) — a re-include-and-reject-every-block DoS otherwise. “Already handed once” can’t be
+derived from <code>reads</code> + parent, so a stateless version either re-hands a BadRegister forever or never hands
+the placeholder reads the fetch-mechanic tests rely on. Conclusion: the <code>handed</code> marker earns its ~30 lines —
+it is a hand-a-BadRegister-at-most-once guard, not incidental bookkeeping.</p>
+<p><strong>Budget-bounded inherent — a too-large pool drains over blocks.</strong> <code>build_inherent</code> never seals the whole
+pool; <code>inherent_data_at</code> (authoring.rs) passes an <code>InherentBudget{ max_bytes, max_streams }</code> (MVP default
+<code>256 KiB / 8</code>), “bounded so an honest provider never hits the runtime’s per-block caps (issue 06); the
+leftover backlog stays pooled for the next block — partial consumption is a lift case, fully supported.”
+<code>max_bytes</code> caps total payload bytes (payloads + lifts + inclusion proofs all ride PoV); <code>max_streams</code> must
+stay below the runtime’s <code>MaxTouchedStreams</code>. Two nested caps: <strong>per stream</strong>, take payloads from the cursor
+while they fit <code>bytes_left</code>, stop at the first that doesn’t (pool.rs:806); <strong>across streams</strong>, stop once
+<code>messages+register_reads ≥ max_streams</code> (pool.rs:785).</p>
+<p>Because the hand-out is <strong>non-destructive</strong> and the cursor comes from the <em>on-chain</em> <code>InboundFrontier</code> after
+this block consumes, the next block resumes where this one stopped — a too-big backlog drains one budget-slice
+per block. <em>E.g. stream <code>[0..100)</code>, ~4 KiB payloads, 256 KiB budget → block N takes <code>[0..64)</code> (<code>frontier→64</code>,
+lift 64→head), N+1 takes <code>[64..100)</code>.</em> And it’s not a degraded path: a prefix <code>[cursor..cursor+take)</code> still
+emits a valid <code>Requires</code> — the <strong>lift</strong> extension bridges the <em>consumption endpoint</em> → target head regardless
+of how much drained (the <code>binding.extension</code> vs <code>lift.extension</code> split above).</p>
+<p>The backlog can’t grow unbounded anyway — <strong>flow control caps it end-to-end</strong>: the receiver drains at
+≤ <code>max_bytes</code>/block → its watermark lags → the sender’s window grant fills → the sender throttles. So the pool
+holds ~one grant-window of backlog and bleeds it at budget/block; it never has to fit “all of it” in one
+block. (<strong>Config invariant:</strong> <code>max_bytes ≥ MaxMsgLen</code>, else a single oversized payload <code>take==0</code>s every block
+and starves — comfortably true at the 256 KiB default.)</p>
+<p><strong>⚠️ Traced — partial take × Case-B is real &amp; unguarded (liveness, not safety).</strong> <code>build_inherent</code> takes a
+byte-budget-limited <em>prefix</em> and does <strong>not</strong> check the Case-A/B split. Path confirmed: <code>endpoint = cursor + take</code> flows via <code>consumption_record()</code> → <code>assemble_from_records</code> → <code>channel_lift(endpoint)</code> (authoring.rs:298);
+in Case B, <code>endpoint &lt; end</code> → <code>NotCovered</code> → <code>AssembleError</code> → <strong>collation fails</strong> (graceful/logged, not a
+crash, never an invalid candidate). No size guard exists: <code>FETCH_CHUNK_BYTES = 512 KiB</code>, <code>MAX_CHUNKS_PER_ROUND = 4096</code> (Case-B run up to <strong>~2 GiB</strong>) vs inherent <code>max_bytes = 256 KiB</code> — even <em>one</em> chunk exceeds the budget,
+so a Case-B run > 256 KiB forces a partial take.</p>
+<ul>
+<li><strong>Reachability:</strong> Case B = the round didn’t reach <code>head</code> (chunk loop stops only on the 4096-chunk cap, i.e.
+a <strong>> ~2 GiB single-stream backlog</strong>, or a <strong>stalled/incomplete round</strong>). Steady-state caught-up receivers
+are Case A (partial fully supported). So this is a <strong>deep-backlog / stalled-fetch edge</strong>, not the hot path.</li>
+<li><strong>Impact:</strong> liveness/efficiency, not safety. A Case-B stream > 256 KiB <strong>can’t be consumed until the fetch
+reaches <code>head</code></strong> (→ Case A) — deep backlog is “fetch-all-to-head then drain,” never pipelined — and
+<code>build_inherent</code> <em>wastes a collation attempt</em> each block (a doomed partial) rather than skipping the stream.
+Self-resolves once caught up.</li>
+<li><strong>Fix:</strong> in Case B (<code>ledger.end &lt; head</code>), go all-or-nothing — take <code>[cursor..end)</code> only if the whole run
+fits <code>bytes_left</code> (→ <code>endpoint == end</code>, liftable via <code>binding.extension</code>), else <strong>withhold</strong> the stream
+(<code>continue</code>, like the stale-<code>binding.root</code> guard at pool.rs:801). <strong>Candidate PoC finding.</strong></li>
+</ul>
+<p><strong>Drain granularity: per block, bundled into a candidate.</strong> The <code>256 KiB</code> budget is <strong>per block</strong>
+(<code>build_inherent</code> runs once per block), but a collator “<strong>chains proposals ahead of backing</strong>” (pool.rs:238) —
+so a candidate/collation is a <strong>bundle of blocks</strong>. <code>assemble_collation(blocks: &amp;[Block])</code> reads each block’s
+<code>consumption_record()</code>, merges “in bundle order” into per-stream interval chains, and emits <strong>one
+<code>RequiresLift</code> per stream at the chain endpoint</strong> (<code>chain_endpoint</code>), declared in <code>ParachainBlockData::V3</code>.
+The lift axis is the <strong><code>(source, stream)</code></strong>, not the block/candidate/bundle: a stream consumed in blocks N
+<em>and</em> N+1 gets <strong>one</strong> lift at the chain endpoint (not one per block); a bundle touching K streams emits <strong>K</strong>
+lifts (grouped by source as <code>LiftsBySource</code>, ≤ <code>MaxTouchedStreams</code>). So a candidate carries a <em>set</em> of lifts —
+one per consumed <code>(source, stream)</code> — never “a lift per candidate” or “per bundle”.
+Within one collation, several blocks each drain a <code>256 KiB</code> slice — the pool read <strong>non-destructively per
+block</strong>, cursor advancing block-to-block — and the whole bundle’s consumption of a stream collapses to a
+single lift. <em>E.g.</em> pool <code>[0..100)</code>: block N drains <code>[0..64)</code>, N+1 (cursor now 64) drains <code>[64..100)</code>, one
+lift at endpoint 100. So “drained over multiple blocks” and “drained in one candidate” aren’t in tension — a
+candidate <em>is</em> multiple blocks here (by bundling, not because a candidate = one block). Two bounds keep it
+from being <em>guaranteed</em> single-candidate: <strong>bundle size is bounded</strong> (drain/collation ≈ <code>256 KiB × blocks_in_bundle</code>; a bigger backlog spans multiple collations over successive relay parents), and a <strong>Case-B
+stream drains none</strong> until the fetch reaches <code>head</code> (→ Case A), bundling or not.</p>
+<h3 id="two-tier-prune-as-built--how-it-works-today-both-sides">Two-tier prune (as-built) — how it works today, both sides<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#two-tier-prune-as-built--how-it-works-today-both-sides" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The prune lives on the <strong>sender</strong> (its own-sends archive, <code>client/spec-msg/archive.rs</code>); one of the two
+tiers is <strong>driven by the receiver</strong>. For a channel <strong>S → R</strong>: S archives the Channel stream (per position
+a payload ~KB <strong>and</strong> a leaf hash 32 B, plus per-block boundaries), serves R over <code>/spec-msg/exchange</code>, and
+runs both prunes. R only <em>fetches</em> + publishes a watermark. (Symmetric: R is the sender on the <strong>Ack stream</strong>
+carrying those watermarks back, pruned the same way — roles swapped.)</p>
+<p><strong>Two floors → three bands.</strong> <code>payload_floor</code> (watermark-driven, fast, moved by R) and <code>floor</code>/horizon
+(wall-clock 25 h, S alone) advance up the position axis, with <code>floor ≤ payload_floor</code>:</p>
+<pre><code>position →  0 ....... floor ....... payload_floor ....... count(head)
+            |  BAND A   |   BAND B      |      BAND C         |
+ leaf hash:    gone        present          present
+ payload:      gone        gone             present
+ serve:     BelowHorizon  lift OK,        fully serveable
+                          payload=PayloadsPruned
+</code></pre>
+<ul>
+<li><strong>A</strong> (below horizon): reaped → any request <code>BelowHorizon</code>.</li>
+<li><strong>B</strong> (below the watermark, kept to 25 h): payload gone, <strong>hash kept</strong> → a payload request →
+<code>PayloadsPruned</code>, a lift over it <em>could</em> serve. But note <strong>who its consumer is</strong>: a receiver’s
+<code>InboundFrontier</code> is monotonic on-chain (endpoint <strong>always ≥ its own watermark</strong>) and lifts extend
+<em>forward</em> from the endpoint, so <strong>nothing ever lifts from below the watermark</strong>. Band B has <strong>no reachable
+consumer</strong> — it’s a conservative “serve any boundary within 25 h” guarantee that no client exercises. This
+is exactly the band the <a href="../post/speculative-messaging-v0.5-alignment" class="internal internal-link alias" data-slug="post/speculative-messaging-v0.5-alignment">retention merge plan</a> drops (<code>floor = max(watermark, …) ≥ watermark</code> collapses it). ⚠️ <em>This is the crux of why the two-tier split doesn’t earn
+its keep on 1:1 channels.</em></li>
+<li><strong>C</strong> (unconfirmed tail, ≥ watermark): both present → fully serveable, <strong>and the only band lifts actually
+read</strong> (endpoint → newer root extends across it).</li>
+</ul>
+<p><strong>Tier 1 (watermark, receiver-driven):</strong>
+<code>R pallet consume → InboundFrontier.leaf_count = W → publish_register{up_to:W} on Ack ──R→S──▶ S pallet → OutChannels[ch].register.up_to = W → S node out_channels() (worker.rs:179) → prune_payloads(stream, W)</code> → <code>payload_floor ← W</code>, drop payloads <code>[old, W)</code>, <strong>keep leaf hashes</strong>.
+<em>Example:</em> R confirms through pos 4 (<code>up_to=5</code>) → payloads <code>[5..8)</code>, hashes <code>[0..8)</code>, <code>payload_floor=5</code>;
+payload@2 → <code>PayloadsPruned</code>. The retained hashes <code>[0..5)</code> sit below R’s own endpoint (≥ 5), so R never
+lifts across them — that’s the unused Band B in miniature.</p>
+<p><strong>Tier 2 (horizon, sender wall-clock):</strong>
+<code>S node prune_horizon(now − 25h)</code> (worker.rs:191) → drop boundaries > 25 h old (newest always kept) →
+<code>floor ← oldest-retained boundary's leaf count</code>, delete leaf hashes (+ any payloads) below it, retain the
+boundary frontier at <code>floor</code>. <em>Example, next day: <code>count=120</code>, <code>watermark=100</code> (<code>payload_floor=100</code>),
+boundary 25 h ago recorded 60 → <code>floor=60</code>.</em> Retained: hashes <code>[60..120)</code> + <code>frontier@60</code>. The <strong>real</strong> lift
+is a receiver at its own endpoint@100 binding forward — <code>100 → root@120</code>, over band-C hashes <code>[100..120)</code>;
+that’s what has to keep working. The horizon-kept band <code>[60..100)</code> is below every consumer’s endpoint (Band
+B) — retained but unused. So Tier 2’s genuine job is keeping <code>frontier@60</code> + the tail so appends and
+tail-proofs tile from a floor, <strong>not</strong> serving below-watermark lifts (which nobody issues).</p>
+<p><strong>Receiver retains nothing to prune here</strong> — R consumes (processes + discards payloads), keeping only its
+<code>InboundFrontier</code> (O(log n) peaks). Its whole role in this channel’s retention is emitting the watermark that
+moves S’s <code>payload_floor</code>.</p>
+<p><strong>Landed on top of as-built:</strong> the <strong>lossy-head carve-out</strong> is now implemented standalone (branch
+<code>rk-spec-msg-horizon-head-carveout-mvp</code>, <code>86eee1892f0</code>): <code>prune_horizon</code> pins <code>floor = min(floor, head−1)</code>
+for <code>Ack</code>/<code>Broadcast</code>/<code>Private</code>, so a stalled stream’s head stays serveable (out of Band A) instead of being
+reaped. Independent of the <a href="../post/speculative-messaging-v0.5-alignment" class="internal internal-link alias" data-slug="post/speculative-messaging-v0.5-alignment">retention merge plan</a> (the same guard
+moves onto the unified floor if/when that lands).</p>
+<h3 id="verification-deep-dive--stages-57-trust-free-response-checking">Verification deep-dive — Stages 5–7: trust-free response checking<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#verification-deep-dive--stages-57-trust-free-response-checking" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Why the receiver can fetch payloads from an <strong>untrusted</strong> peer and safely act on them: it never trusts the
+response — it <em>recomputes</em> the sender’s commitment from the bytes and compares to the root the relay already
+vouches for.</p>
+<p><strong>Request names the root.</strong> <code>MessagesRequest{ stream, start, under, max_bytes }</code> — <code>under</code> is the exact
+<code>StreamsRoot</code> the requester will depend on (from <code>RecentProvides</code>, Stage 4). The response is proven under <em>that</em>
+root or discarded.</p>
+<p><strong>Response.</strong> <code>MessagesResponse{ base, payloads, start_peaks, extension, tree_proof }</code> — <code>base</code> = frontier the
+payloads extend from, <code>extension</code> = <code>MMRExtensionProof</code> bridging the recomputed leaves to the stream root,
+<code>tree_proof</code> = <code>TreeInclusionProof</code> from the stream root up to <code>SR</code>.</p>
+<p><strong><code>verify_messages_response</code> (<code>verify.rs:94</code>)</strong> — pure recompute-and-compare:</p>
+<pre><code>1. from base {0,[]}, for each payload: L_i = hash_leaf(0x0, P_i); append → frontier {3,[N01,L2]}
+2. extension.verify(&amp;frontier) → SRoot3          (mmr.rs:409, MMRExtensionProof::verify)
+3. tree_proof.verify(&amp;C, &amp;SRoot3) → SR'          (tree.rs:143, TreeInclusionProof::verify)
+4. SR' == under ?   yes → VerifiedMessages{ end:{3,[N01,L2]}, head:3 }
+                    no  → discard response AND peer (poisoned) → refetch elsewhere
+</code></pre>
+<p>No signature, no trusted transport, no relay-state read below the root: the payloads are self-authenticating
+against a hash the relay chain already put in <code>RecentProvides</code>. A lying peer can only produce bytes that hash to
+something ≠ <code>under</code>, which step 4 rejects. Register (ack) reads follow the same recompute-and-compare
+discipline but over a single-leaf <strong>head</strong> proof rather than a range extension, because the ack stream is lossy
+latest-wins — see the ack-stream deep-dive below. Verified message runs land in <code>SpecMsgPool</code> as a
+<code>ChannelLedger</code> binding
+<code>{root: SR, head, extension, tree_proof}</code> — the material the lift assembler turns into the POV lift (Stage 9)
+without re-fetching (reused verbatim when the run stops short of the head, regenerated from the retained
+leaves once caught up).</p>
+<h3 id="authoring-authoringrs--two-phases-the-specmsg0-inherent-vs-the-pov-lifts--requires">Authoring (<code>authoring.rs</code>) — two phases: the <code>specmsg0</code> inherent vs the POV lifts + <code>Requires</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#authoring-authoringrs--two-phases-the-specmsg0-inherent-vs-the-pov-lifts--requires" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>authoring.rs</code> does two distinct things at different times off different inputs (confirmed matching the code):</p>
+<p><strong>Phase 1 — the inherent (<code>inherent_data_at</code>, at the authoring parent).</strong> Snapshots the pool via
+<code>build_inherent(cursors, registers, budget)</code> into a <code>SpecMsgInherentData</code>, put under
+<code>INHERENT_IDENTIFIER = *b&quot;specmsg0&quot;</code> (primitives/…/inherent.rs:35). Input is the runtime’s <strong>resume cursors</strong>
+(<code>consumed_streams()</code>) — the <em>intended</em> continuation of each pooled run, bounded by <code>InherentBudget</code>
+(256 KiB / 8). It <em>is</em> an <code>InherentDataProvider</code>: an empty pool provides nothing → the block carries no
+spec-msg inherent. Grace-window-gated (<code>ROUND_GRACE_WINDOW</code> = 250 ms) so a round completing just behind the
+proposer’s snapshot isn’t missed.</p>
+<p><strong>Phase 2 — the POV lifts + <code>Requires</code> signal (<code>assemble_collation</code>, after the blocks exist).</strong> Reads each
+built block’s <code>consumption_record()</code> runtime API → <code>records</code>; <code>assemble_from_records</code> produces <code>LiftsBySource</code>
+(one <code>RequiresLift</code> per touched stream, proof material from the pool’s verified runs via
+<code>channel_lift</code>/<code>register_lift</code>); <code>build_requires(records, lifts)</code> synthesizes the <code>RequiresSet</code>, encoded as
+<code>UMPSignal::Requires</code>. Lifts ride the POV (<code>ParachainBlockData::V3</code>); the <code>Requires</code> set rides as the appended
+UMP signal. Running the wrapper’s <em>own</em> <code>build_requires</code> here — over the assembler’s records + lifts — is what
+guarantees the emitted <code>Requires</code> matches what <code>validate_block</code> re-derives in-wasm (else rejected at backing).
+Resubmission is free: lifts are pure functions of public data (<code>consumption_record</code> + pool), so re-assembling
+against the current pool regenerates them for the unchanged blocks.</p>
+<p><strong>The distinction:</strong> the inherent is <em>what the block will consume</em> (from <strong>cursors</strong>, before the block); the
+lifts + <code>Requires</code> are <em>proof of what it actually consumed</em> (from <strong><code>consumption_record()</code></strong>, after). Both
+lift kinds — the POV <code>RequiresLift</code>s and the UMP <code>Requires</code> set — come from the same <code>consumption_record()</code>
+reads.</p>
+<p><strong>Node wiring (<code>polkadot-omni-node/lib/src/nodes/aura.rs</code>, slot-based collator).</strong> Both halves hang off the
+same <code>SpecMsgDeps { pool, lift_assembler }</code>, wired in two different spots:</p>
+<ul>
+<li><em>Phase 1 — inherent.</em> Inside the <code>create_inherent_data_providers</code> closure, <code>inherent_data_at(para_id, client, pool, parent, InherentBudget::default())</code> builds the <code>specmsg0</code> inherent from the pool at <code>parent</code>
+(<code>None</code> pool → empty <code>Default</code>), returned as <code>Ok((storage_proof, spec_msg_inherent))</code> (<code>:774</code>) — the tuple
+<em>is</em> the block’s <code>InherentDataProvider</code>s (a tuple of providers is itself one). Fed into <code>SlotBasedParams</code> →
+<code>launch_slot_based_collator</code>. On each authored block the collator calls the closure for the current
+<code>parent</code>, and <code>spec_msg_inherent.provide_inherent_data</code> inserts the data under <code>*b&quot;specmsg0&quot;</code>; the block
+then carries the inherent extrinsic and the <strong>runtime’s inherent handler consumes</strong> the payloads + register
+reads, advancing the on-chain frontiers. Empty provider ⇒ no <code>specmsg0</code> inherent that block.</li>
+<li><em>Phase 2 — lifts.</em> Wired separately onto the collator <strong>service</strong>, not the inherent path:
+<code>collator_service.with_spec_msg_lift_assembler(deps.lift_assembler.clone())</code> (<code>:732</code>). When it collates a
+block that consumed anything, the assembler attaches the POV lifts + synthesized <code>Requires</code> and emits
+<code>ParachainBlockData::V3</code>.</li>
+</ul>
+<p>So from <code>aura.rs</code> both halves are visible: the <strong>inherent</strong> (what to consume) via the closure’s
+<code>spec_msg_inherent</code> at <code>:774</code>, and the <strong>lifts/<code>Requires</code></strong> (proof of what was consumed) via
+<code>with_spec_msg_lift_assembler</code> at <code>:732</code>.</p>
+<h3 id="client-side-timing-deep-dive--the-fetcherproposer-grace-window-stages-48">Client-side timing deep-dive — the fetcher↔proposer grace window (Stages 4–8)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#client-side-timing-deep-dive--the-fetcherproposer-grace-window-stages-48" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Stages 4–8 hide a race: the <strong>fetcher</strong> (monitor → fetch → pool, Stages 4–7) and the <strong>proposer</strong>
+(<code>inherent_data_at</code>, Stage 8) both fire off the <em>same</em> relay-block import and run concurrently. A fetch round
+takes ~15–40 ms on loopback; if the proposer snapshots the pool a few ms before the round lands, the message
+misses this block’s inherent and slips to the receiver’s <em>next</em> block — a full receiver-block of latency,
+defeating the HRMP-latency target.</p>
+<p><strong>The fix.</strong> Before snapshotting, <code>inherent_data_at</code> waits on any in-flight round for a bounded
+<code>ROUND_GRACE_WINDOW</code> (<code>authoring.rs:80</code>, 250 ms) via <code>wait_for_in_flight_rounds</code> (<code>pool.rs:600</code>). Idle (no
+round) the wait is free. 250 ms is generous for the ~15–40 ms it targets yet ≤ ⅛ of the ~2 s authoring budget,
+so a <em>hung</em> fetch can’t wedge authoring — it gives up and builds without the message (correctness intact: the
+relay ring still vouches <code>SR</code>, so it just arrives next block).</p>
+<p><strong>Three states</strong> (<code>RoundsInFlight</code>, <code>pool.rs:307</code>), because fetcher and proposer aren’t in lockstep:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>State</th><th>Meaning</th><th>Set / cleared</th></tr></thead><tbody><tr><td><code>started</code></td><td>a round is actively running</td><td><code>begin_round</code> (<code>pool.rs:523</code>) / <code>end_round</code> (<code>:560</code>)</td></tr><tr><td><code>pending_offers</code></td><td>monitor pushed the offer, fetcher hasn’t begun the round yet</td><td><code>note_pending_offer</code> (<code>:545</code>, from <code>monitor.rs:395</code>), superseded by <code>begin_round</code></td></tr><tr><td><code>completed</code></td><td>round finished a hair before the snapshot; writes not yet in the read view</td><td><code>end_round</code> retains for <code>COMPLETION_RETENTION</code> (<code>:301</code>, 5 ms)</td></tr></tbody></table></div>
+<p>Without <code>pending_offers</code> the proposer could snapshot in the gap after the offer is sent but before the round
+starts (nothing <code>started</code> yet); without <code>completed</code> retention it could seal an empty inherent microseconds
+after a round dropped its guard.</p>
+<p><strong>Worked timeline</strong> — B authors block N+1; relay block R carries A’s included <code>SR</code> over stream <code>C = [P0,P1,P2]</code>:</p>
+<pre><code>t=0ms   R imported → both fire off it:
+        · monitor:  note_pending_offer(A)  → pending_offers={A}; sends the offer
+        · proposer: inherent_data_at → wait_for_in_flight_rounds(250ms);
+          entry {started:∅, pending:{A}, completed:∅} → waits (not an empty snapshot)
+t=2ms   fetcher:  begin_round(A) → {started:{A}, pending:∅}; fetch + verify P0..P2
+t=28ms  end_round(A) → {started:∅, completed:{A}} (retained 5 ms); waiters woken
+t≈29ms  proposer wakes, retention lapses, writes visible → wait returns (≈29 ms ≪ 250)
+        → inherent messages:[(A, C, [P0,P1,P2])] delivered THIS block ✓
+</code></pre>
+<p>At that exit <code>started==0 &amp;&amp; pending_offers==0</code> → classified <code>RetentionElapsed</code> (a benign settle), logged
+distinctly from a true <code>BoundExpired</code> (a round still live after the full 250 ms — e.g. A’s collator
+unreachable → build N+1 without the message; it lands in N+2).</p>
+<p><strong>Below the design layer.</strong> The window only decides whether a message lands in block N+1 vs N+2 — a node-local
+latency optimization on the fetcher↔proposer seam. It changes nothing committed, verified, or delivered (a
+missed message just waits one block), which is why it lives entirely in the node/client stream
+(<a href="https://github.com/paritytech/polkadot-sdk/issues/12707" class="external external-link">#12707<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>), not the protocol.</p>
+<h2 id="12708--parachain-pallet-cumulus-pallet-spec-messaging">#12708 — parachain pallet (<code>cumulus-pallet-spec-messaging</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12708--parachain-pallet-cumulus-pallet-spec-messaging" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="the-inherent-lifecycle--off-chain-data--on-chain-consumption-enact_messages">The inherent lifecycle — off-chain data → on-chain consumption (<code>enact_messages</code>)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-inherent-lifecycle--off-chain-data--on-chain-consumption-enact_messages" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>How the fetch pipeline’s verified, off-chain material becomes committed on-chain state, via the standard
+Substrate inherent machinery (three stages, two in-wasm):</p>
+<p><strong>A — node produces the data.</strong> <code>inherent_data_at</code> snapshots the verified pool into a <code>SpecMsgInherentData</code>
+(the <code>InherentDataProvider</code>), grace-window-gated.</p>
+<p><strong>B — authoring folds it into the block:</strong></p>
+<ol>
+<li>The collator’s <code>create_inherent_data_providers(parent)</code> returns <code>(storage_proof, spec_msg_inherent)</code>
+(aura.rs:774).</li>
+<li>The proposer builds <code>InherentData</code>: <code>SpecMsgInherentData::provide_inherent_data</code> does
+<code>put_data(*b&quot;specmsg0&quot;, self)</code> when non-empty (inherent.rs:87) — the verified data lands under the
+<code>specmsg0</code> key. Empty ⇒ nothing put.</li>
+<li>The proposer calls <code>BlockBuilder::inherent_extrinsics(inherent_data)</code> <strong>in-wasm</strong>, which calls every
+pallet’s <code>ProvideInherent::create_inherent</code>. Spec-msg’s (lib.rs:1311): <code>get_data::&lt;SpecMsgInherentData> (specmsg0)</code>, non-empty → <code>Some(Call::enact_messages { data })</code> → wrapped as an <strong>unsigned, <code>Mandatory</code>-
+class</strong> inherent extrinsic and placed in the block.</li>
+<li>Dispatch: <code>enact_messages</code> (lib.rs:961) — <code>ensure_none(origin)</code>, then per channel payload
+<code>consume_channel_item</code> (append / advance the <code>InboundFrontier</code>), per register read <code>consume_register_read</code>
+(apply the watermark/grant), emitting <code>ItemRejected</code> for bad items. <strong>This is the off-chain→on-chain
+moment.</strong> It returns <code>Ok</code> even on rejected items — a bad item is an event, never a block failure (it must
+not be, the call being <code>Mandatory</code>).</li>
+</ol>
+<p><strong>C — validation re-executes, never re-fetches.</strong> <code>data</code> rides <em>inside</em> the block as the <code>enact_messages</code>
+extrinsic argument; on import (<code>execute_block</code>) and inside the PVF (<code>validate_block</code>) the runtime re-dispatches
+it deterministically. The provider/<code>create_inherent</code> path runs only at authoring; once the call is in the
+block it is a plain extrinsic on re-execution.</p>
+<p><strong>The trust nuance — where soundness actually lives.</strong> <code>ProvideInherent</code> implements only <code>create_inherent</code> +
+<code>is_inherent</code>, <strong>not <code>check_inherent</code></strong> — there is <em>no</em> author-equivalence check that could reject the block on
+inherent content. At the runtime level the inherent is <em>trusted input</em>; soundness lives in the <strong>lift /
+<code>Requires</code></strong> path: authoring Phase 2 emits <code>Requires</code> (UMP) + POV <code>RequiresLift</code>s from <code>consumption_record()</code>,
+and <code>validate_block</code> re-derives <code>Requires</code> in-wasm, which the relay’s <code>paras_inherent</code> matches against the
+source’s <code>RecentProvides</code> ring — proving everything consumed was genuinely provided under an <em>included</em> source
+root. So <code>enact_messages</code> <strong>applies</strong> the consumption; the <code>Requires</code>/lift check is what makes it <strong>sound</strong>. A
+fabricated inherent yields a <code>Requires</code> matching no provided root → rejected at backing — which is why the
+inherent can be <code>Mandatory</code>-but-content-unchecked.</p>
+<p><strong>Substrate plumbing — why the closure returns a <em>tuple</em>.</strong> <code>sp_inherents::InherentDataProvider</code>
+(client_side.rs:100) carries <code>#[impl_trait_for_tuples::impl_for_tuples(30)]</code>, so any tuple of providers is
+<em>itself</em> one provider — its <code>provide_inherent_data</code> runs each element in order. That is how
+<code>create_inherent_data_providers</code> returns <em>one</em> value yet supplies <em>several</em> inherents:
+<code>(storage_proof, spec_msg_inherent)</code> means “run these two writers.” <code>InherentData</code> is just a
+<code>BTreeMap&lt;InherentIdentifier ([u8;8]), Vec&lt;u8>></code> (lib.rs:210) — providers <strong>write</strong> (<code>put_data(id, …)</code>),
+pallets <strong>read</strong> (<code>get_data(id)</code>), and the provider’s key equals the pallet’s <code>INHERENT_IDENTIFIER</code>
+(<code>*b&quot;specmsg0&quot;</code>), the only coupling between “node wrote it” and “pallet finds it.” Flow: collator awaits the
+closure → tuple → <code>create_inherent_data()</code> (client_side.rs:104) folds each element into a fresh <code>InherentData</code>
+→ proposer → <code>BlockBuilder::inherent_extrinsics</code> → each pallet’s <code>create_inherent</code> pulls <em>its own</em> key. So the
+tuple is write-side composition (N providers → one map), the pallets are read-side fan-out (each indexes its
+key). The cumulus slot-based collator merges this closure’s <em>extra</em> providers (storage proof + spec-msg) with
+the framework’s parachain-system (<code>ParachainInherentData</code>) + timestamp inherents one level up.</p>
+<h3 id="commitment-tree-storage--mvps-persisted-trie-vs-the-primitives-stateless-recompute">Commitment tree storage — MVP’s persisted trie vs the primitives’ stateless recompute<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#commitment-tree-storage--mvps-persisted-trie-vs-the-primitives-stateless-recompute" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Design mandates only the <em>root</em>, not how it’s stored.</strong> The design doc’s only relevant section is titled
+“Parachain Runtime State (<strong>Internal</strong>)” and sketches <code>OutgoingMessageState { per_destination: BTreeMap&lt;ParaId, MMR>, current_root: Hash }</code> — “hold the accumulators, commit a <code>current_root</code>.” No on-chain tree layout, no
+stream lifecycle, no “eternal,” no cleanup semantics. So maintaining <code>current_root</code> is an <strong>implementation
+choice</strong>, and the repo already has <em>both</em> strategies for the same keyed Patricia trie:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th><code>rk-spec-msg-primitives</code> — <strong>stateless</strong></th><th><code>lexnv/spec-msg-poc-mvp</code> pallet — <strong>persisted</strong></th></tr></thead><tbody><tr><td>tree</td><td><code>streams_root(entries)</code> recomputes from scratch</td><td><code>TreeNodes</code>/<code>TreeRoot</code> storage</td></tr><tr><td>per block</td><td>O(S) rebuild from the active-stream set</td><td>O(k·log S) incremental path update</td></tr><tr><td>state kept</td><td><strong>none</strong></td><td>N−1 inner nodes, <strong>eternal / never-deleted</strong></td></tr><tr><td>growth / cleanup</td><td>nothing to grow or delete</td><td>unbounded; no delete path</td></tr><tr><td>active-set policy</td><td><strong>caller’s choice</strong> (agnostic — drop a closed stream and it’s gone)</td><td>“streams eternal” baked in</td></tr></tbody></table></div>
+<p>Same logical trie (“Primitives reconciliation … DONE” — roots agree), two builders.</p>
+<p><strong>Stateless (primitives, <code>streams_root.rs</code>).</strong> Pure function of the entry set — no <code>StorageMap</code>, no
+<code>NodeKey</code>/<code>InnerNode</code>, no <code>insert</code>/<code>remove</code>:</p>
+<pre><code>streams_root(entries) = node_hash(sort_by_key(entries))
+node_hash([leaf])     = hash_leaf(key, root)
+node_hash(es)         = hash_inner(first_diverging_bit, node_hash(left), node_hash(right))
+</code></pre>
+<p>Doc says the root is over <code>(StreamId, root)</code> <strong>“for every active stream”</strong> — <em>active</em>, whatever the caller
+passes; the primitive has no notion of eternal.</p>
+<p><strong>Persisted (MVP pallet, <code>cumulus/pallets/spec-messaging</code>).</strong> <code>TreeRoot: StorageValue&lt;TreeChild></code> (its <code>hash</code>
+IS the <code>StreamsRoot</code>) + <code>TreeNodes: StorageMap&lt;NodeKey, InnerNode></code> (inner nodes only; leaves live in the
+parent’s <code>TreeChild</code>). <code>NodeKey{len, prefix[8]}</code> (<code>len==64</code> ⇒ leaf), child hashes stored <strong>inline</strong> so a path
+walk collects exactly the proof siblings. <code>commit_streams_root()</code> → <code>upsert_tree_leaf</code> per touched stream:
+O(log S) walk-down / splice / rehash-bottom-up, off-path untouched.</p>
+<p><strong>No delete path — structurally monotonic.</strong> No <code>remove</code>/<code>kill</code>/<code>drain</code> on the tree anywhere. Streams eternal
+⇒ N distinct streams ⇒ exactly N−1 inner nodes; a new stream adds one (the divergence split, which
+<strong>re-parents</strong> the existing subtree keeping its <code>NodeKey</code> — never orphans), a re-touch only overwrites hashes
+in place. It’s a rebuildable cache; nothing to GC. (The only per-block <code>on_initialize</code> kills are the transient
+companions — <code>BlockStreamsRoot::kill()</code>, <code>ConsumptionOutbox::kill()</code>, <code>OutboundMessages::drain()</code> — <strong>not</strong> the
+tree.)</p>
+<p><strong>⚠️ The unbounded growth is an MVP-strategy cost, not a protocol property.</strong> <code>TreeNodes</code> grows with
+<em>distinct streams ever touched</em> — closed/idle channels keep their node forever. The design doesn’t require
+this; two fixes without touching the protocol: (a) <strong>stateless recompute</strong> (the primitives already do it —
+O(S)/block, zero persistent tree), or (b) keep the persisted trie but <strong>evict</strong> closed + fully-confirmed +
+horizon-aged leaves (safe once the stream’s roots have left <code>RecentProvides</code> — same “aged ⇒ unliftable ⇒ dead”
+reasoning as retention). MVP just took the simplest path. <strong>Candidate MVP PoC issue if channel churn is
+expected — not a design gap.</strong></p>
+<h4 id="stateless-pallet-integration-imagined--how-a-no-tree-pallet-would-wire-the-primitive">Stateless pallet integration (imagined) — how a no-tree pallet would wire the primitive<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#stateless-pallet-integration-imagined--how-a-no-tree-pallet-would-wire-the-primitive" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Two facts make this small: the pallet <strong>must</strong> keep <code>OutboundFrontier: StorageMap&lt;StreamId, MmrFrontier></code>
+either way (needed to append + derive each stream root), and the <strong>node already recomputes <code>StreamsRoot</code>
+itself</strong> (archive: “recomputes every root itself — never takes one from the runtime”), so proof generation is
+<em>already</em> stateless. <code>TreeNodes</code>/<code>TreeRoot</code> exist <strong>only</strong> to produce the on-chain root digest cheaply — that
+is the entire integration surface.</p>
+<p>Drop the persisted trie; keep a flat <strong>root cache</strong> (the entry set the primitive consumes):</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="rust" data-theme="github-light github-dark"><code data-language="rust" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">StreamRoots</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> StorageValue</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">BoundedVec</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">StreamId</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">Hash</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">), </span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">MaxStreams</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">>>;   </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// sorted by StreamId</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">fn</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> commit_streams_root</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Option</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">StreamsRoot</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">> {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    let</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> mut</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> roots </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> StreamRoots</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">::</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">get</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    let</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> mut</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> touched </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> false</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (stream, messages) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">in</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> OutboundMessages</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">::</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">iter</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">        let</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> mut</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> f </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> OutboundFrontier</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">::</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">get</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">stream);</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">        for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> p </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">in</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">messages { f</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">append_leaf</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">hash_leaf</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">::</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">&lt;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">SpecHasher</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">>(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">LEAF_VERSION</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, p)); }</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">        OutboundFrontier</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">::</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">insert</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">stream, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">f);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">        upsert</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;mut</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> roots, stream, f</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">root</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">());                 </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// binary-search set/insert, O(log S)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">        touched </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    }</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    if</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> !</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">touched { </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">return</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> None</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">; }</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">    StreamRoots</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">::</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">put</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">roots);</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    let</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> root </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> streams_root</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(roots</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">iter</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">()</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">copied</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">()</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">collect</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">())</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">?</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">; </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// ← the primitive, unchanged</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    deposit_digest</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(root);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property">    Some</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(root)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p><strong>Eviction falls out for free</strong> — the growth problem dissolves because shrinking is a <code>Vec</code> removal, not trie
+surgery: on close + drain + horizon-age, <code>roots.retain(|(id,_)| *id != closed)</code>. No “streams eternal” baked
+in; the active set <em>is</em> the cache’s contents.</p>
+<p><strong>Trade-off is cost, not correctness</strong> (identical root either way) — and it’s dominated by <strong>PoV</strong>:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>stateless cache</th><th>persisted trie (MVP)</th></tr></thead><tbody><tr><td>compute / block</td><td>O(S) recompute</td><td>O(k·log S) path rehash</td></tr><tr><td><strong>PoV / block</strong></td><td><strong>O(S)</strong> — whole <code>StreamRoots</code> value in/out</td><td><strong>O(k·log S)</strong> — only touched paths</td></tr><tr><td>storage</td><td>bounded, evictable (<code>Vec::retain</code>)</td><td>eternal, only-grows</td></tr></tbody></table></div>
+<p>The persisted trie’s real payoff: a block touching <code>k</code> of <code>S</code> streams pulls only <code>O(k·log S)</code> nodes into PoV,
+vs the flat cache dragging the whole <code>~40·S</code>-byte set every block. <strong>At MVP scale (dozens of channels) noise —
+prefer the stateless cache: ~30 lines, bounded, evictable. At thousands of streams, persist for the bounded
+per-block PoV.</strong> So it’s a scale decision, decoupled from the protocol (which mandates only the root).</p>
+<h3 id="register-republish--receiversender-watermark--grant-flow-control-backstop">Register republish — receiver→sender watermark + grant (flow-control backstop)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#register-republish--receiversender-watermark--grant-flow-control-backstop" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The <strong>inbound (receiver) side</strong> tells the sender how far it has consumed, so the sender can reclaim
+flow-control credit and prune its retained-payload archive. What’s republished is a <code>Register</code>, <strong>not</strong>
+the frontier, and it rides back over the channel’s <strong>ack_stream</strong> (an outbound stream receiver→sender).</p>
+<p><strong><code>publish_register</code></strong> (<code>cumulus/pallets/spec-messaging/src/lib.rs:1485</code>):</p>
+<ul>
+<li><code>up_to = InboundFrontier(peer, stream).leaf_count</code> — the consumption <strong>watermark</strong>: a scalar position
+derived from the inbound frontier’s leaf count, <em>not</em> the peaks-frontier itself.</li>
+<li><code>Register { version, up_to, grant, closed }</code> — watermark <strong>+</strong> a <code>WindowGrant</code> (credit) + closed flag.</li>
+<li><code>append_to_stream(ack_stream(channel), register.encode())</code> → outbound back to the sender.</li>
+</ul>
+<p><strong>Sender uses it for</strong>: reclaiming credit (the grant), and <code>confirm(up_to)</code> (<code>:351-360</code>) releases every
+retained payload below the watermark (archive prune). Read-side is monotonic-safe: a register regressing
+<code>up_to</code>/<code>version</code> is rejected (<code>:1849</code>).</p>
+<p><strong>Two triggers</strong>:</p>
+<ul>
+<li>Normal — the <strong>¼-window</strong> trigger (frequent, fires on consumption progress).</li>
+<li>Backstop — the <strong>age sweep</strong> in <code>on_initialize</code> (<code>:898-918</code>): inbound channels with unreported progress
+(<code>InboundFrontier.leaf_count > published.up_to</code>, <code>:917-918</code>) republish at latest every
+<code>RegisterPublishAge</code> blocks. Guards liveness for channels that stayed under the ¼-window trigger and then
+went quiet — without it the sender’s credit/archive stall forever. <code>O(inbound channels)</code>/block, fine at
+MVP counts; a due-queue replaces it when channels multiply.</li>
+</ul>
+<h3 id="sender-deep-dive--stages-02-sends--streamsroot">Sender deep-dive — Stages 0–2: sends → <code>StreamsRoot</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#sender-deep-dive--stages-02-sends--streamsroot" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>How three XCMs become one 32-byte commitment, in <code>cumulus-pallet-spec-messaging</code> (refs <code>lib.rs</code>).</p>
+<p><strong>Credit gate (Stage 1).</strong> <code>can_send</code> (<code>:1401</code>) / <code>ensure_credit</code> (<code>:1467</code>): a send needs room in the peer’s
+granted window. <em>In-flight</em> = the count and byte-sum of leaves at positions ≥ B’s read watermark; <code>send</code>
+requires in-flight strictly below <strong>both</strong> <code>grant.max_messages</code> and <code>grant.max_bytes</code>. Over either →
+<code>SendError::Transport</code>, surfaced to the XCM caller as backpressure (no hidden queue). With B’s opening grant
+<code>{100, 1 MiB}</code> and watermark 0, A’s three sends sit at <code>3 / 100</code> msgs and <code>|P0|+|P1|+|P2| / 1 MiB</code> — admitted.</p>
+<p><strong>Append (Stage 1).</strong> <code>append_to_stream</code> (<code>:1336</code>) pushes each payload onto <code>OutboundMessages[C]</code> (<code>:625</code>) —
+<em>this block’s</em> sends, host-appended O(1). The stored <code>OutboundFrontier[C]</code> (<code>:616</code>) is untouched mid-block, so
+<code>position = frontier.leaf_count + index</code> is stable across the whole block (frontier 0 → P0@0, P1@1, P2@2).</p>
+<p><strong>Commit (Stage 2, <code>on_finalize</code> <code>:931</code>).</strong> <code>commit_streams_root</code> (<code>:1560</code>) runs the fold <em>transiently</em> —
+<code>OutboundFrontier</code> is not mutated yet:</p>
+<pre><code>leaves      L_i = hash_leaf(LEAF_VERSION=0x0, SpecMsgKind::Data(X_i).encode())   (mmr.rs:90)
+              preimage domain-tagged LEAF_TAG=0x1 (lib.rs:143)
+stream MMR  fold C's stored frontier (empty) + [L0,L1,L2]:
+              N01 = merge(INNER_TAG=0x2, L0, L1);  peaks = [N01, L2]
+              SRoot3 = bag(PEAK_TAG=0x3, peaks)          ← C's new root at leaf_count 3
+commit tree leaf(C) = tree_leaf_hash(C, SRoot3)          (tree.rs:75, TREE_LEAF_TAG=0x5)
+              inner via tree_inner_hash(bit, l, r)        (tree.rs:88, TREE_INNER_TAG=0x6)
+              SR = compute_streams_root({C→SRoot3, K→…})  (tree.rs:195)   ← the StreamsRoot
+</code></pre>
+<p><code>commit_streams_root</code> then <strong>memoizes</strong> <code>SR</code> for <code>provides_root</code> (<code>:1932</code> → <code>UMPSignal::Provides(SR)</code>) and
+deposits the header digest <code>DigestItem::Consensus(SPMS_ENGINE_ID, SR)</code> (<code>lib.rs:170</code>), ≤ 1 per header. An idle
+block (no touched stream) folds nothing, emits nothing, deposits nothing.</p>
+<p><strong>Advance (next <code>on_initialize</code> <code>:874</code>).</strong> The pending <code>[L0,L1,L2]</code> are hashed into <code>OutboundFrontier[C]</code>
+(leaf_count 0 → 3) and <code>OutboundMessages</code> cleared — one atomic step. So block N’s sends stay readable in <strong>N’s</strong>
+state, where the <code>outbound_messages()</code> runtime API extracts them for the archiver (Stage 2), never via storage
+after the fact.</p>
+<pre><code>block N   : append P0,P1,P2 (frontier stays 0) → on_finalize: fold → SR + digest + Provides(SR)
+              OutboundMessages[C]=[P0,P1,P2], OutboundFrontier[C]=0
+block N+1 : on_initialize: frontier[C] 0→3, OutboundMessages cleared
+              (N's sends already committed under SR; archiver already read them from N's state)
+</code></pre>
+<p>Key invariant: the commitment is <em>derived, never declared</em> — <code>SR</code> is recomputable from the frontiers alone, so
+anyone with the payloads can reproduce it. That is exactly what makes the fetch trust-free (verification
+deep-dive under #12707 above).</p>
+<p><strong>Marker leaf — an opened channel is never empty.</strong> The <code>StreamsRoot</code> commitment is inclusion-only, so you
+cannot prove a stream is <em>empty</em> — “empty”, “peer lagging” and “peer withholding” would be indistinguishable (a
+real attack surface). The fix is a marker leaf: <code>open_channel</code> (<code>lib.rs:1067</code>) commits <code>OpenChannel</code> as the
+channel stream’s <strong>leaf 0</strong> at open (<code>open_channel</code> → <code>send_signal</code> → <code>append_to_stream</code>). So an opened channel
+always carries ≥ 1 leaf; <strong>cursor 0 is always provable</strong>, and the receiver can tell “nothing sent yet” (only the
+<code>OpenChannel</code> leaf) from a stalled or withholding peer. The <code>OpenChannel</code> leaf is window-counted like any send.</p>
+<h3 id="lift-deep-dive--stage-9-pov-lift--requires-and-ump-signal-transport-safety">Lift deep-dive — Stage 9: POV lift → <code>Requires</code>, and UMP-signal transport safety<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lift-deep-dive--stage-9-pov-lift--requires-and-ump-signal-transport-safety" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong><code>ConsumptionRecord</code> vs the pool — producer + trust.</strong> The record is <strong>runtime (STF) output</strong>, <em>not</em>
+pool-derived: the pool feeds the inherent (<code>build_inherent</code>), the runtime <strong>consumes</strong> it
+(<code>consume_channel_item</code> / <code>consume_register_read</code>) and writes <code>ConsumptionOutbox</code> → <code>consumption_record()</code>. So
+the record <em>reflects</em> what the pool handed out (via execution) but is authoritative <strong>independent</strong> of it — the
+runtime stores only frontiers + this record, enough to <em>verify</em> a lift, never to <em>generate</em> one. At lift time
+the two are <strong>joined</strong>: the <strong>record</strong> supplies the authoritative key + endpoint (<code>(source, stream)</code>,
+<code>chain_endpoint</code>), the <strong>pool</strong> supplies the proof material (leaves + binding) via <code>channel_lift(endpoint)</code>.
+Trust asymmetry — the <strong>record leads</strong> (trusted; consumption can’t be hidden), the <strong>pool must cover</strong> it
+(untrusted, verified): if the record names material the pool lacks — another collator’s block (<code>cursor > end</code> →
+drop + re-fetch) or a Case-B partial (<code>NotCovered</code>) — lift assembly fails. Direction: <strong>pool → inherent →
+runtime → record</strong>, then <strong>record + pool → lifts</strong>.</p>
+<h4 id="the-liftrequires-path-5-steps-3-contexts">The lift/<code>Requires</code> path (5 steps, 3 contexts)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-liftrequires-path-5-steps-3-contexts" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ol>
+<li><strong>Consumption record (runtime output).</strong> <code>consume_channel_item</code> (<code>lib.rs:1690</code>) / <code>consume_register_read</code>
+(<code>:1756</code>) write per-<code>(source,stream)</code> <code>Interval</code>s into transient <code>ConsumptionOutbox</code>, exposed by
+<code>consumption_record()</code>. Runtime stores <strong>only frontiers</strong> (<code>InboundFrontier</code>) + this record — enough to
+<em>verify</em> a lift, never to <em>generate</em> one.</li>
+<li><strong>Lift generation (node-side).</strong> <code>lift_assembler</code> → <code>assemble_collation</code> (<code>authoring.rs:234</code>) →
+<code>channel_lift</code>/<code>register_lift</code> (<code>pool.rs:860/905</code>) pulls extension-over-retained-leaf-hashes + tree proof
+from the pool; multi-block candidates <code>stitch</code> interval chains in bundle order (<code>chain_endpoint</code>) — a
+<em>bundle</em> is the candidate’s <strong>chained blocks</strong> (collator “chains proposals ahead of backing”), so <em>bundle
+order</em> = block order N, N+1, …, and each block contributes one <code>ConsumptionRecord</code> merged into per-stream
+chains. Consecutive intervals must chain (<code>next.start == prev.end.root()</code>) or an <code>advances</code> extension proves
+the gap is a forward step (present only when a fresher root was read mid-bundle). A mispaired or forged
+chain can’t fold to the committed root — the soundness guard.</li>
+<li><strong>POV carriage.</strong> Lifts ride in <code>ParachainBlockData::V3</code> — the PVF’s <em>input</em>.</li>
+<li><strong>PVF synthesis (<code>validate_block</code> wrapper, post-execution).</strong> Reads <code>consumption_record()</code>, takes POV lifts,
+<code>build_requires(records, lifts)</code> <strong>advances each endpoint to a current in-window root</strong> (extension+tree →
+<code>StreamsRoot</code>; invalid → <code>LiftError</code> fails candidate; per source must converge → <code>DivergentRoots</code> else),
+produces canonical <code>RequiresSet</code>, appends <code>UMPSignal::Requires(set)</code> to <code>UpwardMessages</code>.</li>
+<li><strong>Byte-identity.</strong> Collator also runs <code>build_requires</code> node-side to declare the same signal; PVF re-derives
+it — a mismatch is rejected at backing.</li>
+</ol>
+<p><strong>The primitive encodes the invariant.</strong> <code>UMPSignal::Requires</code> doc (<code>polkadot/primitives/src/v9/mod.rs:2750-2761</code>):
+<em>“NEVER emitted by parachain block execution … the validate_block wrapper synthesizes this signal from the record
+via POV-carried lifts … Relay-side semantics are window membership only.”</em> <code>Provides</code> (<code>:2744</code>): <em>“Emitted only
+by blocks that touched at least one stream.”</em> Matches the <code>validate_block</code>-hook synthesis (§4) and the PoV-format
+rollout order (§7).</p>
+<p><strong>Two validation layers — PVF vs relay.</strong> “Is the <code>Requires</code> valid?” is answered in <em>two</em> places: the PVF
+guarantees the signal is <strong>honestly derived</strong>, the relay guarantees it’s <strong>currently admissible</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>checks</th><th>answers</th></tr></thead><tbody><tr><td><strong>PVF</strong> (<code>validate_block</code>)</td><td>lifts verify (extension + tree fold to a committed stream root) <strong>+</strong> <code>Requires</code> is the canonical derivation, <strong>byte-identical</strong> to the declared signal; panics on any lift failure or a block-emitted <code>Requires</code></td><td>”the lifts are cryptographically sound and the signal is exactly what they produce”</td></tr><tr><td><strong>Relay</strong> (<code>check_requires</code>, Stage 10)</td><td>every requires root ∈ the source’s <code>RecentProvides</code> window</td><td>”the receiver depended on data the relay still vouches for”</td></tr></tbody></table></div>
+<p>The PVF <strong>cannot</strong> judge staleness — no relay state in-wasm — so window membership is <strong>relay-only</strong>. Crypto +
+honest-derivation = PVF; in-window admission = relay.</p>
+<h4 id="upwardmessages--ump-signals--what-it-is-and-why-its-safe"><code>UpwardMessages</code> + UMP signals — what it is and why it’s safe<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#upwardmessages--ump-signals--what-it-is-and-why-its-safe" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>The emitter (<code>append(UMP_SEPARATOR)</code> then each signal) builds the candidate’s <code>upward_messages</code> commitment, which
+has <strong>two regions split by <code>UMP_SEPARATOR = vec![]</code></strong> (<code>v9:2867</code>):</p>
+<ul>
+<li><strong>before</strong> the separator → real UMP (XCM to relay, queued);</li>
+<li><strong>after</strong> → <strong>UMP signals</strong> (<code>SelectCore</code>/<code>ApprovedPeer</code>/<code>Provides</code>/<code>Requires</code>) — parsed and acted on, <strong>never
+queued as XCM</strong>.</li>
+</ul>
+<p>So <code>Provides</code> (sender) and <code>Requires</code> (receiver, from the wrapper) are appended as post-separator signals.</p>
+<p><strong>Does not break relay UMP processing — safe by construction:</strong></p>
+<ol>
+<li><strong>XCM queueing excludes signals</strong> — the relay uses <code>skip_ump_signals</code> (<code>inclusion/mod.rs:950,1004</code>) =
+<code>take_while(m != separator)</code> (<code>v9:2873</code>); post-separator signals are never dispatched as XCM.</li>
+<li><strong>Signals don’t consume XCM UMP budget</strong> — count/size checks run on the <code>skip_ump_signals</code> output (pre-sep
+only); signal count is separately bounded by <code>MAX_UMP_SIGNALS = 4</code> (<code>v9:2770</code>; duplicates → error).</li>
+<li><strong>Mechanism pre-exists</strong> — same separator+signal transport as <code>SelectCore</code>/<code>ApprovedPeer</code>; <code>Provides</code>/<code>Requires</code>
+add two enum variants + two handlers: <code>note_provides</code> (<code>inclusion:918-921</code> → ring) and <code>check_requires</code>
+(<code>paras_inherent:1044-1052</code> → drop candidate if root not in window). Parsed via <code>commitments.ump_signals()</code>
+(<code>v9:2879</code>).</li>
+</ol>
+<p><strong>Real hazard = uneven deploy (not the mechanism).</strong> Emitting <code>Provides</code>/<code>Requires</code> to a relay whose runtime
+lacks the enum variants → <code>UMPSignal::decode</code> fails → candidate rejected. The safeguard is <strong>release-first
+ordering</strong> (§7): the relay runtime with UMP-signal support must reach ⅔+ validators <em>before</em> any parachain emits
+the new signals (decode-first upgrade order). There is deliberately <strong>no feature bit</strong> — the earlier
+<code>SpeculativeMessaging</code> node-feature / consumer-side gate was dropped, so <code>note_provides</code> and <code>check_requires</code> run
+<strong>unconditionally</strong> (gated only by a <code>Requires</code> being present); with no on-chain toggle to hold candidates back,
+deploy-before-emit ordering is the sole migration safeguard. The transport is sound; safety rests on release
+ordering, not a runtime gate.</p>
+<h3 id="ack-stream-deep-dive--stages-0-1112-the-register-head-read">Ack-stream deep-dive — Stages 0, 11–12: the register head read<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#ack-stream-deep-dive--stages-0-1112-the-register-head-read" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The ack stream <code>K = Ack{recipient: sender, domain, num}</code> is an ordinary per-stream MMR like the data stream
+<code>C</code>, but consumed under the <strong>opposite discipline — lossy latest-wins</strong>: only B’s <em>newest</em> <code>Register</code> matters,
+so A reads just the <strong>head</strong> leaf of <code>K</code>, never the history. (Data stream <code>C</code> is ordered no-skip — A reads
+<em>every</em> leaf via a range + extension proof, verification deep-dive above.)</p>
+<p><strong>No direct ack — the register is just a stream leaf.</strong> B’s <code>publish_register</code> (<code>lib.rs:1485</code>) only
+<code>append_to_stream</code>s the <code>Register</code> onto <code>K</code>; it never pushes anything to A (the local <code>Event::RegisterPublished</code>
+is a FRAME event for RPC, not a cross-chain signal). The <code>StreamsRoot</code> update isn’t in <code>publish_register</code>
+either — it’s the ordinary end-of-block <code>commit_streams_root</code> fold: <code>K</code> is now a touched stream, so B’s block
+commits a fresh <code>SR_B</code> and emits <code>Provides(SR_B)</code>. Delivery to A is then the <strong>identical</strong> path as data,
+just B→A — <code>note_provides</code> → <code>RecentProvides[B]</code> → monitor → fetch → verify → inherent — with B as <code>K</code>’s
+sender and A its reader. So the ack is <strong>asynchronous</strong> (it round-trips through relay inclusion + an
+off-chain fetch), which is exactly why flow control is windowed/advisory: A sends up to the <code>grant</code> without
+waiting for a per-message ack, and B’s watermarks catch it up later.</p>
+<p><strong>Head read, not range.</strong> <code>fetch_register</code> (<code>fetch.rs:367</code>) issues <code>EventRequest{ stream:K, under:SR_B, at:None }</code>
+— <code>at:None</code> = “the head as of <code>under</code>”. The reply is a single leaf, not a run:
+<code>EventResponse{ payload: Register.encode(), inclusion: MmrInclusionProof, tree_proof }</code>.</p>
+<p><strong><code>verify_event_response</code> (<code>verify.rs:152</code>)</strong> — head branch:</p>
+<pre><code>leaf = hash_leaf(LEAF_VERSION, payload)                              (= the served Register)
+(position, frontier) = inclusion.verify_head(leaf)   (mmr.rs:299)    → position = leaf_count-1
+root = frontier.root()
+streams_root = tree_proof.verify(K, root)            (tree.rs:143)
+streams_root == under ?   yes → VerifiedEvent{ position, frontier }
+                          no  → RootMismatch → discard + peer
+</code></pre>
+<p><strong>What <code>verify_head</code> proves (head-ness, not mere inclusion).</strong> <code>MmrInclusionProof{ mmr_size, items }</code> — <code>mmr_size</code>
+fixes <code>leaf_count</code>. The head leaf is the rightmost leaf of the last (smallest) peak’s subtree, so its sibling
+path is <em>exactly</em> <code>leaf_count.trailing_zeros()</code> LEFT siblings plus <code>count_ones()−1</code> other peaks; the item count
+is checked exactly, so the proof has <strong>one valid form</strong>. It reconstructs the full frontier and returns
+<code>position = leaf_count−1</code>.</p>
+<p><strong>Why lossy-latest-wins is still trust-free.</strong> <code>under = SR_B</code> commits <code>K</code>’s root at a <em>specific</em> leaf count. A
+lagging or malicious peer that serves a <strong>stale</strong> register as the head puts the wrong leaf in the head slot →
+a different frontier root → <code>≠ under</code> → rejected (<code>verify.rs:150</code>: <em>“under fixes the stream’s leaf count, so a
+stale leaf served as the head yields a different stream root and fails the comparison”</em>). So A can be <em>behind</em>
+(it only sees whichever <code>SR_B</code> it points at) but never <em>fooled</em> into treating an old register as current.</p>
+<p><strong>Data / timeline</strong> — B acknowledges A’s <code>C=[P0,P1,P2]</code>; A reads B’s register off <code>K</code> (B is <code>K</code>’s sender, A its
+reader; every register publish touches <code>K</code>, so B commits a fresh <code>StreamsRoot</code> and pushes it to its ring):</p>
+<pre><code>K leaf   Register (B → A on stream K)                 B's StreamsRoot    relay ring RecentProvides[B]
+  0       {up_to:0, grant:{100,1MiB}, closed:false}    SR_B0  (Stage 0)   [ …, SR_B0 ]
+  1       {up_to:3, grant:{100,1MiB}, closed:false}    SR_B1  (Stage 11)  [ …, SR_B0, SR_B1 ]
+  2       {up_to:5, …}   (if B consumes more later)    SR_B2             [ …, SR_B1, SR_B2 ]
+
+A (Stage 12), currently pointing at SR_B1:
+  EventRequest{ K, under:SR_B1, at:None }
+   → EventResponse{ payload: Register#1, inclusion: head @ leaf_count=2, tree_proof: ⟨K↪SR_B1⟩ }
+   → verify_head → position 1, frontier{leaf_count:2}, root → tree → SR_B1 == under ✓
+   → consume_register_read (lib.rs:1756): OutChannels[C].register = {up_to:3}; confirm(3) (lib.rs:355)
+     → credit freed  (→ flow-control deep-dive)
+</code></pre>
+<p>Pointing at <code>SR_B2</code> instead would yield <code>Register#2 {up_to:5}</code> — the newer head; registers <a href=".././tags/0/1" class="tag-link internal internal-link alias" data-slug="tags/0/1">0/1</a> are simply
+superseded, never fetched. The head read always returns exactly the latest register committed under the root A
+depends on. And the read is itself POV-lifted (<code>register_lift</code>) → <code>Requires({(B, SR_B*)})</code>, matched on the
+relay like any data read — so even reading an ack is proven against a committed root.</p>
+<h3 id="flow-control-deep-dive--stages-1112-credit--watermark--prune">Flow-control deep-dive — Stages 11–12: credit / watermark / prune<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#flow-control-deep-dive--stages-1112-credit--watermark--prune" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Entirely bilateral — no relay involvement. One channel = A’s data stream <code>C</code> + B’s register stream <code>K</code>
+(<code>Ack{recipient:A,…}</code>, lossy latest-wins). B’s whole voice is its <code>Register</code> (refs <code>lib.rs</code>).</p>
+<p><strong>Register.</strong> <code>Register{ up_to, grant{max_messages,max_bytes}, closed }</code> — <code>up_to</code> = B’s consumption watermark
+(how far it has read <code>C</code>), <code>grant</code> = advisory credit B extends to A, <code>closed</code> = teardown. B publishes on
+acceptance, ~¼-window consumption progress, or age: <code>note_consumption</code> (<code>:1525</code>) sets the <code>due</code> flag,
+<code>publish_register</code> (<code>:1485</code>) emits it onto <code>K</code>.</p>
+<p><strong>The credit loop (Stage 12).</strong> A reads B’s register out-of-band over <code>K</code> (<code>fetch_register</code> → <code>verify_event_response</code>
+→ <code>note_register</code> → inherent → <code>consume_register_read</code> <code>:1756</code>), then <code>confirm(up_to)</code> (<code>:355</code>) releases
+in-flight below the watermark → credit freed for the next send.</p>
+<pre><code>A: send P0,P1,P2       → in-flight = 3 msgs, |P0|+|P1|+|P2| bytes   (below grant {100,1MiB} → OK)
+B: consume to pos 3    → InboundFrontier[(A,C)] = 3, watermark up_to = 3
+B: publish Register{ up_to:3, grant:{100,1MiB}, closed:false } on K   (¼-window / age trigger)
+A: read register → confirm(3): no in-flight positions ≥ 3 → in-flight 0 / 100
+   → ensure_credit sees 0/100 → A may send X3, X4, …
+A: prune_payloads(C, 3) (archive.rs:418) → drop confirmed payloads (leaf HASHES kept per horizon)
+</code></pre>
+<p><code>grant:{0,…}</code> suspends (backpressure); <code>closed:true</code> tears the channel down. Because the register read is
+proven against a committed root (ack-stream deep-dive), even <em>credit</em> accounting is trust-free — never taken on
+a peer’s word.</p>
+<hr/>
+<h2 id="12709--testing--rollout">#12709 — testing / rollout<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12709--testing--rollout" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>No code-analysis deep-dive; the end-to-end flow is in the <a href="../post/speculative-messaging-e2e-test" class="internal internal-link alias" data-slug="post/speculative-messaging-e2e-test">E2E test runbook</a>.</p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-99" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#speculative-messaging--poc-internals-code-analysis" data-for="speculative-messaging--poc-internals-code-analysis">Speculative Messaging — PoC Internals (code analysis)</a></li><li class="depth-1"><a href="#12346--primitives-cumulus-primitives-spec-messaging" data-for="12346--primitives-cumulus-primitives-spec-messaging">#12346 — primitives (cumulus-primitives-spec-messaging)</a></li><li class="depth-2"><a href="#proof-shapes--mmrinclusionproof-vs-mmrextensionproof" data-for="proof-shapes--mmrinclusionproof-vs-mmrextensionproof">Proof shapes — MmrInclusionProof vs MMRExtensionProof</a></li><li class="depth-1"><a href="#12349--relay-runtimeparachainsspec_msg" data-for="12349--relay-runtimeparachainsspec_msg">#12349 — relay (runtime/parachains::spec_msg)</a></li><li class="depth-2"><a href="#relay-ring-deep-dive--stages-3--10-recentprovides-window-match" data-for="relay-ring-deep-dive--stages-3--10-recentprovides-window-match">Relay-ring deep-dive — Stages 3 &amp; 10: RecentProvides window match</a></li><li class="depth-1"><a href="#12707--nodeclient-cumulus-client-spec-msg" data-for="12707--nodeclient-cumulus-client-spec-msg">#12707 — node/client (cumulus-client-spec-msg)</a></li><li class="depth-2"><a href="#the-relay-provides-monitor-monitorrs--run_relay_provides_monitor--the-fetch-trigger-stage-4" data-for="the-relay-provides-monitor-monitorrs--run_relay_provides_monitor--the-fetch-trigger-stage-4">The relay Provides monitor (monitor.rs / run_relay_provides_monitor) — the fetch trigger (Stage 4)</a></li><li class="depth-2"><a href="#the-fetch-pipeline-fetchrs--run_spec_msg_fetcher--rounds--retry-classification" data-for="the-fetch-pipeline-fetchrs--run_spec_msg_fetcher--rounds--retry-classification">The fetch pipeline (fetch.rs / run_spec_msg_fetcher) — rounds &amp; retry classification</a></li><li class="depth-2"><a href="#the-verified-pool-poolrs--specmsgpool--ledgers-bindings-fork-safe-hand-out" data-for="the-verified-pool-poolrs--specmsgpool--ledgers-bindings-fork-safe-hand-out">The verified pool (pool.rs / SpecMsgPool) — ledgers, bindings, fork-safe hand-out</a></li><li class="depth-2"><a href="#two-tier-prune-as-built--how-it-works-today-both-sides" data-for="two-tier-prune-as-built--how-it-works-today-both-sides">Two-tier prune (as-built) — how it works today, both sides</a></li><li class="depth-2"><a href="#verification-deep-dive--stages-57-trust-free-response-checking" data-for="verification-deep-dive--stages-57-trust-free-response-checking">Verification deep-dive — Stages 5–7: trust-free response checking</a></li><li class="depth-2"><a href="#authoring-authoringrs--two-phases-the-specmsg0-inherent-vs-the-pov-lifts--requires" data-for="authoring-authoringrs--two-phases-the-specmsg0-inherent-vs-the-pov-lifts--requires">Authoring (authoring.rs) — two phases: the specmsg0 inherent vs the POV lifts + Requires</a></li><li class="depth-2"><a href="#client-side-timing-deep-dive--the-fetcherproposer-grace-window-stages-48" data-for="client-side-timing-deep-dive--the-fetcherproposer-grace-window-stages-48">Client-side timing deep-dive — the fetcher↔proposer grace window (Stages 4–8)</a></li><li class="depth-1"><a href="#12708--parachain-pallet-cumulus-pallet-spec-messaging" data-for="12708--parachain-pallet-cumulus-pallet-spec-messaging">#12708 — parachain pallet (cumulus-pallet-spec-messaging)</a></li><li class="depth-2"><a href="#the-inherent-lifecycle--off-chain-data--on-chain-consumption-enact_messages" data-for="the-inherent-lifecycle--off-chain-data--on-chain-consumption-enact_messages">The inherent lifecycle — off-chain data → on-chain consumption (enact_messages)</a></li><li class="depth-2"><a href="#commitment-tree-storage--mvps-persisted-trie-vs-the-primitives-stateless-recompute" data-for="commitment-tree-storage--mvps-persisted-trie-vs-the-primitives-stateless-recompute">Commitment tree storage — MVP’s persisted trie vs the primitives’ stateless recompute</a></li><li class="depth-2"><a href="#register-republish--receiversender-watermark--grant-flow-control-backstop" data-for="register-republish--receiversender-watermark--grant-flow-control-backstop">Register republish — receiver→sender watermark + grant (flow-control backstop)</a></li><li class="depth-2"><a href="#sender-deep-dive--stages-02-sends--streamsroot" data-for="sender-deep-dive--stages-02-sends--streamsroot">Sender deep-dive — Stages 0–2: sends → StreamsRoot</a></li><li class="depth-2"><a href="#lift-deep-dive--stage-9-pov-lift--requires-and-ump-signal-transport-safety" data-for="lift-deep-dive--stage-9-pov-lift--requires-and-ump-signal-transport-safety">Lift deep-dive — Stage 9: POV lift → Requires, and UMP-signal transport safety</a></li><li class="depth-2"><a href="#ack-stream-deep-dive--stages-0-1112-the-register-head-read" data-for="ack-stream-deep-dive--stages-0-1112-the-register-head-read">Ack-stream deep-dive — Stages 0, 11–12: the register head read</a></li><li class="depth-2"><a href="#flow-control-deep-dive--stages-1112-credit--watermark--prune" data-for="flow-control-deep-dive--stages-1112-credit--watermark--prune">Flow-control deep-dive — Stages 11–12: credit / watermark / prune</a></li><li class="depth-1"><a href="#12709--testing--rollout" data-for="12709--testing--rollout">#12709 — testing / rollout</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../post/speculative-messaging-impl-design" class="internal">Speculative Messaging — Implementation Design (v0.5)</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-8ddcde67.js" type="module" data-persist="true"></script></html>
