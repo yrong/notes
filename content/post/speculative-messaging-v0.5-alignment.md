@@ -84,55 +84,102 @@ every response independently verifiable against a requester-named root. Lift-ser
 
 ## Retention — final model (supersedes the whole earlier thread)
 
-`floor(stream) = max( watermark(stream), leaf_count_at_window_floor(stream) )`, keep the **last N boundaries**
-(256/512, margin over the ~128 ring), prune payload **and** leaf hash together below the floor. **No wall
-clock, no config** (drops `prune_horizon`, `archived_at`/`now_secs`/`SERVING_HORIZON`, the 24 h/10 MiB
-config, and the `payload_floor` vs `floor.leaf_count` split). Deterministic → reproducible.
+**Two axes, don't conflate them.** The archiver has an *append/head* trigger (when a block's sends become
+serveable — stays **best-block**; the only part that bears on delivery latency, and it is *not* touched) and
+a *prune/tail* floor (how long stale data resides — pure retention, **zero latency impact**). This model
+governs the **tail only**.
 
-- Healthy channel → `watermark` dominates (no over-pruning). The window-floor term only wins when a receiver
-  stalled **> N blocks** — and reaping then is safe because N ≫ ring depth: roots that old have left
-  `RecentProvides`, so the data is **unliftable, hence dead**.
-- **Lossy-head carve-out still stands** (now count-triggered): pin `floor = head-1` for
-  `Ack`/`Broadcast`/`Private` so a stalled head isn't reaped by the window-floor term.
-- One deliberate policy change: below-watermark lift material is no longer served (nobody needs it —
-  consumption is always above the watermark).
-- **PoC defect to raise:** lexnv's `archive.rs` over-prunes channel **payloads** at the hardcoded 25 h
-  horizon, foreclosing > 25 h catch-up that recomputation-from-frontier would otherwise allow; the horizon is
-  a `const`, not operator-tunable.
+**Finality rejected as the floor** (the "archive only when finalized" idea). Prune-on-finality — mirroring the
+receiver-side Tier 1/Tier 2 pruner — does *not* transfer. The receiver prunes on finality because it retains
+reorg-safety of consumed payloads across competing branches, and finality is the "no further reorg" line. The
+sender has no cross-branch retention (it rewinds to best chain); its floor falls out of the channel protocol
+(watermark + credit for Channels, keep-latest for lossy kinds) — a consumption/credit quantity, not blocks and
+not finality. Finality (block/wall-clock-measured) would reap still-serveable data of a slow-but-live channel.
+
+**Retention needs no independent horizon — it falls out of the channel protocol.** The earlier drafts
+(wall-clock 25 h horizon, then a count-based `window_floor` over the last N distinct roots) were both plugging
+a hole the v0.5 flow-control already closes. The stream kinds split cleanly, and neither branch needs a ring:
+
+- **Channel** (`stream_id.rs:82`: *"ordered, flow-controlled, guaranteed-delivery"*) → **`floor = watermark`**
+  (`Register.up_to`, the peer's confirmed-consumption point). The unconfirmed span `[watermark..head]` is
+  bounded **by the credit window itself**: the sender tracks outstanding credit to decide whether it may send
+  (`WindowGrant { max_messages, max_bytes, .. }`), so `head ≤ up_to + window` by construction. A stall freezes
+  `up_to`, the sender exhausts the window and **stops** (guaranteed-delivery ⇒ can't drop; flow-controlled ⇒
+  can't exceed). Retention is capped by the negotiated window, no horizon.
+- **Ack / Broadcast / Private** (`stream_id.rs:92,103`: *"lossy … latest-wins"*) → **`floor = head-1`** (keep
+  only the latest). This isn't a carve-out bolted onto a horizon — keep-latest **is** the lossy-latest-wins
+  contract. Bounded at one message.
+
+So `floor(stream)` = `watermark` for Channels, `head-1` for lossy kinds. **No `window_floor`, no distinct-root
+counting, no `RecentProvides`-ring coupling, no wall clock, no config.** The entire liftability/ring apparatus
+drops out of retention — it belongs to the relay's `Requires`-match tolerance, a separate concern. Prune
+payload **and** leaf hash together below the floor; deterministic → reproducible.
+
+- **Why the horizon *looked* necessary.** The flow-control commit (`341754c5`) states window accounting is
+  **"Deferred to the pallet"** — the PoC has no credit enforcement, so its sender retention really is
+  unbounded, and the 25 h horizon (and my count-based `window_floor` replacement) was plugging exactly that.
+  **The horizon is a stand-in for flow-control that isn't wired yet**, not a permanent mechanism; once the
+  pallet's window accounting lands it is *deleted*, not replaced. → **ordering dependency** (see plan).
+- **Consumption correctness is independent of all this.** Roots are cumulative (the head frontier is a
+  superset of every earlier root's), so a receiver always fetches/consumes under the **head** and re-anchors
+  to it if a staler root was pruned — a *retry, not a failure*. Aggressive tail-pruning never blocks
+  consumption; it only costs an occasional re-anchor. So the floor can be as tight as the two rules above.
+- **Two caveats, neither a reason to reintroduce `window_floor`:** (1) `WindowGrant` is documented
+  *"advisory"* — the bound is self-enforced (a sender honoring its own window is bounded; one that over-sends
+  only OOMs *itself*); a trivial per-channel "max outstanding" cap covers the defensive case, no ring. (2) A
+  receiver that grants credit then vanishes pins `window`-worth until the channel **closes** (`Register.closed`)
+  / times out — bounded, released by channel *lifecycle*, not retention windowing.
+- One deliberate policy change: below-watermark lift material is no longer served (consumption is always above
+  the watermark) — automatic from the single floor.
+- **PoC defect to raise:** lexnv's `archive.rs` over-prunes channel **payloads** at the hardcoded 25 h horizon
+  (a `const`, non-deterministic, not operator-tunable), foreclosing > 25 h catch-up that recomputation from
+  frontier would allow. The real fix is flow-control-bounded retention, not a tunable horizon.
 
 > _Moved to [PoC internals](speculative-messaging-poc-internals.md): the **two-tier prune (as-built)** deep-dive (#12707 node/client)._
 
-### Implementation plan — merge leaf-hash + payload pruning into one floor (`archive.rs`)
+### Implementation plan — retention = watermark (Channels) / keep-latest (lossy), delete the horizon
 
-Collapse the two-tier prune (watermark payloads + wall-clock leaf hashes) into a **single count-based
-floor**. Land the merge **and** the head carve-out as *one* change — merging alone re-creates the stalled-head
-reap (the window-floor term lands on `P`), so the carve-out is load-bearing, not a follow-up.
+Delete the wall-clock horizon outright and let the floor fall out of the stream kind. No `window_floor`, no
+distinct-root walk, no boundary ring, no `RecentProvides` reference in the archive.
 
-1. **`StreamState` (archive.rs:141):** drop `payload_floor: u64` and `floor: MmrFrontier`; keep one
-   `floor: MmrFrontier`. Below `floor.leaf_count`, **both** payload and leaf hash are gone.
-2. **Single floor rule:** `floor = max( watermark(stream), leaf_count_at_window_floor(stream) )`, where
-   `window_floor` = the stream's count at the **N-th-from-last** retained boundary. Healthy channel →
-   `watermark` dominates (no over-prune); window-floor only wins when a receiver stalled **> N blocks**.
-3. **Head carve-out (load-bearing, count-triggered):** pin `floor = min(floor, head − 1)` for
-   `Ack`/`Broadcast`/`Private` so the window-floor term can't reap a stalled head (the exact
-   `min(new_floor, head−1)` mitigation, generalized). This is what fixes the stalled-head scenario.
-4. **Boundary ring → count-based:** keep the **last N boundaries** (256/512), replacing the wall-clock drop.
-   Delete `prune_horizon`, `archived_at`, `now_secs`, `SERVING_HORIZON`, and the 24 h/10 MiB horizon config.
-   Fold the single-floor prune into the watermark-driven path (`prune_payloads` → prune both below `floor`).
-5. **Serve path:** below-floor requests fail with a below-floor error (replaces `HorizonError`). One
-   deliberate policy change: **below-watermark lift material is no longer served** — consumption is always
-   above the watermark, so nobody needs it.
-6. **Worker (`worker.rs:188-191`):** drop the `prune_horizon(now − SERVING_HORIZON)` call and the
-   `SERVING_HORIZON` import; the single prune is driven from register reads + the boundary ring.
+1. **`StreamState` (archive.rs:141):** collapse `payload_floor: u64` + `floor: MmrFrontier` into one
+   `floor: MmrFrontier`. Below `floor.leaf_count`, **both** payload and leaf hash are gone; the floor
+   frontier's peaks still tile the pruned prefix for proofs (mechanism unchanged).
+2. **Floor rule (per kind):**
+   - `Channel` → `floor = watermark` = `Register.up_to` from the `out_channels()` register view (the existing
+     `prune_payloads(below)` input, now driving **both** payload *and* leaf pruning).
+   - `Ack`/`Broadcast`/`Private` → `floor = head-1` (keep-latest), independent of any register.
+3. **Delete the horizon apparatus:** remove `prune_horizon`, `archived_at` (the `Boundary` field), `now_secs`,
+   `SERVING_HORIZON`, `import_block_at`'s timestamp param, and the 24 h/10 MiB config.
+4. **Boundary pruning follows the floor:** prune boundaries below the oldest retained leaf (`min` per-stream
+   `floor`'s block) — a boundary only resolves roots serveable from retained leaves, so it prunes *with* the
+   leaves at no extra rule. Channel span `[watermark-block .. head]` (credit-bounded); lossy kinds 1–2. No
+   separate boundary ring.
+5. **Merge the prune methods:** fold `prune_payloads` + `prune_horizon` into one `prune(stream, floor)` that
+   drops payload+leaf together below `floor` and advances the floor frontier (`frontier_at`).
+   `ServeError::PayloadsPruned`/`BelowHorizon` collapse into one `BelowFloor`.
+6. **Worker (`worker.rs`):** drop the `prune_horizon(now − SERVING_HORIZON)` call + `SERVING_HORIZON` import;
+   drive `prune` per Channel from the `out_channels()` register `up_to`, per lossy stream from `head-1`.
 
-**Safety invariant to assert + test (the whole license to reap a live-but-stalled channel):**
-`N ≫ RecentProvides ring depth` (256/512 vs ~128) ⇒ a root aged past N boundaries has **left
-`RecentProvides` ⇒ is unliftable ⇒ dead**. Add a test pinning `N > ring_depth`, and sanity-check the
-"below-watermark unneeded" claim for **Broadcast/multi-consumer** specifically (no single watermark there —
-those kinds lean entirely on window-floor + the head carve-out, not the watermark term).
+**Ordering dependency (do not land naked before flow-control).** The credit bound relies on pallet-side window
+accounting, which commit `341754c5` marks *"Deferred to the pallet."* Removing the horizon *before* that lands
+would drop the crude bound with nothing enforcing the window ⇒ a truly-stalled channel regrows unbounded.
+Options: **(a)** land this refactor *with/after* the pallet window accounting; or **(b)** keep an interim
+trivial per-channel *max-outstanding* cap (caveat 1 above) as the bound until credit is enforced — still no
+ring, no distinct roots.
 
-**Win:** deterministic (no wall clock → archive state is a pure function of consumed data + boundary ring),
-one floor instead of two, and the #12699 over-prune defect goes away.
+**Safety to assert + test:**
+- **Watermark safety (Channels):** the floor never prunes unconsumed data — prune at `up_to`, re-serve
+  `[up_to..head]`.
+- **Credit bound (Channels):** with window accounting, `[watermark..head] ≤ granted window` even under a
+  frozen `up_to` — a stalled-receiver test asserting retention *plateaus* at the window, not grows.
+- **Keep-latest (lossy):** an idle `Broadcast` retains exactly its head; a below-head request fails
+  `BelowFloor`.
+
+**Win:** retention is a pure function of the channel protocol (credit + kind) — no wall clock, no ring, no
+distinct-root counting, no horizon config. One floor, deterministic; the #12699 over-prune defect is *deleted*
+rather than re-tuned, and the whole `window_floor`/liftability machinery (with its sparse-sender subtlety) is
+gone.
 
 > _Moved to [PoC internals](speculative-messaging-poc-internals.md): **commitment-tree storage** (#12708 parachain) and **the verified pool** (#12707 node/client)._
 
