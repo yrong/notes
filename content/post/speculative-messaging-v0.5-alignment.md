@@ -89,12 +89,47 @@ serveable — stays **best-block**; the only part that bears on delivery latency
 a *prune/tail* floor (how long stale data resides — pure retention, **zero latency impact**). This model
 governs the **tail only**.
 
-**Finality rejected as the floor** (the "archive only when finalized" idea). Prune-on-finality — mirroring the
-receiver-side Tier 1/Tier 2 pruner — does *not* transfer. The receiver prunes on finality because it retains
-reorg-safety of consumed payloads across competing branches, and finality is the "no further reorg" line. The
-sender has no cross-branch retention (it rewinds to best chain); its floor falls out of the channel protocol
-(watermark + credit for Channels, keep-latest for lossy kinds) — a consumption/credit quantity, not blocks and
-not finality. Finality (block/wall-clock-measured) would reap still-serveable data of a slow-but-live channel.
+**Why the append trigger MUST stay best-block (not finalized).** Tempting to key `archive_best_block` off the
+parachain's *finalized* head instead — it's reorg-free, so `rewind_to` disappears. But it breaks the feature,
+and the reason is factual, not philosophical:
+
+- A parachain has **no finality of its own**. `finalized_head_stream_worker` (`parachain_consensus.rs`)
+  streams `finalized_heads` *from the relay chain* and calls `parachain.finalize_block(...)` — the parachain
+  finalized head **is** the relay's GRANDPA-finalized head. So "archive finalized" ≡ "wait for relay
+  finality"; there is no faster parachain-local finality to key off.
+- `RecentProvides` is populated at **inclusion** (`record_provides` in `enact_candidate`), so a sender root is
+  liftable — and receivers consume under it — throughout the **inclusion → relay-finality** window.
+- The sender archive is the receiver's **fetch endpoint**; the append trigger *defines which roots are
+  fetchable*. A finalized-only archive, by construction, lacks the included-but-unfinalized roots — exactly
+  the liftable ones. A receiver fetching under liftable `R` gets `UnknownRoot` until `R` finalizes ⇒ it cannot
+  consume `R` speculatively. That reintroduces the sender-side inclusion→finality wait the feature removes.
+
+So finalized-archiving removes `rewind_to` precisely *by* dropping the ability to serve liftable roots — the
+one thing the archive must serve. `rewind_to` is the price of best-block serving (tested, and bounded: reorgs
+are shallow, the floor is the recent watermark, so a rewind never crosses it). **If the real goal is a
+reorg-free durable store** (not latency): persist to aux only up to the **finalized prefix** (on-disk state
+never reorgs, `rewind_to` never touches disk) and serve the short **unfinalized tail from the in-memory best
+chain**, rebuilt trivially on reorg from blocks already in the client DB. Reorg handling then shrinks to
+"recompute a tiny in-memory tail," and liftable-root serving is preserved.
+
+**Finality rejected as the floor — and why that doesn't contradict the receiver-pool pruner (45b9d46).** The
+receiver pool *does* prune on finality (Tier 1/Tier 2), the sender archive does *not*, and both are correct —
+it is not a symmetry break, it's two different jobs. The one rule they share: **act on best-block, prune
+conservatively.** Neither gates the *speculative* path (fetch / consume / serve) on finality; they diverge only
+on what sets the *prune* floor, and that divergence is forced by structure:
+
+| | receiver pool | sender archive |
+|---|---|---|
+| what it holds | payloads it consumed on **its own** competing branches | its best chain's sends, served to other chains |
+| reorg model | retains across branches (a consuming ancestor may reorg away) | tracks **one** chain, `rewind_to`s on reorg — no cross-branch retention |
+| prune floor | **finality** — the "no fork descends below here" line, so a consumed payload is truly dead (45b9d46's own words: *"No live fork descends below a finalized block, so trimmed payloads can never be handed again"*) | **watermark + credit / keep-latest** — resume-depth of a live receiver; finality is the wrong quantity (and wrong unit: provides-emissions, not blocks) |
+| serves anyone? | **no** — local consumption state, fetched by nobody | **yes** — the receiver's fetch endpoint |
+
+The clincher is the last row: the argument that pins the sender's *append* trigger to best-block ("must serve
+liftable = unfinalized roots") **doesn't apply to the pool at all** — a local pool has no liftable roots to
+fail to serve. So finality is right for the receiver (its retained thing is its own reorg horizon) and wrong
+for the sender (whose retained thing is live-receiver resume depth, and whose append must serve unfinalized
+liftable roots). The sender model was *derived by contrast* with the pool's finality-pruning, not against it.
 
 **Retention needs no independent horizon — it falls out of the channel protocol.** The earlier drafts
 (wall-clock 25 h horizon, then a count-based `window_floor` over the last N distinct roots) were both plugging
