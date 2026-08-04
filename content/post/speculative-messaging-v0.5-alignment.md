@@ -112,43 +112,54 @@ never reorgs, `rewind_to` never touches disk) and serve the short **unfinalized 
 chain**, rebuilt trivially on reorg from blocks already in the client DB. Reorg handling then shrinks to
 "recompute a tiny in-memory tail," and liftable-root serving is preserved.
 
-**Finality rejected as the floor — and why that doesn't contradict the receiver-pool pruner (45b9d46).** The
-receiver pool *does* prune on finality (Tier 1/Tier 2), the sender archive does *not*, and both are correct —
-it is not a symmetry break, it's two different jobs. The one rule they share: **act on best-block, prune
-conservatively.** Neither gates the *speculative* path (fetch / consume / serve) on finality; they diverge only
-on what sets the *prune* floor, and that divergence is forced by structure:
+**Finality in the sender archive — corrected (the `spec_msg_penpal` E2E caught this).** An earlier draft here
+claimed the sender archive needs *no* finality (watermark/keep-latest only). **That was wrong**, and the E2E
+proved it: a best-chain reorg (#9→#10, common ancestor #7) needs `rewind_to(#7)`, but serveability-only
+boundary pruning had dropped #7's boundary — worse, pre-handshake blocks carry no streams, so the sweep's
+`streams.iter().all(...)` was vacuously true and collapsed the archive to one boundary. The walk-back then
+found no archived ancestor and the archiver wedged on `WorkerError::Disconnected` (152 times), stopped
+archiving, and refused every fetch → the handshake never reached `Open`. **The sender archive *does* need
+finality — as the reorg-safety cap, not the serving floor.** `rewind_to` must reconstruct state at the common
+ancestor, and a best-chain reorg never crosses the finalized head, so boundaries **and** leaves must be
+retained back to `finalized`. Corrected model: **`min(watermark, finalized)` — the watermark bounds memory,
+finality bounds reorg-safety** — so the sender mirrors the receiver pool's finalized retention after all.
+
+**How it relates to the receiver-pool pruner (45b9d46).** Both prune with a finality component; the difference
+is which layer finality governs — and the sender still keeps a *watermark* floor the receiver has no analog for:
 
 | | receiver pool | sender archive |
 |---|---|---|
 | what it holds | payloads it consumed on **its own** competing branches | its best chain's sends, served to other chains |
-| reorg model | retains across branches (a consuming ancestor may reorg away) | tracks **one** chain, `rewind_to`s on reorg — no cross-branch retention |
-| prune floor | **finality** — the "no fork descends below here" line, so a consumed payload is truly dead (45b9d46's own words: *"No live fork descends below a finalized block, so trimmed payloads can never be handed again"*) | **watermark + credit / keep-latest** — resume-depth of a live receiver; finality is the wrong quantity (and wrong unit: provides-emissions, not blocks) |
+| reorg model | retains across branches until finality (a consuming ancestor may reorg away) | tracks **one** chain, `rewind_to`s on reorg — needs boundaries + leaves back to the reorg point |
+| prune floor | **finality is the primary floor** — a consumed payload below it is truly dead (45b9d46: *"No live fork descends below a finalized block, so trimmed payloads can never be handed again"*) | **`min(watermark, finalized)`** — watermark/keep-latest is the serving/memory floor, *capped* by finality for reorg-safety (`apply_retention`) |
 | serves anyone? | **no** — local consumption state, fetched by nobody | **yes** — the receiver's fetch endpoint |
 
-The clincher is the last row: the argument that pins the sender's *append* trigger to best-block ("must serve
-liftable = unfinalized roots") **doesn't apply to the pool at all** — a local pool has no liftable roots to
-fail to serve. So finality is right for the receiver (its retained thing is its own reorg horizon) and wrong
-for the sender (whose retained thing is live-receiver resume depth, and whose append must serve unfinalized
-liftable roots). The sender model was *derived by contrast* with the pool's finality-pruning, not against it.
+Still true (unaffected by the correction): the sender's **append** trigger stays best-block (must serve
+liftable = unfinalized roots) — the last row. What changed is only the *prune* floor: finality is not the
+*wrong* quantity for the sender, it's the reorg-safety cap sitting on top of the watermark/keep-latest serving
+floor. The liftability/`RecentProvides`-ring apparatus still stays out of retention (it's the relay's
+`Requires`-match tolerance) — the sender's finality here is about `rewind_to` reconstruction, not liftability.
 
-**Retention needs no independent horizon — it falls out of the channel protocol.** The earlier drafts
+**Retention needs no wall-clock horizon — the serving floor falls out of the channel protocol (capped by
+finality for reorg-safety).** The earlier drafts
 (wall-clock 25 h horizon, then a count-based `window_floor` over the last N distinct roots) were both plugging
 a hole the v0.5 flow-control already closes. The stream kinds split cleanly, and neither branch needs a ring:
 
-- **Channel** (`stream_id.rs:82`: *"ordered, flow-controlled, guaranteed-delivery"*) → **`floor = watermark`**
-  (`Register.up_to`, the peer's confirmed-consumption point). The unconfirmed span `[watermark..head]` is
-  bounded **by the credit window itself**: the sender tracks outstanding credit to decide whether it may send
-  (`WindowGrant { max_messages, max_bytes, .. }`), so `head ≤ up_to + window` by construction. A stall freezes
-  `up_to`, the sender exhausts the window and **stops** (guaranteed-delivery ⇒ can't drop; flow-controlled ⇒
-  can't exceed). Retention is capped by the negotiated window, no horizon.
-- **Ack / Broadcast / Private** (`stream_id.rs:92,103`: *"lossy … latest-wins"*) → **`floor = head-1`** (keep
-  only the latest). This isn't a carve-out bolted onto a horizon — keep-latest **is** the lossy-latest-wins
-  contract. Bounded at one message.
+- **Channel** (`stream_id.rs:82`: *"ordered, flow-controlled, guaranteed-delivery"*) → serving floor =
+  **`watermark`** (`Register.up_to`, the peer's confirmed-consumption point). The unconfirmed span
+  `[watermark..head]` is bounded **by the credit window itself**: the sender tracks outstanding credit to decide
+  whether it may send (`WindowGrant { max_messages, max_bytes, .. }`), so `head ≤ up_to + window` by
+  construction. A stall freezes `up_to`, the sender exhausts the window and **stops** (guaranteed-delivery ⇒
+  can't drop; flow-controlled ⇒ can't exceed). No wall-clock horizon.
+- **Ack / Broadcast / Private** (`stream_id.rs:92,103`: *"lossy … latest-wins"*) → serving floor =
+  **`head-1`** (keep only the latest). This isn't a carve-out bolted onto a horizon — keep-latest **is** the
+  lossy-latest-wins contract. Bounded at one message.
 
-So `floor(stream)` = `watermark` for Channels, `head-1` for lossy kinds. **No `window_floor`, no distinct-root
-counting, no `RecentProvides`-ring coupling, no wall clock, no config.** The entire liftability/ring apparatus
-drops out of retention — it belongs to the relay's `Requires`-match tolerance, a separate concern. Prune
-payload **and** leaf hash together below the floor; deterministic → reproducible.
+So the **serving** floor is `watermark` (Channels) / `head-1` (lossy) — **no `window_floor`, no distinct-root
+counting, no `RecentProvides`-ring coupling, no wall clock, no config** (the liftability/ring apparatus stays
+out; it's the relay's `Requires`-match tolerance). But the effective floor is **`min(serving, finalized)`** —
+capped by the finalized reorg-horizon so `rewind_to` can reconstruct (see the correction above). Below the
+floor, prune payload **and** leaf hash together; deterministic given `(watermark, finalized)`.
 
 - **Why the horizon *looked* necessary.** The flow-control commit (`341754c5`) states window accounting is
   **"Deferred to the pallet"** — the PoC has no credit enforcement, so its sender retention really is
@@ -172,49 +183,51 @@ payload **and** leaf hash together below the floor; deterministic → reproducib
 
 > _Moved to [PoC internals](speculative-messaging-poc-internals.md): the **two-tier prune (as-built)** deep-dive (#12707 node/client)._
 
-### Implementation plan — retention = watermark (Channels) / keep-latest (lossy), delete the horizon
+### Implementation — retention = `min(watermark/keep-latest, finalized)` (as built + reorg fix)
 
-Delete the wall-clock horizon outright and let the floor fall out of the stream kind. No `window_floor`, no
-distinct-root walk, no boundary ring, no `RecentProvides` reference in the archive.
+Built in two commits: the first deleted the wall-clock horizon and pruned to the serving floor; the second
+(after the E2E, `cd3e179`) added the finalized reorg-safety cap. Net design:
 
-1. **`StreamState` (archive.rs:141):** collapse `payload_floor: u64` + `floor: MmrFrontier` into one
-   `floor: MmrFrontier`. Below `floor.leaf_count`, **both** payload and leaf hash are gone; the floor
-   frontier's peaks still tile the pruned prefix for proofs (mechanism unchanged).
-2. **Floor rule (per kind):**
-   - `Channel` → `floor = watermark` = `Register.up_to` from the `out_channels()` register view (the existing
-     `prune_payloads(below)` input, now driving **both** payload *and* leaf pruning).
-   - `Ack`/`Broadcast`/`Private` → `floor = head-1` (keep-latest), independent of any register.
-3. **Delete the horizon apparatus:** remove `prune_horizon`, `archived_at` (the `Boundary` field), `now_secs`,
-   `SERVING_HORIZON`, `import_block_at`'s timestamp param, and the 24 h/10 MiB config.
-4. **Boundary pruning follows the floor:** prune boundaries below the oldest retained leaf (`min` per-stream
-   `floor`'s block) — a boundary only resolves roots serveable from retained leaves, so it prunes *with* the
-   leaves at no extra rule. Channel span `[watermark-block .. head]` (credit-bounded); lossy kinds 1–2. No
-   separate boundary ring.
-5. **Merge the prune methods:** fold `prune_payloads` + `prune_horizon` into one `prune(stream, floor)` that
-   drops payload+leaf together below `floor` and advances the floor frontier (`frontier_at`).
-   `ServeError::PayloadsPruned`/`BelowHorizon` collapse into one `BelowFloor`.
-6. **Worker (`worker.rs`):** drop the `prune_horizon(now − SERVING_HORIZON)` call + `SERVING_HORIZON` import;
-   drive `prune` per Channel from the `out_channels()` register `up_to`, per lossy stream from `head-1`.
+1. **`StreamState` (archive.rs):** one `floor: MmrFrontier` (dropped the `payload_floor` split). Below
+   `floor.leaf_count`, **both** payload and leaf hash are gone; the floor frontier's peaks tile the pruned
+   prefix for proofs.
+2. **`apply_retention(finalized, watermarks)`** — single entry, reorg-safe:
+   - **Boundaries:** drop those with `number < finalized`; keep everything `>= finalized` (a best-chain reorg
+     never crosses the finalized head, so `rewind_to` always finds the common ancestor).
+   - **Per stream:** floor = `min(serving, finalized-count)`, where serving = `watermark` (`Register.up_to`)
+     for `Channel`, `head-1` for lossy kinds, and `finalized-count` = the stream's leaf count at the finalized
+     boundary (a stream born after `finalized` isn't pruned at all). `prune_stream` drops payload+leaf below
+     the floor and advances the floor frontier.
+3. **Deleted:** `prune_horizon`, `archived_at`, `now_secs`, `SERVING_HORIZON`, the 24 h/10 MiB config,
+   `import_block_at`'s timestamp (test shim only). `ServeError::PayloadsPruned`/`BelowHorizon` → one
+   `BelowFloor`.
+4. **Worker (`worker.rs`):** build the `Channel → up_to` watermark map from `out_channels()`, read
+   `client.info().finalized_number`, call `apply_retention`.
 
-**Ordering dependency (do not land naked before flow-control).** The credit bound relies on pallet-side window
-accounting, which commit `341754c5` marks *"Deferred to the pallet."* Removing the horizon *before* that lands
-would drop the crude bound with nothing enforcing the window ⇒ a truly-stalled channel regrows unbounded.
-Options: **(a)** land this refactor *with/after* the pallet window accounting; or **(b)** keep an interim
-trivial per-channel *max-outstanding* cap (caveat 1 above) as the bound until credit is enforced — still no
-ring, no distinct roots.
+**The reorg bug the E2E caught (why step 2 is `min(…, finalized)`, not just the serving floor).** The first cut
+pruned boundaries by serveability alone. Pre-handshake blocks carry no streams ⇒ `streams.iter().all(…)` is
+vacuously true ⇒ the archive collapsed to one boundary ⇒ a reorg (#9→#10, ancestor #7) found no archived
+ancestor ⇒ `WorkerError::Disconnected` ⇒ archiver stops ⇒ every fetch refused ⇒ handshake never reached `Open`.
+Finality-capping **both** boundaries and leaves fixes it (a `rewind_to` a `>= finalized` ancestor must rebuild
+the frontier there, so those leaves can't be pruned either).
 
-**Safety to assert + test:**
-- **Watermark safety (Channels):** the floor never prunes unconsumed data — prune at `up_to`, re-serve
-  `[up_to..head]`.
-- **Credit bound (Channels):** with window accounting, `[watermark..head] ≤ granted window` even under a
-  frozen `up_to` — a stalled-receiver test asserting retention *plateaus* at the window, not grows.
-- **Keep-latest (lossy):** an idle `Broadcast` retains exactly its head; a below-head request fails
-  `BelowFloor`.
+**Tests:** watermark safety (prune at `up_to`, re-serve `[up_to..head]`); keep-latest (idle lossy stream
+retains its head, below-head → `BelowFloor`); **reorg reconciliation** (empty-stream blocks + reorg to a
+`>= finalized` ancestor still reconciles — the direct regression for the E2E bug); **leaf cap** (watermark
+beyond the finalized horizon still leaves enough for `rewind_to` to rebuild — `Corrupt` without the cap).
+Deferred: the **credit-bound plateau** test needs pallet window accounting (`341754c5`, "Deferred to the
+pallet"). **Verified:** 56 unit tests + the `spec_msg_penpal` E2E (0 `Disconnected` vs 152, archiving sustained
+to #158, `test result: ok. 1 passed`).
 
-**Win:** retention is a pure function of the channel protocol (credit + kind) — no wall clock, no ring, no
-distinct-root counting, no horizon config. One floor, deterministic; the #12699 over-prune defect is *deleted*
-rather than re-tuned, and the whole `window_floor`/liftability machinery (with its sparse-sender subtlety) is
-gone.
+**Ordering dependency (memory bound only).** The *reorg* cap is in. The *memory* bound on a stalled channel
+still relies on pallet-side credit enforcement (`341754c5`, "Deferred to the pallet"): until it lands,
+`[watermark..head]` is bounded only by a well-behaved sender honoring its own advisory window (or an interim
+per-channel max-outstanding cap). Orthogonal to the finalized reorg cap.
+
+**Win:** retention is a function of `(watermark, finalized)` — no wall clock, no ring, no distinct-root
+counting, no horizon config. The #12699 over-prune defect is *deleted* rather than re-tuned; the
+`window_floor`/liftability machinery (with its sparse-sender subtlety) is gone; and finality re-enters only as
+the reorg-safety cap that `rewind_to` needs — mirroring the receiver pool.
 
 > _Moved to [PoC internals](speculative-messaging-poc-internals.md): **commitment-tree storage** (#12708 parachain) and **the verified pool** (#12707 node/client)._
 
