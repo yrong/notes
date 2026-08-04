@@ -231,6 +231,31 @@ the reorg-safety cap that `rewind_to` needs — mirroring the receiver pool.
 
 > _Moved to [PoC internals](speculative-messaging-poc-internals.md): **commitment-tree storage** (#12708 parachain) and **the verified pool** (#12707 node/client)._
 
+### Branch review — `ron/spec-msg-finalized-pruning` vs `lexnv/spec-msg-poc-mvp`
+
+Four commits, one theme: **finality-bounded retention on both sides of the channel** — the poc-mvp left both
+the receiver pool and the sender archive effectively unbounded. Both read the parachain's (relay-derived)
+finalized head, and both preserve proof capability by folding dropped leaves onto a **base frontier** rather
+than deleting outright.
+
+| side | commits | what | files |
+|---|---|---|---|
+| **receiver pool** (#12707) | `45b9d46` (T1), `4d0696e` (T2) | `run_finalized_pruner` reads `consumed_streams()` at each *finalized* block and `trim_below(finalized)` drops payloads **and** leaves below the finalized consumption point (folded onto the base frontier), collapsing the ledger to `[finalized..head]`. Bounds the pool, which was bounded only by stream length → OOM. | `pool.rs`, `prune.rs` (new), `spec_msg.rs`, `authoring.rs` (tests) |
+| **sender archive** (#12708) | `4d1d506`, `cd3e179` | Replaced the wall-clock 25 h horizon with `apply_retention(finalized, watermarks)` = `min(watermark/keep-latest, finalized)`; `cd3e179` added the finalized cap on boundaries + leaves after the E2E caught a `Disconnected` reorg wedge. | `archive.rs`, `worker.rs`, `lib.rs` |
+
+**Roles differ (per the model above):** receiver — finality is the *primary* floor (reorg-safety of consumed
+payloads across its own branches); sender — finality is the *reorg-safety cap* on top of the watermark/
+keep-latest serving floor. Same mechanism (`consumed_streams()` / `finalized_number` + base-frontier fold),
+different layer.
+
+**Verified:** 56 unit tests (incl. the two sender reorg regressions) + `spec_msg_penpal` E2E green (0
+`Disconnected`, archiving to #158, `1 passed`).
+
+**Finding (doc-only, no behavior impact) — fixed in `47af590`:** `prune.rs` carried Tier-1 language — *"Leaf
+hashes are retained for lift generation, so only the bulk payload bytes are reclaimed"* — but Tier 2's
+`trim_below` drops the leaves too (folds them onto the base frontier). Doc now reads: both payloads and leaf
+hashes below the finalized floor are reclaimed, only the base frontier's peaks kept for proofs.
+
 ## DHT peer discovery (`ron/spec-msg-dht-discovery`) — implemented, E2E green ([PR #12736](https://github.com/paritytech/polkadot-sdk/pull/12736))
 
 Cross-parachain peer discovery over the relay DHT, driven purely by on-chain `set_source_genesis` — no static
