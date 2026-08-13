@@ -18,7 +18,7 @@ tags:
 | **Authors** | eskimor |
 | **Status** | Review |
 | **Version** | 1.2 |
-| **Related Designs** | [Speculative Messaging](speculative-messaging-design.md) |
+| **Related Designs** | [Speculative Messaging](https://github.com/paritytech/polkadot-sdk/pull/12659) |
 
 ### Version History
 
@@ -265,7 +265,7 @@ fashion.)
 Throughput figures can be reached by the means of elastic scaling and by
 building super chains (interconnected chains, with messaging latency between
 them in the ballpark of milliseconds), based on [speculative
-messaging](speculative-messaging-design.md).
+messaging](https://github.com/paritytech/polkadot-sdk/pull/12659).
 
 ---
 
@@ -367,7 +367,7 @@ The relay chain decoupling, in particular building on older/finalized relay
 chain parents, comes at the cost of increased messaging latency, as the relay
 parent provides the context for message receival. To mitigate this drawback we
 are also introducing a new mechanism replacing on-chain messaging, which is
-[Speculative Messaging](speculative-messaging-design.md).
+[Speculative Messaging](https://github.com/paritytech/polkadot-sdk/pull/12659).
 
 Speculative messaging is able to restore the messaging latency we had with
 building on the most recent relay parent and in many cases we will be able to
@@ -672,7 +672,7 @@ will look much more closely into this in the scheduling parent section.
 
 This is the one thing we get from the relay chain context which is the most problematic with regards to relay parent age. If we build on finalized relay chain blocks, this means we are adding >18s to the messaging latency.
 
-This is the biggest downside of using older relay parents and needs to be mitigated for the solution to be practical. This is why this design should go hand-in-hand with the introduction of [speculative messaging](speculative-messaging-design.md).
+This is the biggest downside of using older relay parents and needs to be mitigated for the solution to be practical. This is why this design should go hand-in-hand with the introduction of [speculative messaging](https://github.com/paritytech/polkadot-sdk/pull/12659).
 
 #### Randomness
 

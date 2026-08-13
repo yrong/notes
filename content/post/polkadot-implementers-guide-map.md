@@ -13,7 +13,7 @@ tags:
 
 Source: `polkadot/roadmap/implementers-guide/src/SUMMARY.md` (the mdBook table of contents). This is a
 reading map — what each area covers, how the pieces relate, and which parts matter most for the
-speculative-messaging work (see [v0.5 alignment](speculative-messaging-v0.5-alignment.md)).
+speculative-messaging work.
 
 The guide is the canonical spec for the **parachains protocol**: how a parachain block (a *candidate*)
 travels from a collator, through relay-chain backing / availability / approval / disputes, to inclusion and
@@ -213,8 +213,7 @@ GRANDPA) with approval, which is **not** proportional.
 - The three genuine **2/3 supermajorities** are **availability, disputes, and GRANDPA finality** — approval
   and backing are *not* among them.
 
-This ties back to the spec-msg finality reasoning (see
-[v0.5 alignment](speculative-messaging-v0.5-alignment.md)): inclusion needs availability (2/3) + backing,
+This ties back to the spec-msg finality reasoning: inclusion needs availability (2/3) + backing,
 but *irreversibility* needs the inclusion relay block to be **GRANDPA-finalized**, which in turn requires
 the candidate to have cleared **approval** — so a merely-included candidate (and its `RecentProvides` write)
 is still revertible by a dispute until then.
