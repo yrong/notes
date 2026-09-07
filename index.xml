@@ -6,65 +6,65 @@
       <description>Last 10 notes on Ron&#039;s Notes</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>Polkadot</title>
-    <link>https://yrong.github.io/notes/01-technology/polkadot/</link>
-    <guid>https://yrong.github.io/notes/01-technology/polkadot/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <title>Notes: Euler V2 模块化去中心化借贷协议架构深度解析</title>
+    <link>https://yrong.github.io/notes/post/2026-09-07-euler-v2-modular-lending-architecture-zh</link>
+    <guid>https://yrong.github.io/notes/post/2026-09-07-euler-v2-modular-lending-architecture-zh</guid>
+    <description><![CDATA[ 全面解析 Euler V2 —— 以模块化、无许可与高可组合性为核心的以太坊去中心化借贷基础设施协议栈。 1. ]]></description>
+    <pubDate>Mon, 07 Sep 2026 14:30:00 GMT</pubDate>
   </item><item>
-    <title>post</title>
-    <link>https://yrong.github.io/notes/post/</link>
-    <guid>https://yrong.github.io/notes/post/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <title>Notes: Euler V2 Modular Lending Infrastructure &amp; Product Synthesis</title>
+    <link>https://yrong.github.io/notes/post/2026-09-07-euler-v2-modular-lending-architecture</link>
+    <guid>https://yrong.github.io/notes/post/2026-09-07-euler-v2-modular-lending-architecture</guid>
+    <description><![CDATA[ A complete architectural synthesis of Euler V2 — a modular, permissionless, and composable lending infrastructure on Ethereum. 1. ]]></description>
+    <pubDate>Mon, 07 Sep 2026 14:00:00 GMT</pubDate>
   </item><item>
-    <title>polkadot</title>
-    <link>https://yrong.github.io/notes/tags/polkadot</link>
-    <guid>https://yrong.github.io/notes/tags/polkadot</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <title>Notes: Euler Price Oracle Deep Dive</title>
+    <link>https://yrong.github.io/notes/post/2026-09-07-euler-price-oracle-deep-dive</link>
+    <guid>https://yrong.github.io/notes/post/2026-09-07-euler-price-oracle-deep-dive</guid>
+    <description><![CDATA[ The Euler Price Oracle is an on-chain, composable pricing framework. ]]></description>
+    <pubDate>Mon, 07 Sep 2026 12:00:00 GMT</pubDate>
   </item><item>
-    <title>parachain</title>
-    <link>https://yrong.github.io/notes/tags/parachain</link>
-    <guid>https://yrong.github.io/notes/tags/parachain</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <title>Notes: Ethereum Vault Connector (EVC) Deep Dive</title>
+    <link>https://yrong.github.io/notes/post/2026-09-07-ethereum-vault-connector-evc-deep-dive</link>
+    <guid>https://yrong.github.io/notes/post/2026-09-07-ethereum-vault-connector-evc-deep-dive</guid>
+    <description><![CDATA[ The Ethereum Vault Connector (EVC) is a foundational coordination layer for decentralized lending. ]]></description>
+    <pubDate>Mon, 07 Sep 2026 10:00:00 GMT</pubDate>
   </item><item>
-    <title>polkadot-sdk</title>
-    <link>https://yrong.github.io/notes/tags/polkadot-sdk</link>
-    <guid>https://yrong.github.io/notes/tags/polkadot-sdk</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <title>Notes: Euler Vault Kit (EVK) Repository Code Review</title>
+    <link>https://yrong.github.io/notes/post/2026-09-07-euler-vault-kit-repo-code-review</link>
+    <guid>https://yrong.github.io/notes/post/2026-09-07-euler-vault-kit-repo-code-review</guid>
+    <description><![CDATA[ A comprehensive code-level review and technical breakdown of the euler-vault-kit repository. 1. ]]></description>
+    <pubDate>Mon, 07 Sep 2026 08:00:00 GMT</pubDate>
   </item><item>
-    <title>technology</title>
-    <link>https://yrong.github.io/notes/tags/technology</link>
-    <guid>https://yrong.github.io/notes/tags/technology</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <title>Notes: Euler Vault Kit (EVK) Whitepaper Deep Dive</title>
+    <link>https://yrong.github.io/notes/post/2026-09-07-euler-vault-kit-whitepaper-deep-dive</link>
+    <guid>https://yrong.github.io/notes/post/2026-09-07-euler-vault-kit-whitepaper-deep-dive</guid>
+    <description><![CDATA[ The Euler Vault Kit (EVK) is a modular framework for constructing credit vaults on Ethereum. ]]></description>
+    <pubDate>Mon, 07 Sep 2026 06:00:00 GMT</pubDate>
   </item><item>
-    <title>obsidian</title>
-    <link>https://yrong.github.io/notes/tags/obsidian</link>
-    <guid>https://yrong.github.io/notes/tags/obsidian</guid>
+    <title>hyperbridge</title>
+    <link>https://yrong.github.io/notes/tags/hyperbridge</link>
+    <guid>https://yrong.github.io/notes/tags/hyperbridge</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <pubDate>Mon, 07 Sep 2026 04:34:21 GMT</pubDate>
   </item><item>
-    <title>java</title>
-    <link>https://yrong.github.io/notes/tags/java</link>
-    <guid>https://yrong.github.io/notes/tags/java</guid>
+    <title>ismp</title>
+    <link>https://yrong.github.io/notes/tags/ismp</link>
+    <guid>https://yrong.github.io/notes/tags/ismp</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <pubDate>Mon, 07 Sep 2026 04:34:21 GMT</pubDate>
   </item><item>
-    <title>vertx</title>
-    <link>https://yrong.github.io/notes/tags/vertx</link>
-    <guid>https://yrong.github.io/notes/tags/vertx</guid>
+    <title>zcash</title>
+    <link>https://yrong.github.io/notes/tags/zcash</link>
+    <guid>https://yrong.github.io/notes/tags/zcash</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <pubDate>Mon, 07 Sep 2026 04:34:21 GMT</pubDate>
   </item><item>
-    <title>elasticsearch</title>
-    <link>https://yrong.github.io/notes/tags/elasticsearch</link>
-    <guid>https://yrong.github.io/notes/tags/elasticsearch</guid>
+    <title>privacy</title>
+    <link>https://yrong.github.io/notes/tags/privacy</link>
+    <guid>https://yrong.github.io/notes/tags/privacy</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Thu, 27 Aug 2026 18:53:28 GMT</pubDate>
+    <pubDate>Mon, 07 Sep 2026 04:34:21 GMT</pubDate>
   </item>
     </channel>
   </rss>
