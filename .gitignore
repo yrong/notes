@@ -14,3 +14,6 @@ quartz/cli/tui/dist/
 # Local Obsidian vault symlink (absolute path; not for CI/deploy)
 content/obsidian
 content/private/
+
+# Private notes — nested repo, pushes to yrong/notes2 (private). Never track here.
+private/
