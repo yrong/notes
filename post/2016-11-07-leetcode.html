@@ -15,7 +15,7 @@ The range of numbers in the array is [-1000, 1000] and the range of the integer 
 
 </code></pre>
 <h2 id="思路">思路<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#思路" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
-<p id="2).">符合直觉的做法是暴力求解所有的子数组，然后分别计算和，如果等于k,count就+1.这种做法的时间复杂度为O(n</p>
+<p>符合直觉的做法是暴力求解所有的子数组，然后分别计算和，如果等于k,count就+1.这种做法的时间复杂度为O(n^2).</p>
 <p>这里有一种更加巧妙的方法，我们可以借助额外的空间，使用hashmap来简化时间复杂度，这种算法的时间复杂度可以达到O(n).</p>
 <p>我们维护一个hashmap，hashmap的key为累加值acc，value为累加值acc出现的次数。
 我们迭代数组，然后不断更新acc和hashmap，如果acc 等于k，那么很明显应该+1. 如果hashmap[acc - k] 存在，
@@ -869,7 +869,7 @@ class Solution(object):
 </code></pre>
 <h3 id="广度优先搜索bfs">广度优先搜索（BFS）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#广度优先搜索bfs" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
 <blockquote>
-<p id="3).">We maintain two queues: one of the amount so far(queue) and the other for the minimal steps for each amount(steps). The time is too much because of the contains method take n and total time is O(n</p>
+<p>We maintain two queues: one of the amount so far(queue) and the other for the minimal steps for each amount(steps). The time is too much because of the contains method take n and total time is O(n^3).</p>
 </blockquote>
 <pre><code>class Solution(object):
     def coinChange(self, coins, amount):
