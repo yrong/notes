@@ -12,7 +12,7 @@ Neo4j中数据是如何存储的
 
 # 电子书 #
 
-[GraphDatabase](/attach/OreillyGraphDatabases.pdf)
+[Graph Databases (O'Reilly)](/notes/resource/oreillygraphdatabases.pdf)
 
 
 # 存储结构 #
